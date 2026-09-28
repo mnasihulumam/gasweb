@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GasWeb Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            orange: { DEFAULT: '#FF5A1F', 600: '#E04E1A' },
+            navy: { DEFAULT: '#0F1F3D', 800: '#1A2B4A', 900: '#0A1528' }
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    .tab-btn.active { background: #FF5A1F; color: white; }
+    textarea, input, select { transition: border-color 0.15s; }
+  </style>
+</head>
+<body class="bg-gray-100 text-navy min-h-screen">
+
+  <!-- LOGIN SCREEN -->
+  <div id="login-screen" class="min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-8">
+      <div class="text-center mb-8">
+        <h1 class="text-2xl font-bold text-navy">Gas<span class="text-orange">Web</span> Admin</h1>
+        <p class="text-gray-500 text-sm mt-1">Masuk untuk mengelola konten website</p>
+      </div>
+      <form id="login-form" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium mb-1">Email</label>
+          <input type="email" id="login-user" required class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-orange focus:ring-2 focus:ring-orange/20 outline-none" placeholder="email@contoh.com">
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Password</label>
+          <input type="password" id="login-pass" required class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-orange focus:ring-2 focus:ring-orange/20 outline-none" placeholder="Password">
+        </div>
+        <p id="login-error" class="text-red-500 text-sm hidden"></p>
+        <button type="submit" class="w-full py-3 rounded-lg bg-orange text-white font-semibold hover:bg-orange-600 transition">Masuk</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ADMIN DASHBOARD -->
+  <div id="admin-screen" class="hidden">
+    <!-- Top bar -->
+    <header class="bg-navy text-white sticky top-0 z-40">
+      <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <span class="font-bold text-lg">Gas<span class="text-orange">Web</span> Admin</span>
+          <a href="index.html" target="_blank" class="text-xs bg-white/10 hover:bg-white/20 px-3 py-1 rounded-full transition">Lihat Website →</a>
+        </div>
+        <div class="flex items-center gap-3">
+          <button id="btn-save-all" class="px-4 py-1.5 rounded-lg bg-orange text-white text-sm font-semibold hover:bg-orange-600 transition">Simpan Semua</button>
+          <button id="btn-logout" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-sm transition">Logout</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="max-w-6xl mx-auto px-4 py-6">
+      <!-- Tabs -->
+      <div class="flex flex-wrap gap-2 mb-6">
+        <button class="tab-btn active px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 hover:bg-gray-300" data-tab="settings">Settings & Teks</button>
+        <button class="tab-btn px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 hover:bg-gray-300" data-tab="logo">Logo</button>
+        <button class="tab-btn px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 hover:bg-gray-300" data-tab="packages">Paket</button>
+        <button class="tab-btn px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 hover:bg-gray-300" data-tab="portfolio">Portfolio</button>
+        <button class="tab-btn px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 hover:bg-gray-300" data-tab="services">Services</button>
+        <button class="tab-btn px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 hover:bg-gray-300" data-tab="problems">Problems</button>
+        <button class="tab-btn px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 hover:bg-gray-300" data-tab="features">Features</button>
+        <button class="tab-btn px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 hover:bg-gray-300" data-tab="steps">Steps</button>
+        <button class="tab-btn px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 hover:bg-gray-300" data-tab="password">Ganti Password</button>
+      </div>
+
+      <!-- STATUS -->
+      <div id="status-msg" class="hidden mb-4 px-4 py-3 rounded-lg text-sm font-medium"></div>
+
+      <!-- TAB: SETTINGS -->
+      <div id="tab-settings" class="tab-content bg-white rounded-xl shadow-sm p-6 space-y-4">
+        <h2 class="text-lg font-bold mb-4">Settings & Semua Teks Website</h2>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div><label class="block text-xs font-medium text-gray-500 mb-1">Site Title</label><input id="s-siteTitle" class="w-full px-3 py-2 border rounded-lg text-sm"></div>
+          <div><label class="block text-xs font-medium text-gray-500 mb-1">WhatsApp (628xxx)</label><input id="s-whatsapp" class="w-full px-3 py-2 border rounded-lg text-sm"></div>
+          <div><label class="block text-xs font-medium text-gray-500 mb-1">Instagram URL</label><input id="s-instagram" class="w-full px-3 py-2 border rounded-lg text-sm"></div>
+          <div><label class="block text-xs font-medium text-gray-500 mb-1">TikTok URL</label><input id="s-tiktok" class="w-full px-3 py-2 border rounded-lg text-sm"></div>
+          <div><label class="block text-xs font-medium text-gray-500 mb-1">Hero Badge</label><input id="s-heroBadge" class="w-full px-3 py-2 border rounded-lg text-sm"></div>
+          <div><label class="block text-xs font-medium text-gray-500 mb-1">CTA Button Text</label><input id="s-ctaText" class="w-full px-3 py-2 border rounded-lg text-sm"></div>
+          <div class="sm:col-span-2"><label class="block text-xs font-medium text-gray-500 mb-1">Hero Headline 1</label><input id="s-heroHeadline1" class="w-full px-3 py-2 border rounded-lg text-sm"></div>
+          <div class="sm:col-span-2"><label class="block text-xs font-medium text-gray-500 mb-1">Hero Headline 2</label><input id="s-heroHeadline2" class="w-full px-3 py-2 border rounded-lg text-sm"></div>
+          <div class="sm:col-span-2"><label class="block text-xs font-medium text-gray-500 mb-1">Hero Subheadline</label><textarea id="s-heroSubheadline" rows="2" class="w-full px-3 py-2 border rounded-lg text-sm"></textarea></div>
+          <div class="sm:col-span-2"><label class="block text-xs font-medium text-gray-500 mb-1">Problems Title</label><input id="s-problemsTitle" class="w-full px-3 py-2 border rounded-lg text-sm"></div>
+          <div class="sm:col-span-2"><label class="block text-xs font-medium text-gray-500 mb-1">Problems Subtitle</label><input id="s-problemsSubtitle" class="w-full px-3 py-2 border rounded-lg text-sm"></div>
+          <div class="sm:col-span-2"><label class="block text-xs font-medium text-gray-500 mb-1">Problems Closing</label><input id="s-problemsClosing" class="w-full px-3 py-2 border rounded-lg text-sm"></div>
+          <div class="sm:col-span-2"><label class="block text-xs font-medium text-gray-500 mb-1">Services Title</label><input id="s-servicesTitle" class="w-full px-3 py-2 border rounded-lg text-sm"></div>
+          <div class="sm:col-span-2"><label class="block text-xs font-medium text-gray-500 mb-1">Services Subtitle</label><input id="s-servicesSubtitle" class="w-full px-3 py-2 border rounded-lg text-sm"></div>
+          <div class="sm:col-span-2"><label class="block text-xs font-medium text-gray-500 mb-1">Features Title</label><input id="s-featuresTitle" class="w-full px-3 py-2 border rounded-lg text-sm"></div>
+          <div class="sm:col-span-2"><label class="block text-xs font-medium text-gray-500 mb-1">Features Subtitle</label><input id="s-featuresSubtitle" class="w-full px-3 py-2 border rounded-lg text-sm"></div>
+          <div class="sm:col-span-2"><label class="block text-xs font-medium text-gray-500 mb-1">Portfolio Title</label><input id="s-portfolioTitle" class="w-full px-3 py-2 border rounded-lg text-sm"></div>
+          <div class="sm:col-span-2"><label class="block text-xs font-medium text-gray-500 mb-1">Portfolio Subtitle</label><input id="s-portfolioSubtitle" class="w-full px-3 py-2 border rounded-lg text-sm"></div>
+          <div class="sm:col-span-2"><label class="block text-xs font-medium text-gray-500 mb-1">Steps Title</label><input id="s-stepsTitle" class="w-full px-3 py-2 border rounded-lg text-sm"></div>
+          <div class="sm:col-span-2"><label class="block text-xs font-medium text-gray-500 mb-1">Steps Subtitle</label><input id="s-stepsSubtitle" class="w-full px-3 py-2 border rounded-lg text-sm"></div>
+          <div class="sm:col-span-2"><label class="block text-xs font-medium text-gray-500 mb-1">Pricing Title</label><input id="s-pricingTitle" class="w-full px-3 py-2 border rounded-lg text-sm"></div>
+          <div class="sm:col-span-2"><label class="block text-xs font-medium text-gray-500 mb-1">Pricing Subtitle</label><input id="s-pricingSubtitle" class="w-full px-3 py-2 border rounded-lg text-sm"></div>
+          <div class="sm:col-span-2"><label class="block text-xs font-medium text-gray-500 mb-1">Final CTA Headline</label><input id="s-finalCtaHeadline" class="w-full px-3 py-2 border rounded-lg text-sm"></div>
+          <div class="sm:col-span-2"><label class="block text-xs font-medium text-gray-500 mb-1">Final CTA Text</label><textarea id="s-finalCtaText" rows="2" class="w-full px-3 py-2 border rounded-lg text-sm"></textarea></div>
+          <div class="sm:col-span-2"><label class="block text-xs font-medium text-gray-500 mb-1">Footer Description</label><textarea id="s-footerDescription" rows="2" class="w-full px-3 py-2 border rounded-lg text-sm"></textarea></div>
+        </div>
+      </div>
+
+      <!-- TAB: LOGO -->
+      <div id="tab-logo" class="tab-content hidden bg-white rounded-xl shadow-sm p-6 space-y-4">
+        <h2 class="text-lg font-bold mb-4">Logo Website</h2>
+        <p class="text-sm text-gray-500 mb-4">Masukkan URL gambar logo (upload dulu ke Imgur / Google Drive / GitHub, lalu paste link-nya). Kosongkan untuk pakai logo default SVG.</p>
+        <div>
+          <label class="block text-xs font-medium text-gray-500 mb-1">Logo URL</label>
+          <input id="logo-url" class="w-full px-3 py-2 border rounded-lg text-sm" placeholder="https://...">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-gray-500 mb-1">Alt Text</label>
+          <input id="logo-alt" class="w-full px-3 py-2 border rounded-lg text-sm" value="GasWeb">
+        </div>
+        <div id="logo-preview" class="mt-4 p-4 bg-gray-50 rounded-lg border border-dashed border-gray-300 text-center text-sm text-gray-400">Preview logo akan muncul di sini</div>
+      </div>
+
+      <!-- TAB: PACKAGES -->
+      <div id="tab-packages" class="tab-content hidden bg-white rounded-xl shadow-sm p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-bold">Paket Harga</h2>
+          <button type="button" onclick="addPackage()" class="px-3 py-1.5 rounded-lg bg-orange text-white text-sm font-medium">+ Tambah Paket</button>
+        </div>
+        <div id="packages-editor" class="space-y-4"></div>
+      </div>
+
+      <!-- TAB: PORTFOLIO -->
+      <div id="tab-portfolio" class="tab-content hidden bg-white rounded-xl shadow-sm p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-bold">Portfolio</h2>
+          <button type="button" onclick="addPortfolio()" class="px-3 py-1.5 rounded-lg bg-orange text-white text-sm font-medium">+ Tambah Project</button>
+        </div>
+        <div id="portfolio-editor" class="space-y-4"></div>
+      </div>
+
+      <!-- TAB: SERVICES -->
+      <div id="tab-services" class="tab-content hidden bg-white rounded-xl shadow-sm p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-bold">Services</h2>
+          <button type="button" onclick="addService()" class="px-3 py-1.5 rounded-lg bg-orange text-white text-sm font-medium">+ Tambah Service</button>
+        </div>
+        <div id="services-editor" class="space-y-4"></div>
+      </div>
+
+      <!-- TAB: PROBLEMS -->
+      <div id="tab-problems" class="tab-content hidden bg-white rounded-xl shadow-sm p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-bold">Problems Section</h2>
+          <button type="button" onclick="addProblem()" class="px-3 py-1.5 rounded-lg bg-orange text-white text-sm font-medium">+ Tambah</button>
+        </div>
+        <div id="problems-editor" class="space-y-4"></div>
+      </div>
+
+      <!-- TAB: FEATURES -->
+      <div id="tab-features" class="tab-content hidden bg-white rounded-xl shadow-sm p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-bold">Features (Kenapa Pilih GasWeb)</h2>
+          <button type="button" onclick="addFeature()" class="px-3 py-1.5 rounded-lg bg-orange text-white text-sm font-medium">+ Tambah</button>
+        </div>
+        <div id="features-editor" class="space-y-4"></div>
+      </div>
+
+      <!-- TAB: STEPS -->
+      <div id="tab-steps" class="tab-content hidden bg-white rounded-xl shadow-sm p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-bold">How It Works (Steps)</h2>
+          <button type="button" onclick="addStep()" class="px-3 py-1.5 rounded-lg bg-orange text-white text-sm font-medium">+ Tambah Step</button>
+        </div>
+        <div id="steps-editor" class="space-y-4"></div>
+      </div>
+
+      <!-- TAB: PASSWORD -->
+      <div id="tab-password" class="tab-content hidden bg-white rounded-xl shadow-sm p-6 max-w-md">
+        <h2 class="text-lg font-bold mb-4">Ganti Password Admin</h2>
+        <div class="space-y-3">
+          <div><label class="block text-xs font-medium text-gray-500 mb-1">Password Baru</label><input type="password" id="new-password" class="w-full px-3 py-2 border rounded-lg text-sm"></div>
+          <div><label class="block text-xs font-medium text-gray-500 mb-1">Ulangi Password Baru</label><input type="password" id="new-password2" class="w-full px-3 py-2 border rounded-lg text-sm"></div>
+          <button type="button" onclick="changePassword()" class="px-4 py-2 rounded-lg bg-orange text-white text-sm font-semibold hover:bg-orange-600">Simpan Password Baru</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>
