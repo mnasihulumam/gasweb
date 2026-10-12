@@ -31,6 +31,10 @@ const DEFAULT_DATA = {
     portfolioSubtitle: 'Beberapa contoh website yang sudah kami kerjakan untuk klien.',
     stepsTitle: 'Gampang. Tinggal Cerita, Kami yang Kerjakan.',
     stepsSubtitle: 'Proses sederhana dan transparan dari awal sampai website live.',
+    testimonialsTitle: 'Kata Mereka Tentang GasWeb',
+    testimonialsSubtitle: 'Cerita dari klien yang sudah merasakan hasil kerja kami.',
+    faqTitle: 'Pertanyaan yang Sering Ditanyakan',
+    faqSubtitle: 'Masih ragu? Semoga jawaban di bawah ini membantu.',
     pricingTitle: 'Pilih Paket Sesuai Kebutuhan.',
     pricingSubtitle: 'Harga transparan. Konsultasi dulu, baru tentukan paket yang pas.'
   },
@@ -69,6 +73,14 @@ const DEFAULT_DATA = {
     { number: '02', title: 'Desain & Development', description: 'Kami mulai membangun website sesuai kebutuhan kamu.' },
     { number: '03', title: 'Review & Revisi', description: 'Kamu review website dan memberikan masukan.' },
     { number: '04', title: 'Launch 🚀', description: 'Website kamu siap online dan digunakan.' }
+  ],
+  testimonials: [],
+  faq: [
+    { question: 'Berapa lama proses pembuatan website?', answer: 'Tergantung paket dan kompleksitas website. Estimasi waktu kami sampaikan jelas saat sesi konsultasi, sebelum proyek dimulai.' },
+    { question: 'Apakah harga sudah termasuk domain dan hosting?', answer: 'Detail apa saja yang termasuk di setiap paket kami jelaskan saat konsultasi, jadi tidak ada biaya tersembunyi di tengah jalan.' },
+    { question: 'Apakah bisa revisi setelah website jadi?', answer: 'Bisa. Kamu akan mereview website dan memberi masukan di tahap Review & Revisi sebelum website live.' },
+    { question: 'Apakah website-nya tampil bagus di HP?', answer: 'Ya, semua website kami dibuat responsif sehingga tampil rapi di HP, tablet, maupun desktop.' },
+    { question: 'Bagaimana cara mulai?', answer: 'Klik tombol konsultasi di halaman ini, ceritakan kebutuhan bisnismu lewat WhatsApp, dan kami bantu dari sana. Konsultasi awal gratis.' }
   ]
 };
 
@@ -134,7 +146,7 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 // ---------- LOAD DATA ----------
 async function loadAdminData() {
   try {
-    const paths = ['settings', 'logo', 'packages', 'portfolio', 'services', 'problems', 'features', 'steps'];
+    const paths = ['settings', 'logo', 'packages', 'portfolio', 'services', 'problems', 'features', 'steps', 'testimonials', 'faq'];
     const results = await Promise.all(
       paths.map(p => db.ref(p).once('value').then(s => ({ key: p, val: s.val() })))
     );
@@ -174,6 +186,7 @@ function populateForms() {
     'featuresTitle','featuresSubtitle',
     'portfolioTitle','portfolioSubtitle',
     'stepsTitle','stepsSubtitle',
+    'testimonialsTitle','testimonialsSubtitle','faqTitle','faqSubtitle',
     'pricingTitle','pricingSubtitle',
     'finalCtaHeadline','finalCtaText','footerDescription'
   ];
@@ -192,6 +205,8 @@ function populateForms() {
   renderProblemsEditor();
   renderFeaturesEditor();
   renderStepsEditor();
+  renderTestimonialsEditor();
+  renderFaqEditor();
 }
 
 document.getElementById('logo-url').addEventListener('input', updateLogoPreview);
@@ -204,6 +219,128 @@ function updateLogoPreview() {
     preview.innerHTML = 'Preview logo akan muncul di sini (kosong = logo default SVG)';
   }
 }
+
+// ---------- LOGO UPLOAD (dikompres di browser, disimpan sebagai data URL) ----------
+const LOGO_MAX_WIDTH = 480;
+const LOGO_MAX_HEIGHT = 200;
+const LOGO_MAX_CHARS = 150000; // batas ukuran data URL (~110 KB)
+
+function setLogoInfo(msg, isError) {
+  const el = document.getElementById('logo-upload-info');
+  el.textContent = msg;
+  el.className = 'text-xs mt-2 ' + (isError ? 'text-red-600' : 'text-gray-500');
+}
+
+function fileToImage(file) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Gambar tidak bisa dibaca')); };
+    img.src = url;
+  });
+}
+
+async function compressImage(file, opts) {
+  const { maxW, maxH, maxChars, quality } = opts;
+  const img = await fileToImage(file);
+  const w = img.naturalWidth || img.width;
+  const h = img.naturalHeight || img.height;
+  if (!w || !h) throw new Error('Ukuran gambar tidak terbaca');
+
+  let scale = Math.min(1, maxW / w, maxH / h);
+  // SVG tanpa ukuran bisa sangat kecil: perbesar sedikit supaya tetap tajam
+  if (w < 200 && h < 100) scale = Math.min(maxW / w, maxH / h, 2);
+
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.round(w * scale));
+    canvas.height = Math.max(1, Math.round(h * scale));
+    canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+
+    // WebP: kecil & mendukung transparansi; fallback PNG kalau browser tidak mendukung
+    let dataUrl = canvas.toDataURL('image/webp', quality);
+    if (!dataUrl.startsWith('data:image/webp')) dataUrl = canvas.toDataURL('image/png');
+    if (dataUrl.length <= maxChars) return { dataUrl, width: canvas.width, height: canvas.height };
+    scale *= 0.8;
+  }
+  throw new Error('Gambar terlalu kompleks/besar. Coba gambar yang lebih sederhana atau lebih kecil.');
+}
+
+const compressLogo = (file) => compressImage(file, { maxW: LOGO_MAX_WIDTH, maxH: LOGO_MAX_HEIGHT, maxChars: LOGO_MAX_CHARS, quality: 0.9 });
+
+// ---------- PORTFOLIO IMAGE UPLOAD ----------
+const PORTFOLIO_IMG = { maxW: 800, maxH: 600, maxChars: 130000, quality: 0.82 }; // ~95 KB per gambar
+
+async function uploadPortfolioImage(idx, input) {
+  const file = input.files && input.files[0];
+  const info = document.getElementById('pf-info-' + idx);
+  if (!file) return;
+  if (!/^image\/(png|jpeg|webp|svg\+xml)$/.test(file.type)) {
+    info.textContent = 'Format tidak didukung. Pakai PNG, JPG, WebP, atau SVG.';
+    info.className = 'text-xs mt-1 text-red-600';
+    input.value = '';
+    return;
+  }
+  if (file.size > 8 * 1024 * 1024) {
+    info.textContent = 'File terlalu besar (maks. 8 MB).';
+    info.className = 'text-xs mt-1 text-red-600';
+    input.value = '';
+    return;
+  }
+  info.textContent = 'Memproses gambar...';
+  info.className = 'text-xs mt-1 text-gray-500';
+  try {
+    const { dataUrl, width, height } = await compressImage(file, PORTFOLIO_IMG);
+    currentData.portfolio[idx].imageUrl = dataUrl;
+    renderPortfolioEditor();
+    const el = document.getElementById('pf-info-' + idx);
+    if (el) el.textContent = 'Gambar siap: ' + width + '×' + height + 'px, ±' + Math.round(dataUrl.length / 1024) + ' KB. Klik "Simpan Semua" untuk menerapkan.';
+  } catch (err) {
+    console.error(err);
+    info.textContent = err.message || 'Gagal memproses gambar.';
+    info.className = 'text-xs mt-1 text-red-600';
+  }
+  input.value = '';
+}
+
+function clearPortfolioImage(idx) {
+  currentData.portfolio[idx].imageUrl = '';
+  renderPortfolioEditor();
+}
+
+document.getElementById('logo-file').addEventListener('change', async (e) => {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+  if (!/^image\/(png|jpeg|webp|svg\+xml)$/.test(file.type)) {
+    setLogoInfo('Format tidak didukung. Pakai PNG, JPG, WebP, atau SVG.', true);
+    e.target.value = '';
+    return;
+  }
+  if (file.size > 8 * 1024 * 1024) {
+    setLogoInfo('File terlalu besar (maks. 8 MB).', true);
+    e.target.value = '';
+    return;
+  }
+  setLogoInfo('Memproses gambar...', false);
+  try {
+    const { dataUrl, width, height } = await compressLogo(file);
+    document.getElementById('logo-url').value = dataUrl;
+    updateLogoPreview();
+    const kb = Math.round(dataUrl.length / 1024);
+    setLogoInfo('Logo siap: ' + width + '×' + height + 'px, ±' + kb + ' KB. Klik "Simpan Semua" untuk menerapkan.', false);
+  } catch (err) {
+    console.error(err);
+    setLogoInfo(err.message || 'Gagal memproses gambar.', true);
+  }
+  e.target.value = '';
+});
+
+document.getElementById('logo-clear').addEventListener('click', () => {
+  document.getElementById('logo-url').value = '';
+  updateLogoPreview();
+  setLogoInfo('Logo dihapus. Klik "Simpan Semua" untuk kembali ke logo default.', false);
+});
 
 // ---------- EDITORS ----------
 function renderPackagesEditor() {
@@ -238,7 +375,16 @@ function renderPortfolioEditor() {
       <div class="grid sm:grid-cols-2 gap-3">
         <div><label class="text-xs text-gray-500">Judul</label><input class="w-full px-2 py-1.5 border rounded text-sm" value="${esc(item.title)}" onchange="updateItem('portfolio',${i},'title',this.value)"></div>
         <div><label class="text-xs text-gray-500">Kategori</label><input class="w-full px-2 py-1.5 border rounded text-sm" value="${esc(item.category)}" onchange="updateItem('portfolio',${i},'category',this.value)"></div>
-        <div class="sm:col-span-2"><label class="text-xs text-gray-500">Image URL</label><input class="w-full px-2 py-1.5 border rounded text-sm" value="${esc(item.imageUrl)}" onchange="updateItem('portfolio',${i},'imageUrl',this.value)"></div>
+        <div class="sm:col-span-2">
+          <label class="text-xs text-gray-500">Gambar Project</label>
+          <div class="flex flex-wrap items-center gap-3 mt-1">
+            ${item.imageUrl ? `<img src="${esc(item.imageUrl)}" alt="preview" class="h-16 w-24 object-cover rounded border bg-white">` : '<div class="h-16 w-24 rounded border border-dashed bg-white text-[10px] text-gray-400 flex items-center justify-center text-center">Belum ada gambar</div>'}
+            <input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" onchange="uploadPortfolioImage(${i}, this)" class="text-xs file:mr-2 file:px-3 file:py-1.5 file:rounded-lg file:border-0 file:bg-orange file:text-white file:font-medium file:cursor-pointer">
+            ${item.imageUrl ? `<button type="button" onclick="clearPortfolioImage(${i})" class="text-red-500 text-xs hover:underline">Hapus gambar</button>` : ''}
+          </div>
+          <p id="pf-info-${i}" class="text-xs mt-1 text-gray-500">Otomatis dikecilkan (maks. 800px). Atau tempel URL gambar di bawah.</p>
+          <input class="w-full px-2 py-1.5 border rounded text-sm mt-1" placeholder="https://... (opsional)" value="${item.imageUrl && item.imageUrl.startsWith('data:') ? '' : esc(item.imageUrl)}" onchange="updateItem('portfolio',${i},'imageUrl',this.value)">
+        </div>
         <div><label class="text-xs text-gray-500">Link</label><input class="w-full px-2 py-1.5 border rounded text-sm" value="${esc(item.link)}" onchange="updateItem('portfolio',${i},'link',this.value)"></div>
         <div><label class="text-xs text-gray-500">Color Theme</label>
           <select class="w-full px-2 py-1.5 border rounded text-sm" onchange="updateItem('portfolio',${i},'colorTheme',this.value)">
@@ -310,6 +456,51 @@ function renderStepsEditor() {
   `).join('') || '<p class="text-gray-400 text-sm">Belum ada.</p>';
 }
 
+function renderTestimonialsEditor() {
+  const list = currentData.testimonials || [];
+  document.getElementById('testimonials-editor').innerHTML = list.map((item, i) => `
+    <div class="border rounded-xl p-4 space-y-3 bg-gray-50">
+      <div class="flex justify-between"><span class="font-semibold text-sm">Testimoni #${i+1}</span>
+        <button type="button" onclick="removeItem('testimonials',${i})" class="text-red-500 text-xs hover:underline">Hapus</button></div>
+      <div class="grid sm:grid-cols-3 gap-3">
+        <div><label class="text-xs text-gray-500">Nama</label><input class="w-full px-2 py-1.5 border rounded text-sm" value="${esc(item.name)}" onchange="updateItem('testimonials',${i},'name',this.value)"></div>
+        <div><label class="text-xs text-gray-500">Jabatan / Nama Bisnis</label><input class="w-full px-2 py-1.5 border rounded text-sm" value="${esc(item.role)}" onchange="updateItem('testimonials',${i},'role',this.value)"></div>
+        <div><label class="text-xs text-gray-500">Rating</label>
+          <select class="w-full px-2 py-1.5 border rounded text-sm" onchange="updateItem('testimonials',${i},'rating',parseInt(this.value,10))">
+            ${[5,4,3,2,1,0].map(n => `<option value="${n}" ${Number(item.rating)===n?'selected':''}>${n === 0 ? 'Tanpa rating' : '★'.repeat(n)}</option>`).join('')}
+          </select></div>
+        <div class="sm:col-span-3"><label class="text-xs text-gray-500">Isi Testimoni</label><textarea class="w-full px-2 py-1.5 border rounded text-sm" rows="3" onchange="updateItem('testimonials',${i},'text',this.value)">${esc(item.text)}</textarea></div>
+        <div class="sm:col-span-3"><label class="text-xs text-gray-500">URL Foto (opsional, kosong = inisial nama)</label><input class="w-full px-2 py-1.5 border rounded text-sm" placeholder="https://..." value="${esc(item.photoUrl)}" onchange="updateItem('testimonials',${i},'photoUrl',this.value)"></div>
+      </div>
+    </div>
+  `).join('') || '<p class="text-gray-400 text-sm">Belum ada testimoni. Section Testimoni tidak akan tampil di website sampai kamu menambahkan minimal satu.</p>';
+}
+
+function renderFaqEditor() {
+  const list = currentData.faq || [];
+  document.getElementById('faq-editor').innerHTML = list.map((item, i) => `
+    <div class="border rounded-xl p-4 space-y-3 bg-gray-50">
+      <div class="flex justify-between"><span class="font-semibold text-sm">FAQ #${i+1}</span>
+        <button type="button" onclick="removeItem('faq',${i})" class="text-red-500 text-xs hover:underline">Hapus</button></div>
+      <div class="space-y-3">
+        <div><label class="text-xs text-gray-500">Pertanyaan</label><input class="w-full px-2 py-1.5 border rounded text-sm" value="${esc(item.question)}" onchange="updateItem('faq',${i},'question',this.value)"></div>
+        <div><label class="text-xs text-gray-500">Jawaban</label><textarea class="w-full px-2 py-1.5 border rounded text-sm" rows="3" onchange="updateItem('faq',${i},'answer',this.value)">${esc(item.answer)}</textarea></div>
+      </div>
+    </div>
+  `).join('') || '<p class="text-gray-400 text-sm">Belum ada. Section FAQ tidak akan tampil di website sampai kamu menambahkan minimal satu.</p>';
+}
+
+function addTestimonial() {
+  if (!currentData.testimonials) currentData.testimonials = [];
+  currentData.testimonials.push({ name: '', role: '', rating: 5, text: '', photoUrl: '' });
+  renderTestimonialsEditor();
+}
+function addFaq() {
+  if (!currentData.faq) currentData.faq = [];
+  currentData.faq.push({ question: 'Pertanyaan baru', answer: '' });
+  renderFaqEditor();
+}
+
 function updateItem(section, idx, key, value) {
   if (!currentData[section]) currentData[section] = [];
   currentData[section][idx][key] = value;
@@ -324,6 +515,8 @@ function removeItem(section, idx) {
   if (section === 'problems') renderProblemsEditor();
   if (section === 'features') renderFeaturesEditor();
   if (section === 'steps') renderStepsEditor();
+  if (section === 'testimonials') renderTestimonialsEditor();
+  if (section === 'faq') renderFaqEditor();
 }
 
 function addPackage() {
@@ -381,6 +574,7 @@ async function saveAll() {
     'featuresTitle','featuresSubtitle',
     'portfolioTitle','portfolioSubtitle',
     'stepsTitle','stepsSubtitle',
+    'testimonialsTitle','testimonialsSubtitle','faqTitle','faqSubtitle',
     'pricingTitle','pricingSubtitle',
     'finalCtaHeadline','finalCtaText','footerDescription'
   ];
@@ -405,7 +599,7 @@ async function saveAll() {
 
 async function saveToFirebase(data) {
   const updates = {};
-  ['settings', 'logo', 'packages', 'portfolio', 'services', 'problems', 'features', 'steps'].forEach(key => {
+  ['settings', 'logo', 'packages', 'portfolio', 'services', 'problems', 'features', 'steps', 'testimonials', 'faq'].forEach(key => {
     if (data[key] !== undefined) updates[key] = data[key];
   });
   await db.ref('/').update(updates);
