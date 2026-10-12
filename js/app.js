@@ -27,6 +27,10 @@ const DEFAULT_DATA = {
     portfolioSubtitle: 'Beberapa contoh website yang sudah kami kerjakan untuk klien.',
     stepsTitle: 'Gampang. Tinggal Cerita, Kami yang Kerjakan.',
     stepsSubtitle: 'Proses sederhana dan transparan dari awal sampai website live.',
+    testimonialsTitle: 'Kata Mereka Tentang GasWeb',
+    testimonialsSubtitle: 'Cerita dari klien yang sudah merasakan hasil kerja kami.',
+    faqTitle: 'Pertanyaan yang Sering Ditanyakan',
+    faqSubtitle: 'Masih ragu? Semoga jawaban di bawah ini membantu.',
     pricingTitle: 'Pilih Paket Sesuai Kebutuhan.',
     pricingSubtitle: 'Harga transparan. Konsultasi dulu, baru tentukan paket yang pas.'
   },
@@ -65,6 +69,14 @@ const DEFAULT_DATA = {
     { number: '02', title: 'Desain & Development', description: 'Kami mulai membangun website sesuai kebutuhan kamu.' },
     { number: '03', title: 'Review & Revisi', description: 'Kamu review website dan memberikan masukan.' },
     { number: '04', title: 'Launch 🚀', description: 'Website kamu siap online dan digunakan.' }
+  ],
+  testimonials: [],
+  faq: [
+    { question: 'Berapa lama proses pembuatan website?', answer: 'Tergantung paket dan kompleksitas website. Estimasi waktu kami sampaikan jelas saat sesi konsultasi, sebelum proyek dimulai.' },
+    { question: 'Apakah harga sudah termasuk domain dan hosting?', answer: 'Detail apa saja yang termasuk di setiap paket kami jelaskan saat konsultasi, jadi tidak ada biaya tersembunyi di tengah jalan.' },
+    { question: 'Apakah bisa revisi setelah website jadi?', answer: 'Bisa. Kamu akan mereview website dan memberi masukan di tahap Review & Revisi sebelum website live.' },
+    { question: 'Apakah website-nya tampil bagus di HP?', answer: 'Ya, semua website kami dibuat responsif sehingga tampil rapi di HP, tablet, maupun desktop.' },
+    { question: 'Bagaimana cara mulai?', answer: 'Klik tombol konsultasi di halaman ini, ceritakan kebutuhan bisnismu lewat WhatsApp, dan kami bantu dari sana. Konsultasi awal gratis.' }
   ]
 };
 
@@ -90,6 +102,8 @@ function render(data) {
   const problems = data.problems || DEFAULT_DATA.problems;
   const features = data.features || DEFAULT_DATA.features;
   const steps = data.steps || DEFAULT_DATA.steps;
+  const testimonials = data.testimonials || DEFAULT_DATA.testimonials;
+  const faq = data.faq || DEFAULT_DATA.faq;
 
   document.title = s.siteTitle || document.title;
 
@@ -253,6 +267,59 @@ function render(data) {
         </div>`;
     }).join('');
   }
+  // Testimonials (section disembunyikan kalau kosong)
+  const testiSection = document.getElementById('testimonials');
+  const testiEl = document.getElementById('testimonials-list');
+  if (testiSection && testiEl) {
+    const list = (Array.isArray(testimonials) ? testimonials : Object.values(testimonials || {})).filter(t => t && t.text);
+    testiSection.classList.toggle('hidden', list.length === 0);
+    setText('testimonials-title', s.testimonialsTitle);
+    setText('testimonials-subtitle', s.testimonialsSubtitle);
+    testiEl.innerHTML = list.map(t => {
+      const rating = Math.max(0, Math.min(5, parseInt(t.rating, 10) || 0));
+      const stars = rating
+        ? '<div class="flex gap-0.5 mb-4" aria-label="Rating ' + rating + ' dari 5">' +
+          Array.from({ length: 5 }, (_, i) =>
+            '<svg class="w-5 h-5 ' + (i < rating ? 'text-orange' : 'text-navy/15') + '" fill="currentColor" viewBox="0 0 20 20"><path d="M9.05 2.93c.3-.92 1.6-.92 1.9 0l1.07 3.29a1 1 0 00.95.69h3.46c.97 0 1.37 1.24.59 1.81l-2.8 2.03a1 1 0 00-.36 1.12l1.07 3.29c.3.92-.76 1.69-1.54 1.12l-2.8-2.03a1 1 0 00-1.18 0l-2.8 2.03c-.78.57-1.84-.2-1.54-1.12l1.07-3.29a1 1 0 00-.36-1.12L2.98 8.72c-.78-.57-.38-1.81.59-1.81h3.46a1 1 0 00.95-.69l1.07-3.29z"/></svg>'
+          ).join('') + '</div>'
+        : '';
+      const photoUrl = safeUrl(t.photoUrl, '');
+      const initial = esc((t.name || '?').trim().charAt(0).toUpperCase());
+      const avatar = photoUrl
+        ? '<img src="' + esc(photoUrl) + '" alt="' + esc(t.name) + '" class="w-12 h-12 rounded-full object-cover flex-shrink-0" loading="lazy">'
+        : '<div class="w-12 h-12 rounded-full bg-orange/10 text-orange font-bold flex items-center justify-center flex-shrink-0">' + initial + '</div>';
+      return `
+        <figure class="bg-white rounded-2xl p-7 border border-navy/10 shadow-soft flex flex-col">
+          ${stars}
+          <blockquote class="text-navy/80 leading-relaxed flex-1">${esc(t.text).replace(/\n/g, '<br>')}</blockquote>
+          <figcaption class="flex items-center gap-3 mt-6 pt-5 border-t border-navy/10">
+            ${avatar}
+            <div>
+              <div class="font-bold text-navy text-sm">${esc(t.name)}</div>
+              <div class="text-navy/55 text-xs">${esc(t.role)}</div>
+            </div>
+          </figcaption>
+        </figure>`;
+    }).join('');
+  }
+
+  // FAQ (accordion native <details>, tanpa JS tambahan)
+  const faqSection = document.getElementById('faq');
+  const faqEl = document.getElementById('faq-list');
+  if (faqSection && faqEl) {
+    const list = (Array.isArray(faq) ? faq : Object.values(faq || {})).filter(f => f && f.question);
+    faqSection.classList.toggle('hidden', list.length === 0);
+    setText('faq-title', s.faqTitle);
+    setText('faq-subtitle', s.faqSubtitle);
+    faqEl.innerHTML = list.map(f => `
+      <details class="group bg-white rounded-xl border border-navy/10 shadow-soft open:shadow-card">
+        <summary class="flex items-center justify-between gap-4 cursor-pointer list-none px-6 py-5 font-semibold text-navy">
+          <span>${esc(f.question)}</span>
+          <svg class="w-5 h-5 text-orange flex-shrink-0 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </summary>
+        <div class="px-6 pb-5 text-navy/70 leading-relaxed">${esc(f.answer).replace(/\n/g, '<br>')}</div>
+      </details>`).join('');
+  }
 }
 
 function setText(id, value) {
@@ -260,18 +327,23 @@ function setText(id, value) {
   if (el && value != null) el.textContent = value;
 }
 
+// Hanya izinkan http(s), anchor, atau path relatif (blokir javascript: dll.)
+function safeUrl(url, fallback) {
+  const u = String(url || '').trim();
+  if (/^(https?:\/\/|#|\/|\.\/|assets\/)/i.test(u)) return u;
+  return fallback || '#';
+}
+
 function esc(str) {
-  if (!str) return '';
-  const d = document.createElement('div');
-  d.textContent = str;
-  return d.innerHTML;
+  if (str == null) return '';
+  return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
 // Load data from Firebase (hanya node konten publik, tidak mengambil data sensitif)
 function loadData() {
   try {
     // Ambil hanya node yang dibutuhkan (bukan root '/')
-    const paths = ['settings', 'logo', 'packages', 'portfolio', 'services', 'problems', 'features', 'steps'];
+    const paths = ['settings', 'logo', 'packages', 'portfolio', 'services', 'problems', 'features', 'steps', 'testimonials', 'faq'];
     const promises = paths.map(p => db.ref(p).once('value').then(s => ({ key: p, val: s.val() })));
 
     Promise.all(promises)
