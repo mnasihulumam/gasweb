@@ -46,10 +46,10 @@ const DEFAULT_DATA = {
     { title: 'Wedding Organizer Website', category: 'Wedding', imageUrl: '', link: '#cta', colorTheme: 'pink' }
   ],
   services: [
-    { icon: '🌐', title: 'Landing Page', description: 'Website fokus untuk promosi produk atau jasa. Satu halaman yang powerful untuk konversi.' },
-    { icon: '🏢', title: 'Company Profile', description: 'Tampilkan bisnis kamu secara profesional dan terpercaya dengan profil perusahaan lengkap.' },
-    { icon: '🛍️', title: 'Website Bisnis', description: 'Website untuk katalog produk, layanan, dan kebutuhan operasional bisnis sehari-hari.' },
-    { icon: '🔧', title: 'Website Maintenance', description: 'Bantu update, merawat, dan menjaga website tetap aman, cepat, dan berjalan dengan baik.' }
+    { icon: 'fa-solid fa-globe', title: 'Landing Page', description: 'Website fokus untuk promosi produk atau jasa. Satu halaman yang powerful untuk konversi.' },
+    { icon: 'fa-solid fa-building', title: 'Company Profile', description: 'Tampilkan bisnis kamu secara profesional dan terpercaya dengan profil perusahaan lengkap.' },
+    { icon: 'fa-solid fa-store', title: 'Website Bisnis', description: 'Website untuk katalog produk, layanan, dan kebutuhan operasional bisnis sehari-hari.' },
+    { icon: 'fa-solid fa-wrench', title: 'Website Maintenance', description: 'Bantu update, merawat, dan menjaga website tetap aman, cepat, dan berjalan dengan baik.' }
   ],
   problems: [
     { icon: 'search', title: 'Informasi Bisnis Sulit Ditemukan', description: 'Calon pelanggan sulit mencari info lengkap tentang produk, layanan, atau kontak bisnis kamu.' },
@@ -172,7 +172,7 @@ function render(data) {
   if (servicesEl) {
     servicesEl.innerHTML = services.map(svc => `
       <div class="group bg-white rounded-2xl p-7 border border-navy/8 shadow-soft hover:shadow-card hover:border-orange/30 transition-all duration-300">
-        <div class="w-12 h-12 rounded-xl bg-orange/10 flex items-center justify-center text-2xl mb-5 group-hover:scale-110 transition-transform">${svc.icon || '🌐'}</div>
+        <div class="w-12 h-12 rounded-xl bg-orange/10 flex items-center justify-center text-2xl text-orange mb-5 group-hover:scale-110 transition-transform">${renderIcon(svc.icon, 'text-xl')}</div>
         <h3 class="text-lg font-bold text-navy mb-2">${esc(svc.title)}</h3>
         <p class="text-navy/65 text-sm leading-relaxed">${esc(svc.description)}</p>
       </div>
@@ -337,6 +337,15 @@ function safeUrl(url, fallback) {
 function esc(str) {
   if (str == null) return '';
   return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+/** Render icon: Font Awesome class (contains "fa-") → <i>, else treat as emoji/text */
+function renderIcon(icon, sizeClass = 'text-xl') {
+  const val = (icon || '🌐').trim();
+  if (val.includes('fa-')) {
+    return `<i class="${esc(val)} ${sizeClass}" aria-hidden="true"></i>`;
+  }
+  return esc(val);
 }
 
 // Load data from Firebase (hanya node konten publik, tidak mengambil data sensitif)
