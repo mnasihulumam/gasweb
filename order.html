@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Website - GasWeb | Go Online, Gas Terus!</title>
+  <meta name="description" content="Pesan jasa pembuatan website profesional di GasWeb. Mudah, transparan, dan gratis konsultasi.">
+  <style>
+    :root {
+      --orange: #FF6B00;
+      --orange-hover: #E55A00;
+      --navy: #101828;
+      --white: #FFFFFF;
+      --gray-bg: #F5F7FA;
+      --gray-border: #E4E7EC;
+      --gray-text: #667085;
+      --success: #12B76A;
+      --error: #F04438;
+      --radius: 12px;
+      --shadow: 0 4px 24px rgba(16, 24, 40, 0.08);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: var(--gray-bg);
+      color: var(--navy);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 24px 16px 60px;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+      padding-top: 16px;
+    }
+
+    .logo {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--orange);
+      letter-spacing: -0.5px;
+    }
+
+    .tagline {
+      font-size: 15px;
+      color: var(--gray-text);
+      margin-top: 4px;
+    }
+
+    /* Card */
+    .card {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 28px 24px;
+      margin-bottom: 20px;
+    }
+
+    .card h2 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: var(--navy);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card h2 span {
+      background: var(--orange);
+      color: white;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    /* Form */
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--navy);
+    }
+
+    label .required {
+      color: var(--error);
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid var(--gray-border);
+      border-radius: 8px;
+      font-size: 15px;
+      font-family: inherit;
+      color: var(--navy);
+      background: var(--white);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--orange);
+      box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.12);
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .error-msg {
+      color: var(--error);
+      font-size: 13px;
+      margin-top: 4px;
+      display: none;
+    }
+
+    .form-group.error input,
+    .form-group.error select,
+    .form-group.error textarea {
+      border-color: var(--error);
+    }
+
+    .form-group.error .error-msg {
+      display: block;
+    }
+
+    /* Package cards */
+    .packages {
+      display: grid;
+      gap: 12px;
+    }
+
+    .package-option {
+      border: 2px solid var(--gray-border);
+      border-radius: 10px;
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .package-option:hover {
+      border-color: var(--orange);
+    }
+
+    .package-option.selected {
+      border-color: var(--orange);
+      background: rgba(255, 107, 0, 0.04);
+    }
+
+    .package-option input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .package-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+
+    .package-name {
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .package-price {
+      font-weight: 800;
+      color: var(--orange);
+      font-size: 16px;
+      white-space: nowrap;
+    }
+
+    .package-features {
+      font-size: 13px;
+      color: var(--gray-text);
+      line-height: 1.5;
+    }
+
+    /* Payment summary */
+    .payment-box {
+      background: var(--gray-bg);
+      border-radius: 10px;
+      padding: 16px;
+      margin-top: 12px;
+      display: none;
+    }
+
+    .payment-box.visible {
+      display: block;
+    }
+
+    .payment-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .payment-row.total {
+      font-weight: 700;
+      font-size: 15px;
+      border-top: 1px solid var(--gray-border);
+      padding-top: 10px;
+      margin-top: 6px;
+      margin-bottom: 0;
+    }
+
+    .payment-note {
+      font-size: 12px;
+      color: var(--gray-text);
+      margin-top: 10px;
+      line-height: 1.4;
+    }
+
+    /* Checkbox */
+    .checkbox-group {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .checkbox-group input {
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+      accent-color: var(--orange);
+      flex-shrink: 0;
+    }
+
+    .checkbox-group label {
+      font-weight: 400;
+      font-size: 14px;
+      margin-bottom: 0;
+    }
+
+    /* Submit button */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 16px 24px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: var(--orange);
+      color: white;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--orange-hover);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+
+    .btn-whatsapp {
+      background: #25D366;
+      color: white;
+      text-decoration: none;
+      margin-top: 12px;
+    }
+
+    .btn-whatsapp:hover {
+      background: #1DA851;
+    }
+
+    /* Loading spinner */
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2.5px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Success / Error states */
+    .result-card {
+      text-align: center;
+      display: none;
+    }
+
+    .result-card.visible {
+      display: block;
+    }
+
+    .result-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      font-size: 36px;
+    }
+
+    .result-icon.success {
+      background: rgba(18, 183, 106, 0.12);
+      color: var(--success);
+    }
+
+    .result-icon.error {
+      background: rgba(240, 68, 56, 0.12);
+      color: var(--error);
+    }
+
+    .result-title {
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .result-message {
+      color: var(--gray-text);
+      margin-bottom: 20px;
+      font-size: 15px;
+    }
+
+    .order-id-box {
+      background: var(--gray-bg);
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 20px;
+      font-size: 15px;
+    }
+
+    .order-id-box strong {
+      color: var(--orange);
+      font-size: 18px;
+      letter-spacing: 0.5px;
+    }
+
+    /* Alert */
+    .alert {
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    .alert.error {
+      background: rgba(240, 68, 56, 0.1);
+      color: var(--error);
+      border: 1px solid rgba(240, 68, 56, 0.2);
+    }
+
+    .alert.visible {
+      display: block;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      margin-top: 32px;
+      font-size: 13px;
+      color: var(--gray-text);
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .container {
+        padding: 16px 12px 40px;
+      }
+      .card {
+        padding: 20px 16px;
+      }
+      .package-header {
+        flex-direction: column;
+        gap: 4px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <div class="logo">GasWeb</div>
+      <div class="tagline">Go Online, Gas Terus!</div>
+    </div>
+
+    <!-- Alert -->
+    <div id="alertBox" class="alert error"></div>
+
+    <!-- Form -->
+    <form id="orderForm">
+      <!-- 1. Informasi Pemesan -->
+      <div class="card">
+        <h2><span>1</span> Informasi Pemesan</h2>
+
+        <div class="form-group" id="group-nama">
+          <label for="nama">Nama Lengkap <span class="required">*</span></label>
+          <input type="text" id="nama" name="nama" maxlength="100" placeholder="Contoh: Budi Santoso" required>
+          <div class="error-msg">Nama lengkap wajib diisi (min. 3 karakter).</div>
+        </div>
+
+        <div class="form-group" id="group-bisnis">
+          <label for="bisnis">Nama Bisnis / Lembaga <span class="required">*</span></label>
+          <input type="text" id="bisnis" name="bisnis" maxlength="120" placeholder="Contoh: Toko Budi Sejahtera" required>
+          <div class="error-msg">Nama bisnis wajib diisi.</div>
+        </div>
+
+        <div class="form-group" id="group-whatsapp">
+          <label for="whatsapp">Nomor WhatsApp <span class="required">*</span></label>
+          <input type="tel" id="whatsapp" name="whatsapp" maxlength="20" placeholder="08xxxxxxxxxx atau 628xxxxxxxxxx" required>
+          <div class="error-msg">Nomor WhatsApp valid wajib diisi (10–15 digit).</div>
+        </div>
+
+        <div class="form-group" id="group-email">
+          <label for="email">Email <span class="required">*</span></label>
+          <input type="email" id="email" name="email" maxlength="100" placeholder="email@contoh.com" required>
+          <div class="error-msg">Email valid wajib diisi.</div>
+        </div>
+
+        <div class="form-group" id="group-kota">
+          <label for="kota">Kota Domisili <span class="required">*</span></label>
+          <input type="text" id="kota" name="kota" maxlength="80" placeholder="Contoh: Jakarta Selatan" required>
+          <div class="error-msg">Kota domisili wajib diisi.</div>
+        </div>
+      </div>
+
+      <!-- 2. Detail Order -->
+      <div class="card">
+        <h2><span>2</span> Detail Order</h2>
+
+        <div class="form-group" id="group-paket">
+          <label>Pilih Paket <span class="required">*</span></label>
+          <div class="packages">
+            <label class="package-option" data-package="Landing Page Starter">
+              <input type="radio" name="paket" value="Landing Page Starter" required>
+              <div class="package-header">
+                <div class="package-name">Landing Page Starter</div>
+                <div class="package-price">Rp1.999.000</div>
+              </div>
+              <div class="package-features">
+                Landing page responsif • Profil bisnis & layanan • Integrasi WhatsApp • SEO dasar • Domain + hosting 1 tahun
+              </div>
+            </label>
+
+            <label class="package-option" data-package="Company Profile Business">
+              <input type="radio" name="paket" value="Company Profile Business">
+              <div class="package-header">
+                <div class="package-name">Company Profile Business</div>
+                <div class="package-price">Rp2.999.000</div>
+              </div>
+              <div class="package-features">
+                Website company profile • Profil & layanan • Galeri/portofolio • Integrasi WhatsApp • SEO dasar • Domain + hosting 1 tahun • Support 30 hari
+              </div>
+            </label>
+
+            <label class="package-option" data-package="Website Custom">
+              <input type="radio" name="paket" value="Website Custom">
+              <div class="package-header">
+                <div class="package-name">Website Custom</div>
+                <div class="package-price">Harga setelah konsultasi</div>
+              </div>
+              <div class="package-features">
+                Solusi sesuai kebutuhan spesifik. Harga final ditentukan setelah diskusi kebutuhan.
+              </div>
+            </label>
+          </div>
+          <div class="error-msg">Silakan pilih salah satu paket.</div>
+        </div>
+
+        <!-- Payment summary -->
+        <div id="paymentBox" class="payment-box">
+          <div class="payment-row">
+            <span>Harga Paket</span>
+            <span id="displayHarga">-</span>
+          </div>
+          <div class="payment-row">
+            <span>DP 70%</span>
+            <span id="displayDP">-</span>
+          </div>
+          <div class="payment-row">
+            <span>Pelunasan 30%</span>
+            <span id="displayPelunasan">-</span>
+          </div>
+          <div class="payment-row total">
+            <span>Total</span>
+            <span id="displayTotal">-</span>
+          </div>
+          <div class="payment-note" id="paymentNote">
+            Pembayaran baru dilakukan setelah penawaran dikonfirmasi oleh admin GasWeb.
+          </div>
+        </div>
+
+        <div class="form-group" id="group-jenisBisnis" style="margin-top: 20px;">
+          <label for="jenisBisnis">Jenis Bisnis <span class="required">*</span></label>
+          <input type="text" id="jenisBisnis" name="jenisBisnis" maxlength="100" placeholder="Contoh: F&B, Fashion, Jasa, Pendidikan" required>
+          <div class="error-msg">Jenis bisnis wajib diisi.</div>
+        </div>
+
+        <div class="form-group" id="group-tujuan">
+          <label for="tujuan">Tujuan Website <span class="required">*</span></label>
+          <textarea id="tujuan" name="tujuan" maxlength="500" placeholder="Apa tujuan utama website ini? (branding, penjualan, informasi, dll)" required></textarea>
+          <div class="error-msg">Tujuan website wajib diisi.</div>
+        </div>
+
+        <div class="form-group" id="group-fitur">
+          <label for="fitur">Fitur yang Dibutuhkan <span class="required">*</span></label>
+          <textarea id="fitur" name="fitur" maxlength="800" placeholder="Contoh: Form kontak, galeri, blog, multi bahasa, integrasi pembayaran, dll" required></textarea>
+          <div class="error-msg">Fitur yang dibutuhkan wajib diisi.</div>
+        </div>
+
+        <div class="form-group" id="group-referensi">
+          <label for="referensi">Referensi Website (opsional)</label>
+          <input type="text" id="referensi" name="referensi" maxlength="300" placeholder="Link website yang Anda suka sebagai referensi">
+        </div>
+
+        <div class="form-group" id="group-deskripsi">
+          <label for="deskripsi">Deskripsi Kebutuhan <span class="required">*</span></label>
+          <textarea id="deskripsi" name="deskripsi" maxlength="1500" placeholder="Jelaskan lebih detail kebutuhan website Anda" required></textarea>
+          <div class="error-msg">Deskripsi kebutuhan wajib diisi.</div>
+        </div>
+
+        <div class="form-group" id="group-target">
+          <label for="target">Target Pengerjaan <span class="required">*</span></label>
+          <select id="target" name="target" required>
+            <option value="">-- Pilih target --</option>
+            <option value="1-2 minggu">1–2 minggu</option>
+            <option value="2-4 minggu">2–4 minggu</option>
+            <option value="1-2 bulan">1–2 bulan</option>
+            <option value="Fleksibel">Fleksibel / Tidak terburu-buru</option>
+          </select>
+          <div class="error-msg">Target pengerjaan wajib dipilih.</div>
+        </div>
+
+        <div class="form-group" id="group-materi">
+          <label for="materi">Status Kesiapan Materi <span class="required">*</span></label>
+          <select id="materi" name="materi" required>
+            <option value="">-- Pilih status --</option>
+            <option value="Sudah siap semua">Sudah siap semua (logo, foto, teks, dll)</option>
+            <option value="Sebagian siap">Sebagian siap</option>
+            <option value="Belum siap sama sekali">Belum siap sama sekali</option>
+            <option value="Butuh bantuan penyusunan">Butuh bantuan penyusunan materi</option>
+          </select>
+          <div class="error-msg">Status kesiapan materi wajib dipilih.</div>
+        </div>
+
+        <div class="form-group" id="group-domain">
+          <label for="domain">Preferensi Domain <span class="required">*</span></label>
+          <input type="text" id="domain" name="domain" maxlength="100" placeholder="Contoh: namabisnis.com atau belum punya ide" required>
+          <div class="error-msg">Preferensi domain wajib diisi.</div>
+        </div>
+      </div>
+
+      <!-- 3. Persetujuan -->
+      <div class="card">
+        <h2><span>3</span> Persetujuan</h2>
+        <div class="form-group" id="group-setuju">
+          <div class="checkbox-group">
+            <input type="checkbox" id="setuju" name="setuju" required>
+            <label for="setuju">
+              Saya telah membaca dan menyetujui bahwa data yang saya kirimkan akan digunakan untuk proses pemesanan dan follow-up oleh admin GasWeb. Saya memahami bahwa pembayaran baru dilakukan setelah konfirmasi penawaran dari admin. <span class="required">*</span>
+            </label>
+          </div>
+          <div class="error-msg">Anda harus menyetujui syarat dan ketentuan.</div>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary" id="submitBtn">
+        Kirim Pesanan
+      </button>
+    </form>
+
+    <!-- Success Result -->
+    <div id="successCard" class="card result-card">
+      <div class="result-icon success">✓</div>
+      <div class="result-title">Pesanan Berhasil Dicatat!</div>
+      <div class="result-message">
+        Admin GasWeb akan menghubungi Anda untuk konfirmasi kebutuhan dan penawaran.
+      </div>
+      <div class="order-id-box">
+        Order ID Anda:<br>
+        <strong id="displayOrderId">-</strong>
+      </div>
+      <p style="font-size: 14px; color: var(--gray-text); margin-bottom: 8px;">
+        Simpan Order ID ini. Anda juga bisa langsung menghubungi admin via WhatsApp:
+      </p>
+      <a id="waButton" href="#" target="_blank" rel="noopener" class="btn btn-whatsapp">
+        Hubungi Admin via WhatsApp
+      </a>
+      <button type="button" class="btn btn-primary" style="margin-top: 12px; background: var(--navy);" onclick="location.reload()">
+        Buat Pesanan Baru
+      </button>
+    </div>
+
+    <!-- Error Result (fallback) -->
+    <div id="errorCard" class="card result-card">
+      <div class="result-icon error">!</div>
+      <div class="result-title">Gagal Mengirim Pesanan</div>
+      <div class="result-message" id="errorMessage">
+        Terjadi kesalahan. Silakan coba lagi atau hubungi admin langsung.
+      </div>
+      <button type="button" class="btn btn-primary" onclick="document.getElementById('errorCard').classList.remove('visible'); document.getElementById('orderForm').style.display='block';">
+        Coba Lagi
+      </button>
+    </div>
+
+    <div class="footer">
+      © 2026 GasWeb — Go Online, Gas Terus!
+    </div>
+  </div>
+
+  <script>
+    // ============================================================
+    // KONFIGURASI — ISI NILAI INI
+    // ============================================================
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzRy6kHtisq-s7qDlk_0cI4zMMYBzvRSOz2kXYXulQ7Hz3r5rfGFjLsou67NSYO0907/exec";   // Hasil deploy Web App
+    const ADMIN_WHATSAPP  = "6285111429032";                    // Nomor WhatsApp admin (format 62...)
+
+    // Harga paket (bisa diubah di sini)
+    const PACKAGE_PRICES = {
+      "Landing Page Starter": 1999000,
+      "Company Profile Business": 2999000,
+      "Website Custom": 0
+    };
+
+    // ============================================================
+    // UTILITIES
+    // ============================================================
+    function formatRupiah(num) {
+      if (num === 0) return "Menunggu penawaran";
+      return "Rp" + num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    function normalizeWhatsApp(num) {
+      let cleaned = num.replace(/\D/g, "");
+      if (cleaned.startsWith("0")) cleaned = "62" + cleaned.slice(1);
+      if (!cleaned.startsWith("62")) cleaned = "62" + cleaned;
+      return cleaned;
+    }
+
+    function isValidEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    function isValidWhatsApp(num) {
+      const cleaned = num.replace(/\D/g, "");
+      return cleaned.length >= 10 && cleaned.length <= 15;
+    }
+
+    // ============================================================
+    // PACKAGE SELECTION & PRICE DISPLAY
+    // ============================================================
+    const packageOptions = document.querySelectorAll(".package-option");
+    const paymentBox = document.getElementById("paymentBox");
+
+    packageOptions.forEach(opt => {
+      opt.addEventListener("click", () => {
+        packageOptions.forEach(o => o.classList.remove("selected"));
+        opt.classList.add("selected");
+        opt.querySelector("input").checked = true;
+
+        const paket = opt.dataset.package;
+        const harga = PACKAGE_PRICES[paket] || 0;
+
+        if (paket === "Website Custom") {
+          document.getElementById("displayHarga").textContent = "Menunggu penawaran";
+          document.getElementById("displayDP").textContent = "-";
+          document.getElementById("displayPelunasan").textContent = "-";
+          document.getElementById("displayTotal").textContent = "-";
+          document.getElementById("paymentNote").textContent =
+            "Untuk paket Website Custom, pembayaran mengikuti penawaran final setelah konsultasi dengan admin.";
+        } else {
+          const dp = Math.round(harga * 0.7);
+          const pelunasan = harga - dp;
+          document.getElementById("displayHarga").textContent = formatRupiah(harga);
+          document.getElementById("displayDP").textContent = formatRupiah(dp);
+          document.getElementById("displayPelunasan").textContent = formatRupiah(pelunasan);
+          document.getElementById("displayTotal").textContent = formatRupiah(harga);
+          document.getElementById("paymentNote").textContent =
+            "Pembayaran baru dilakukan setelah penawaran dikonfirmasi oleh admin GasWeb. DP 70% dibayar di awal, pelunasan 30% setelah website selesai.";
+        }
+        paymentBox.classList.add("visible");
+      });
+    });
+
+    // ============================================================
+    // VALIDATION
+    // ============================================================
+    function clearErrors() {
+      document.querySelectorAll(".form-group").forEach(g => g.classList.remove("error"));
+    }
+
+    function showError(groupId) {
+      document.getElementById(groupId).classList.add("error");
+    }
+
+    function validateForm() {
+      clearErrors();
+      let valid = true;
+
+      const nama = document.getElementById("nama").value.trim();
+      const bisnis = document.getElementById("bisnis").value.trim();
+      const whatsapp = document.getElementById("whatsapp").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const kota = document.getElementById("kota").value.trim();
+      const paket = document.querySelector('input[name="paket"]:checked');
+      const jenisBisnis = document.getElementById("jenisBisnis").value.trim();
+      const tujuan = document.getElementById("tujuan").value.trim();
+      const fitur = document.getElementById("fitur").value.trim();
+      const deskripsi = document.getElementById("deskripsi").value.trim();
+      const target = document.getElementById("target").value;
+      const materi = document.getElementById("materi").value;
+      const domain = document.getElementById("domain").value.trim();
+      const setuju = document.getElementById("setuju").checked;
+
+      if (nama.length < 3) { showError("group-nama"); valid = false; }
+      if (bisnis.length < 2) { showError("group-bisnis"); valid = false; }
+      if (!isValidWhatsApp(whatsapp)) { showError("group-whatsapp"); valid = false; }
+      if (!isValidEmail(email)) { showError("group-email"); valid = false; }
+      if (kota.length < 2) { showError("group-kota"); valid = false; }
+      if (!paket) { showError("group-paket"); valid = false; }
+      if (jenisBisnis.length < 2) { showError("group-jenisBisnis"); valid = false; }
+      if (tujuan.length < 5) { showError("group-tujuan"); valid = false; }
+      if (fitur.length < 5) { showError("group-fitur"); valid = false; }
+      if (deskripsi.length < 10) { showError("group-deskripsi"); valid = false; }
+      if (!target) { showError("group-target"); valid = false; }
+      if (!materi) { showError("group-materi"); valid = false; }
+      if (domain.length < 2) { showError("group-domain"); valid = false; }
+      if (!setuju) { showError("group-setuju"); valid = false; }
+
+      return valid;
+    }
+
+    // ============================================================
+    // SUBMIT
+    // ============================================================
+    const form = document.getElementById("orderForm");
+    const submitBtn = document.getElementById("submitBtn");
+    let isSubmitting = false;
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (isSubmitting) return;
+
+      if (!validateForm()) {
+        document.getElementById("alertBox").textContent = "Mohon lengkapi semua field yang wajib diisi dengan benar.";
+        document.getElementById("alertBox").classList.add("visible");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
+
+      document.getElementById("alertBox").classList.remove("visible");
+      isSubmitting = true;
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<div class="spinner"></div> Mengirim...';
+
+      const paket = document.querySelector('input[name="paket"]:checked').value;
+      const harga = PACKAGE_PRICES[paket] || 0;
+      const dp = harga > 0 ? Math.round(harga * 0.7) : 0;
+      const pelunasan = harga > 0 ? harga - dp : 0;
+
+      const payload = {
+        nama: document.getElementById("nama").value.trim(),
+        bisnis: document.getElementById("bisnis").value.trim(),
+        whatsapp: normalizeWhatsApp(document.getElementById("whatsapp").value.trim()),
+        email: document.getElementById("email").value.trim().toLowerCase(),
+        kota: document.getElementById("kota").value.trim(),
+        paket: paket,
+        jenisBisnis: document.getElementById("jenisBisnis").value.trim(),
+        tujuan: document.getElementById("tujuan").value.trim(),
+        fitur: document.getElementById("fitur").value.trim(),
+        referensi: document.getElementById("referensi").value.trim(),
+        deskripsi: document.getElementById("deskripsi").value.trim(),
+        target: document.getElementById("target").value,
+        materi: document.getElementById("materi").value,
+        domain: document.getElementById("domain").value.trim()
+      };
+
+      try {
+        const response = await fetch(APPS_SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          // Show success
+          form.style.display = "none";
+          document.getElementById("displayOrderId").textContent = result.orderId;
+
+          // Build WhatsApp message
+          const waMessage = 
+            `Halo Admin GasWeb,%0A%0A` +
+            `Saya baru saja mengirim pesanan website.%0A` +
+            `Order ID: *${result.orderId}*%0A` +
+            `Nama: ${payload.nama}%0A` +
+            `Bisnis: ${payload.bisnis}%0A` +
+            `Paket: ${payload.paket}%0A%0A` +
+            `Mohon dibantu follow-up-nya. Terima kasih.`;
+
+          document.getElementById("waButton").href = 
+            `https://wa.me/${ADMIN_WHATSAPP}?text=${waMessage}`;
+
+          document.getElementById("successCard").classList.add("visible");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        } else {
+          throw new Error(result.message || "Gagal menyimpan pesanan.");
+        }
+      } catch (err) {
+        console.error(err);
+        document.getElementById("errorMessage").textContent = 
+          err.message || "Terjadi kesalahan jaringan. Silakan coba lagi atau hubungi admin langsung via WhatsApp.";
+        form.style.display = "none";
+        document.getElementById("errorCard").classList.add("visible");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } finally {
+        isSubmitting = false;
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = "Kirim Pesanan";
+      }
+    });
+  </script>
+</body>
+</html>
