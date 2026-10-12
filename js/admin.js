@@ -50,10 +50,10 @@ const DEFAULT_DATA = {
     { title: 'Wedding Organizer Website', category: 'Wedding', imageUrl: '', link: '#cta', colorTheme: 'pink' }
   ],
   services: [
-    { icon: '🌐', title: 'Landing Page', description: 'Website fokus untuk promosi produk atau jasa. Satu halaman yang powerful untuk konversi.' },
-    { icon: '🏢', title: 'Company Profile', description: 'Tampilkan bisnis kamu secara profesional dan terpercaya dengan profil perusahaan lengkap.' },
-    { icon: '🛍️', title: 'Website Bisnis', description: 'Website untuk katalog produk, layanan, dan kebutuhan operasional bisnis sehari-hari.' },
-    { icon: '🔧', title: 'Website Maintenance', description: 'Bantu update, merawat, dan menjaga website tetap aman, cepat, dan berjalan dengan baik.' }
+    { icon: 'fa-solid fa-globe', title: 'Landing Page', description: 'Website fokus untuk promosi produk atau jasa. Satu halaman yang powerful untuk konversi.' },
+    { icon: 'fa-solid fa-building', title: 'Company Profile', description: 'Tampilkan bisnis kamu secara profesional dan terpercaya dengan profil perusahaan lengkap.' },
+    { icon: 'fa-solid fa-store', title: 'Website Bisnis', description: 'Website untuk katalog produk, layanan, dan kebutuhan operasional bisnis sehari-hari.' },
+    { icon: 'fa-solid fa-wrench', title: 'Website Maintenance', description: 'Bantu update, merawat, dan menjaga website tetap aman, cepat, dan berjalan dengan baik.' }
   ],
   problems: [
     { icon: 'search', title: 'Informasi Bisnis Sulit Ditemukan', description: 'Calon pelanggan sulit mencari info lengkap tentang produk, layanan, atau kontak bisnis kamu.' },
@@ -405,7 +405,7 @@ function renderServicesEditor() {
       <div class="flex justify-between"><span class="font-semibold text-sm">Service #${i+1}</span>
         <button type="button" onclick="removeItem('services',${i})" class="text-red-500 text-xs hover:underline">Hapus</button></div>
       <div class="grid sm:grid-cols-3 gap-3">
-        <div><label class="text-xs text-gray-500">Icon (emoji)</label><input class="w-full px-2 py-1.5 border rounded text-sm" value="${esc(item.icon)}" onchange="updateItem('services',${i},'icon',this.value)"></div>
+        <div><label class="text-xs text-gray-500">Icon (emoji / FA class)</label><input class="w-full px-2 py-1.5 border rounded text-sm" placeholder="fa-solid fa-globe" value="${esc(item.icon)}" onchange="updateItem('services',${i},'icon',this.value)"></div>
         <div class="sm:col-span-2"><label class="text-xs text-gray-500">Judul</label><input class="w-full px-2 py-1.5 border rounded text-sm" value="${esc(item.title)}" onchange="updateItem('services',${i},'title',this.value)"></div>
         <div class="sm:col-span-3"><label class="text-xs text-gray-500">Deskripsi</label><textarea class="w-full px-2 py-1.5 border rounded text-sm" rows="2" onchange="updateItem('services',${i},'description',this.value)">${esc(item.description)}</textarea></div>
       </div>
@@ -531,7 +531,7 @@ function addPortfolio() {
 }
 function addService() {
   if (!currentData.services) currentData.services = [];
-  currentData.services.push({ icon: '🌐', title: 'Service Baru', description: '' });
+  currentData.services.push({ icon: 'fa-solid fa-star', title: 'Service Baru', description: '' });
   renderServicesEditor();
 }
 function addProblem() {
