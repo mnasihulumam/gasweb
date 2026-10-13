@@ -94,8 +94,10 @@
       </div>
 
       <nav class="flex-1 overflow-y-auto px-3 py-3 space-y-0.5">
+        <button class="tab-btn active" data-tab="dashboard"><i class="fa-solid fa-chart-line"></i> Dashboard</button>
+
         <div class="sidebar-section">Konten Website</div>
-        <button class="tab-btn active" data-tab="settings"><i class="fa-solid fa-sliders"></i> Settings & Teks</button>
+        <button class="tab-btn" data-tab="settings"><i class="fa-solid fa-sliders"></i> Settings & Teks</button>
         <button class="tab-btn" data-tab="logo"><i class="fa-solid fa-image"></i> Logo</button>
         <button class="tab-btn" data-tab="packages"><i class="fa-solid fa-box"></i> Paket</button>
         <button class="tab-btn" data-tab="portfolio"><i class="fa-solid fa-briefcase"></i> Portfolio</button>
@@ -131,12 +133,92 @@
         <button id="btn-save-all-mobile" onclick="document.getElementById('btn-save-all').click()" class="px-3 py-1.5 rounded-lg bg-orange text-white text-xs font-semibold">Simpan</button>
       </header>
 
-      <div class="p-4 sm:p-6 max-w-5xl">
+      <div class="p-4 sm:p-6 lg:p-8 w-full">
+      <!-- TAB: DASHBOARD -->
+      <div id="tab-dashboard" class="tab-content space-y-5">
+        <div class="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h2 class="text-xl font-bold text-navy">Dashboard</h2>
+            <p class="text-sm text-gray-500">Ringkasan order & performa bisnis GasWeb</p>
+          </div>
+          <button type="button" onclick="loadOrders()" class="px-4 py-2 rounded-lg bg-navy text-white text-sm font-semibold hover:opacity-90">↻ Refresh Data</button>
+        </div>
+
+        <div class="grid grid-cols-2 lg:grid-cols-5 gap-3" id="dash-stats">
+          <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
+            <div class="text-[10px] uppercase tracking-wide text-gray-500 font-semibold">Total Order</div>
+            <div class="text-2xl font-extrabold text-navy mt-1" id="dash-stat-total">0</div>
+          </div>
+          <div class="bg-white rounded-xl border border-orange-100 shadow-sm p-4">
+            <div class="text-[10px] uppercase tracking-wide text-orange-600 font-semibold">Menunggu</div>
+            <div class="text-2xl font-extrabold text-orange-600 mt-1" id="dash-stat-menunggu">0</div>
+          </div>
+          <div class="bg-white rounded-xl border border-blue-100 shadow-sm p-4">
+            <div class="text-[10px] uppercase tracking-wide text-blue-600 font-semibold">On Progress</div>
+            <div class="text-2xl font-extrabold text-blue-600 mt-1" id="dash-stat-proses">0</div>
+          </div>
+          <div class="bg-white rounded-xl border border-green-100 shadow-sm p-4">
+            <div class="text-[10px] uppercase tracking-wide text-green-600 font-semibold">Selesai</div>
+            <div class="text-2xl font-extrabold text-green-600 mt-1" id="dash-stat-selesai">0</div>
+          </div>
+          <div class="bg-white rounded-xl border border-red-100 shadow-sm p-4">
+            <div class="text-[10px] uppercase tracking-wide text-red-600 font-semibold">Belum Bayar</div>
+            <div class="text-2xl font-extrabold text-red-600 mt-1" id="dash-stat-belumbayar">0</div>
+          </div>
+        </div>
+
+        <div class="grid lg:grid-cols-3 gap-4">
+          <div class="lg:col-span-2 bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-bold text-navy">Order Terbaru</h3>
+              <button type="button" class="text-xs text-orange font-semibold hover:underline" onclick="document.querySelector('.tab-btn[data-tab=orders]').click()">Lihat semua →</button>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm">
+                <thead class="text-[11px] uppercase text-gray-400 border-b">
+                  <tr>
+                    <th class="text-left py-2 font-semibold">Order</th>
+                    <th class="text-left py-2 font-semibold">Klien</th>
+                    <th class="text-left py-2 font-semibold">Paket</th>
+                    <th class="text-left py-2 font-semibold">Status</th>
+                    <th class="text-right py-2 font-semibold">Harga</th>
+                  </tr>
+                </thead>
+                <tbody id="dash-recent-body">
+                  <tr><td colspan="5" class="text-center text-gray-400 py-8 text-sm">Memuat data order...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+              <h3 class="font-bold text-navy mb-3">Estimasi Nilai</h3>
+              <div class="space-y-3 text-sm">
+                <div class="flex justify-between"><span class="text-gray-500">Total nilai order</span><span class="font-bold" id="dash-nilai-total">Rp0</span></div>
+                <div class="flex justify-between"><span class="text-gray-500">Estimasi sudah bayar*</span><span class="font-bold text-green-600" id="dash-nilai-bayar">Rp0</span></div>
+                <div class="flex justify-between border-t pt-2"><span class="text-gray-500">Outstanding</span><span class="font-bold text-red-600" id="dash-nilai-sisa">Rp0</span></div>
+              </div>
+              <p class="text-[10px] text-gray-400 mt-3">*Berdasarkan status pembayaran di Sheet (Lunas = full, DP = 70%).</p>
+            </div>
+            <div class="bg-navy rounded-xl p-5 text-white">
+              <h3 class="font-bold mb-2">Aksi Cepat</h3>
+              <div class="space-y-2">
+                <button type="button" onclick="document.querySelector('.tab-btn[data-tab=orders]').click()" class="w-full text-left px-3 py-2.5 rounded-lg bg-white/10 hover:bg-white/15 text-sm font-medium">📋 Kelola Orders</button>
+                <button type="button" onclick="document.querySelector('.tab-btn[data-tab=invoice]').click()" class="w-full text-left px-3 py-2.5 rounded-lg bg-white/10 hover:bg-white/15 text-sm font-medium">🧾 Buat Invoice</button>
+                <button type="button" onclick="document.querySelector('.tab-btn[data-tab=settings]').click()" class="w-full text-left px-3 py-2.5 rounded-lg bg-white/10 hover:bg-white/15 text-sm font-medium">⚙️ Settings Website</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="text-xs text-gray-400" id="dash-status">Data order dari Google Sheet.</p>
+      </div>
+
       <!-- STATUS -->
       <div id="status-msg" class="hidden mb-4 px-4 py-3 rounded-lg text-sm font-medium"></div>
 
       <!-- TAB: SETTINGS -->
-      <div id="tab-settings" class="tab-content bg-white rounded-xl shadow-sm p-6 space-y-4">
+      <div id="tab-settings" class="tab-content hidden bg-white rounded-xl shadow-sm p-6 space-y-4">
         <h2 class="text-lg font-bold mb-4">Settings & Semua Teks Website</h2>
         <div class="grid sm:grid-cols-2 gap-4">
           <div><label class="block text-xs font-medium text-gray-500 mb-1">Site Title</label><input id="s-siteTitle" class="w-full px-3 py-2 border rounded-lg text-sm"></div>
