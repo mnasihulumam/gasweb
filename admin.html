@@ -21,7 +21,40 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer">
   <style>
     body { font-family: 'Inter', system-ui, sans-serif; }
-    .tab-btn.active { background: #FF5A1F; color: white; }
+    .tab-btn {
+      display: flex; align-items: center; gap: 10px;
+      width: 100%; text-align: left;
+      padding: 10px 14px; border-radius: 8px;
+      font-size: 13px; font-weight: 500;
+      color: rgba(255,255,255,0.7);
+      background: transparent; border: none; cursor: pointer;
+      transition: all 0.15s;
+    }
+    .tab-btn:hover { background: rgba(255,255,255,0.08); color: #fff; }
+    .tab-btn.active { background: #FF5A1F; color: #fff; }
+    .tab-btn i { width: 18px; text-align: center; opacity: 0.9; }
+    .sidebar-section {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.06em;
+      text-transform: uppercase; color: rgba(255,255,255,0.35);
+      padding: 16px 14px 6px;
+    }
+    #admin-sidebar {
+      width: 240px; background: #0F1F3D;
+      position: fixed; top: 0; left: 0; bottom: 0;
+      z-index: 50; display: flex; flex-direction: column;
+      transition: transform 0.25s ease;
+    }
+    #admin-main { margin-left: 240px; min-height: 100vh; }
+    #sidebar-overlay { display: none; }
+    @media (max-width: 900px) {
+      #admin-sidebar { transform: translateX(-100%); }
+      #admin-sidebar.open { transform: translateX(0); }
+      #admin-main { margin-left: 0; }
+      #sidebar-overlay.show {
+        display: block; position: fixed; inset: 0;
+        background: rgba(0,0,0,0.4); z-index: 45;
+      }
+    }
     textarea, input, select { transition: border-color 0.15s; }
   </style>
 </head>
@@ -51,38 +84,54 @@
 
   <!-- ADMIN DASHBOARD -->
   <div id="admin-screen" class="hidden">
-    <!-- Top bar -->
-    <header class="bg-navy text-white sticky top-0 z-40">
-      <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <span class="font-bold text-lg">Gas<span class="text-orange">Web</span> Admin</span>
-          <a href="index.html" target="_blank" class="text-xs bg-white/10 hover:bg-white/20 px-3 py-1 rounded-full transition">Lihat Website →</a>
-        </div>
-        <div class="flex items-center gap-3">
-          <button id="btn-save-all" class="px-4 py-1.5 rounded-lg bg-orange text-white text-sm font-semibold hover:bg-orange-600 transition">Simpan Semua</button>
-          <button id="btn-logout" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-sm transition">Logout</button>
-        </div>
-      </div>
-    </header>
+    <div id="sidebar-overlay" onclick="closeAdminSidebar()"></div>
 
-    <div class="max-w-6xl mx-auto px-4 py-6">
-      <!-- Tabs -->
-      <div class="flex flex-wrap gap-2 mb-6">
-        <button class="tab-btn active px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 hover:bg-gray-300" data-tab="settings">Settings & Teks</button>
-        <button class="tab-btn px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 hover:bg-gray-300" data-tab="logo">Logo</button>
-        <button class="tab-btn px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 hover:bg-gray-300" data-tab="packages">Paket</button>
-        <button class="tab-btn px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 hover:bg-gray-300" data-tab="portfolio">Portfolio</button>
-        <button class="tab-btn px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 hover:bg-gray-300" data-tab="services">Services</button>
-        <button class="tab-btn px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 hover:bg-gray-300" data-tab="problems">Problems</button>
-        <button class="tab-btn px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 hover:bg-gray-300" data-tab="features">Features</button>
-        <button class="tab-btn px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 hover:bg-gray-300" data-tab="steps">Steps</button>
-        <button class="tab-btn px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 hover:bg-gray-300" data-tab="testimonials">Testimoni</button>
-        <button class="tab-btn px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 hover:bg-gray-300" data-tab="faq">FAQ</button>
-        <button class="tab-btn px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 hover:bg-gray-300" data-tab="orders">Orders</button>
-        <button class="tab-btn px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 hover:bg-gray-300" data-tab="invoice">Invoice</button>
-        <button class="tab-btn px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 hover:bg-gray-300" data-tab="password">Ganti Password</button>
+    <!-- Sidebar -->
+    <aside id="admin-sidebar">
+      <div class="px-4 py-5 border-b border-white/10">
+        <div class="font-bold text-lg text-white">Gas<span class="text-orange">Web</span> Admin</div>
+        <a href="index.html" target="_blank" class="text-[11px] text-white/50 hover:text-orange transition mt-1 inline-block">Lihat Website →</a>
       </div>
 
+      <nav class="flex-1 overflow-y-auto px-3 py-3 space-y-0.5">
+        <div class="sidebar-section">Konten Website</div>
+        <button class="tab-btn active" data-tab="settings"><i class="fa-solid fa-sliders"></i> Settings & Teks</button>
+        <button class="tab-btn" data-tab="logo"><i class="fa-solid fa-image"></i> Logo</button>
+        <button class="tab-btn" data-tab="packages"><i class="fa-solid fa-box"></i> Paket</button>
+        <button class="tab-btn" data-tab="portfolio"><i class="fa-solid fa-briefcase"></i> Portfolio</button>
+        <button class="tab-btn" data-tab="services"><i class="fa-solid fa-layer-group"></i> Services</button>
+        <button class="tab-btn" data-tab="problems"><i class="fa-solid fa-circle-exclamation"></i> Problems</button>
+        <button class="tab-btn" data-tab="features"><i class="fa-solid fa-star"></i> Features</button>
+        <button class="tab-btn" data-tab="steps"><i class="fa-solid fa-list-ol"></i> Steps</button>
+        <button class="tab-btn" data-tab="testimonials"><i class="fa-solid fa-comments"></i> Testimoni</button>
+        <button class="tab-btn" data-tab="faq"><i class="fa-solid fa-circle-question"></i> FAQ</button>
+
+        <div class="sidebar-section">Bisnis</div>
+        <button class="tab-btn" data-tab="orders"><i class="fa-solid fa-cart-shopping"></i> Orders</button>
+        <button class="tab-btn" data-tab="invoice"><i class="fa-solid fa-file-invoice"></i> Invoice</button>
+
+        <div class="sidebar-section">Akun</div>
+        <button class="tab-btn" data-tab="password"><i class="fa-solid fa-lock"></i> Ganti Password</button>
+      </nav>
+
+      <div class="p-3 border-t border-white/10 space-y-2">
+        <button id="btn-save-all" class="w-full py-2.5 rounded-lg bg-orange text-white text-sm font-semibold hover:bg-orange-600 transition">Simpan Semua</button>
+        <button id="btn-logout" class="w-full py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white text-sm transition">Logout</button>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <div id="admin-main">
+      <!-- Mobile top bar -->
+      <header class="lg:hidden bg-navy text-white sticky top-0 z-30 px-4 py-3 flex items-center justify-between">
+        <button type="button" onclick="openAdminSidebar()" class="p-2 -ml-2 rounded-lg hover:bg-white/10" aria-label="Menu">
+          <i class="fa-solid fa-bars text-lg"></i>
+        </button>
+        <span class="font-bold">Gas<span class="text-orange">Web</span> Admin</span>
+        <button id="btn-save-all-mobile" onclick="document.getElementById('btn-save-all').click()" class="px-3 py-1.5 rounded-lg bg-orange text-white text-xs font-semibold">Simpan</button>
+      </header>
+
+      <div class="p-4 sm:p-6 max-w-5xl">
       <!-- STATUS -->
       <div id="status-msg" class="hidden mb-4 px-4 py-3 rounded-lg text-sm font-medium"></div>
 
@@ -351,6 +400,8 @@
           <button type="button" onclick="changePassword()" class="px-4 py-2 rounded-lg bg-orange text-white text-sm font-semibold hover:bg-orange-600">Simpan Password Baru</button>
         </div>
       </div>
+
+      </div>
     </div>
   </div>
 
@@ -361,5 +412,21 @@
   <script src="js/firebase-config.js"></script>
   <script src="js/admin.js"></script>
   <script src="js/orders-invoice.js"></script>
+  <script>
+    function openAdminSidebar() {
+      document.getElementById('admin-sidebar').classList.add('open');
+      document.getElementById('sidebar-overlay').classList.add('show');
+    }
+    function closeAdminSidebar() {
+      document.getElementById('admin-sidebar').classList.remove('open');
+      document.getElementById('sidebar-overlay').classList.remove('show');
+    }
+    // Close sidebar on mobile after tab click
+    document.querySelectorAll('.tab-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        if (window.innerWidth <= 900) closeAdminSidebar();
+      });
+    });
+  </script>
 </body>
 </html>
