@@ -9,7 +9,7 @@
   const GASLEAD_URL = 'https://script.google.com/macros/s/AKfycbysDC2qbuXSN-IXJx8HDVgA5tdgevMhPQ0aZbYaevdb681sGvcaeaXE0Eh3jsvkIMNn/exec';
   const ADMIN_TOKEN = 'gasweb-admin-2026';
 
-  const STATUS_LIST = ['Baru', 'Akan Dihubungi', 'Tertarik', 'Follow-up', 'Closing', 'Tidak Tertarik'];
+  const STATUS_LIST = ['Baru', 'Akan Dihubungi', 'Sudah Dihubungi', 'Tertarik', 'Follow-up', 'Closing', 'Tidak Tertarik'];
   const PAGE_SIZE = 10;
 
   let store = {};
