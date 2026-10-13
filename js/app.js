@@ -141,7 +141,7 @@ function render(data) {
 
   // CTA links
   const wa = waLink(s.whatsapp);
-  ['nav-cta', 'mobile-cta', 'hero-cta', 'final-cta-btn', 'footer-wa'].forEach(id => {
+  ['nav-cta', 'mobile-cta', 'hero-cta', 'final-cta-btn', 'footer-wa', 'wa-float'].forEach(id => {
     const el = document.getElementById(id);
     if (el) {
       el.href = wa;
