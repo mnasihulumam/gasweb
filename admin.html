@@ -168,6 +168,41 @@
           </div>
         </div>
 
+        <!-- Prospek GasLead -->
+        <div>
+          <h3 class="text-sm font-bold text-navy mb-2">Prospek GasLead</h3>
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-3">
+            <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-3">
+              <div class="text-[10px] uppercase text-gray-500 font-semibold">Total Prospek</div>
+              <div class="text-xl font-extrabold text-navy" id="dash-prospek-total">0</div>
+            </div>
+            <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-3">
+              <div class="text-[10px] uppercase text-gray-500 font-semibold">Baru</div>
+              <div class="text-xl font-extrabold text-orange-600" id="dash-prospek-baru">0</div>
+            </div>
+            <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-3">
+              <div class="text-[10px] uppercase text-gray-500 font-semibold">Follow-up</div>
+              <div class="text-xl font-extrabold text-blue-600" id="dash-prospek-fu">0</div>
+            </div>
+            <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-3">
+              <div class="text-[10px] uppercase text-gray-500 font-semibold">Tertarik</div>
+              <div class="text-xl font-extrabold text-green-600" id="dash-prospek-tertarik">0</div>
+            </div>
+            <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-3">
+              <div class="text-[10px] uppercase text-gray-500 font-semibold">Closing</div>
+              <div class="text-xl font-extrabold text-navy" id="dash-prospek-closing">0</div>
+            </div>
+            <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-3">
+              <div class="text-[10px] uppercase text-gray-500 font-semibold">Tidak Tertarik</div>
+              <div class="text-xl font-extrabold text-red-600" id="dash-prospek-tolak">0</div>
+            </div>
+          </div>
+          <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 max-w-md">
+            <div class="text-xs font-semibold text-gray-500 mb-1">Breakdown status</div>
+            <div id="dash-prospek-breakdown" class="text-sm text-gray-400">Memuat prospek...</div>
+          </div>
+        </div>
+
         <div class="grid lg:grid-cols-3 gap-4">
           <div class="lg:col-span-2 bg-white rounded-xl border border-gray-100 shadow-sm p-5">
             <div class="flex items-center justify-between mb-3">
@@ -541,7 +576,16 @@
                   <option value="4">4+</option>
                   <option value="4.5">4.5+</option>
                 </select>
-                <select id="gl-ts" class="text-xs border rounded-lg px-2 py-1.5" onchange="glFilter()">
+                <select id="gl-st-filter" class="text-xs border rounded-lg px-2 py-1.5" onchange="glFilter()" title="Filter status prospek">
+                  <option value="">Semua status</option>
+                  <option>Baru</option>
+                  <option>Akan Dihubungi</option>
+                  <option>Tertarik</option>
+                  <option>Follow-up</option>
+                  <option>Closing</option>
+                  <option>Tidak Tertarik</option>
+                </select>
+                <select id="gl-ts" class="text-xs border rounded-lg px-2 py-1.5" onchange="glResetSort();glFilter()">
                   <option value="near">Terdekat</option>
                   <option value="rating">Rating</option>
                   <option value="rel">Relevan</option>
@@ -554,13 +598,13 @@
                 <table class="w-full text-left min-w-[800px]">
                   <thead class="bg-gray-50 text-[11px] uppercase text-gray-500">
                     <tr>
-                      <th class="px-3 py-2">Bisnis</th>
-                      <th class="px-3 py-2">Alamat</th>
-                      <th class="px-3 py-2">Telepon</th>
+                      <th class="px-3 py-2 cursor-pointer select-none hover:text-orange" data-gl-sort="name" data-label="Bisnis" onclick="glSortBy('name')">Bisnis</th>
+                      <th class="px-3 py-2 cursor-pointer select-none hover:text-orange" data-gl-sort="addr" data-label="Alamat" onclick="glSortBy('addr')">Alamat</th>
+                      <th class="px-3 py-2 cursor-pointer select-none hover:text-orange" data-gl-sort="phone" data-label="Telepon" onclick="glSortBy('phone')">Telepon</th>
                       <th class="px-3 py-2">Web</th>
-                      <th class="px-3 py-2">Rating</th>
-                      <th class="px-3 py-2">Jarak</th>
-                      <th class="px-3 py-2">Prospek</th>
+                      <th class="px-3 py-2 cursor-pointer select-none hover:text-orange" data-gl-sort="rating" data-label="Rating" onclick="glSortBy('rating')">Rating</th>
+                      <th class="px-3 py-2 cursor-pointer select-none hover:text-orange" data-gl-sort="dist" data-label="Jarak" onclick="glSortBy('dist')">Jarak</th>
+                      <th class="px-3 py-2 cursor-pointer select-none hover:text-orange" data-gl-sort="st" data-label="Prospek" onclick="glSortBy('st')">Prospek</th>
                       <th class="px-3 py-2">Aksi</th>
                     </tr>
                   </thead>
@@ -586,7 +630,7 @@
                 <h3 class="font-bold text-navy text-sm">Template WhatsApp</h3>
                 <button type="button" onclick="glSaveWaTemplate()" class="text-xs px-2 py-1 rounded-lg bg-navy text-white font-semibold">Simpan</button>
               </div>
-              <p class="text-[11px] text-gray-500 mb-2">Pesan ini dipakai otomatis saat klik <b>WA</b> di tabel. Format WhatsApp: *tebal* _miring_ ~coret~</p>
+              <p class="text-[11px] text-gray-500 mb-2">Pesan ini dipakai otomatis saat klik <b>WA</b>. Klik <b>Simpan</b> → tersimpan ke Spreadsheet (sheet Settings). Format: *tebal* _miring_ ~coret~</p>
 
               <!-- Toolbar format -->
               <div class="flex flex-wrap gap-1 mb-2">
@@ -605,7 +649,7 @@
 
               <div class="mt-2 text-[10px] text-gray-400 space-y-0.5">
                 <div>Variabel: <code class="bg-gray-100 px-1 rounded">{{nama}}</code> <code class="bg-gray-100 px-1 rounded">{{kategori}}</code> <code class="bg-gray-100 px-1 rounded">{{alamat}}</code> <code class="bg-gray-100 px-1 rounded">{{telepon}}</code></div>
-                <div id="gl-wa-saved-hint" class="text-green-600 hidden">Template tersimpan di browser.</div>
+                <div id="gl-wa-saved-hint" class="text-green-600 hidden">Template tersimpan ke Spreadsheet.</div>
               </div>
             </div>
 
