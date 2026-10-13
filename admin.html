@@ -78,6 +78,8 @@
         <button class="tab-btn px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 hover:bg-gray-300" data-tab="steps">Steps</button>
         <button class="tab-btn px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 hover:bg-gray-300" data-tab="testimonials">Testimoni</button>
         <button class="tab-btn px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 hover:bg-gray-300" data-tab="faq">FAQ</button>
+        <button class="tab-btn px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 hover:bg-gray-300" data-tab="orders">Orders</button>
+        <button class="tab-btn px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 hover:bg-gray-300" data-tab="invoice">Invoice</button>
         <button class="tab-btn px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 hover:bg-gray-300" data-tab="password">Ganti Password</button>
       </div>
 
@@ -216,6 +218,130 @@
         <div id="faq-editor" class="space-y-4"></div>
       </div>
 
+      <!-- TAB: ORDERS -->
+      <div id="tab-orders" class="tab-content hidden space-y-4">
+        <div class="bg-white rounded-xl shadow-sm p-6">
+          <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+            <div>
+              <h2 class="text-lg font-bold">Dashboard Orders</h2>
+              <p class="text-xs text-gray-500" id="orders-status">Data dari Google Sheet via order.html</p>
+            </div>
+            <button type="button" onclick="loadOrders()" class="px-4 py-2 rounded-lg bg-navy text-white text-sm font-semibold hover:opacity-90">↻ Refresh</button>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-5">
+            <div class="rounded-xl border p-3 bg-gray-50"><div class="text-[10px] uppercase text-gray-500 font-semibold">Total</div><div class="text-xl font-extrabold text-navy" id="ord-stat-total">0</div></div>
+            <div class="rounded-xl border p-3 bg-orange-50"><div class="text-[10px] uppercase text-orange-600 font-semibold">Menunggu</div><div class="text-xl font-extrabold text-orange-600" id="ord-stat-menunggu">0</div></div>
+            <div class="rounded-xl border p-3 bg-blue-50"><div class="text-[10px] uppercase text-blue-600 font-semibold">Proses</div><div class="text-xl font-extrabold text-blue-600" id="ord-stat-proses">0</div></div>
+            <div class="rounded-xl border p-3 bg-green-50"><div class="text-[10px] uppercase text-green-600 font-semibold">Selesai</div><div class="text-xl font-extrabold text-green-600" id="ord-stat-selesai">0</div></div>
+            <div class="rounded-xl border p-3 bg-red-50"><div class="text-[10px] uppercase text-red-600 font-semibold">Belum Bayar</div><div class="text-xl font-extrabold text-red-600" id="ord-stat-belumbayar">0</div></div>
+          </div>
+          <div class="flex flex-wrap gap-2 mb-3">
+            <input type="search" id="orders-search" placeholder="Cari order / nama / WA..." class="px-3 py-2 border rounded-lg text-sm flex-1 min-w-[180px]" oninput="renderOrdersTable()">
+            <select id="orders-filter" class="px-3 py-2 border rounded-lg text-sm" onchange="renderOrdersTable()">
+              <option value="">Semua</option>
+              <option value="menunggu">Menunggu Konfirmasi</option>
+              <option value="belumbayar">Belum Dibayar</option>
+              <option value="lunas">Sudah Bayar / Lunas</option>
+            </select>
+            <span class="text-xs text-gray-400 self-center" id="orders-count"></span>
+          </div>
+          <div class="overflow-x-auto border rounded-xl">
+            <table class="w-full text-left min-w-[800px]">
+              <thead class="bg-gray-50 text-[11px] uppercase text-gray-500">
+                <tr>
+                  <th class="px-3 py-2.5">Order ID</th>
+                  <th class="px-3 py-2.5">Tanggal</th>
+                  <th class="px-3 py-2.5">Klien</th>
+                  <th class="px-3 py-2.5">Paket</th>
+                  <th class="px-3 py-2.5">Harga</th>
+                  <th class="px-3 py-2.5">Status Order</th>
+                  <th class="px-3 py-2.5">Pembayaran</th>
+                  <th class="px-3 py-2.5">Kota</th>
+                  <th class="px-3 py-2.5">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="orders-tbody">
+                <tr><td colspan="9" class="text-center text-gray-400 py-10">Klik tab Orders atau tombol Refresh untuk memuat data.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: INVOICE -->
+      <div id="tab-invoice" class="tab-content hidden space-y-4">
+        <div class="bg-white rounded-xl shadow-sm p-6">
+          <h2 class="text-lg font-bold mb-1">Buat Invoice</h2>
+          <p class="text-xs text-gray-500 mb-4">Isi manual atau pilih order di tab <b>Orders</b> lalu klik tombol <b>Invoice</b>.</p>
+
+          <div class="grid sm:grid-cols-3 gap-3 mb-4">
+            <div><label class="block text-xs font-medium text-gray-500 mb-1">No. Invoice</label><input id="inv-number" class="w-full px-3 py-2 border rounded-lg text-sm"></div>
+            <div><label class="block text-xs font-medium text-gray-500 mb-1">Tanggal</label><input type="date" id="inv-date" class="w-full px-3 py-2 border rounded-lg text-sm"></div>
+            <div><label class="block text-xs font-medium text-gray-500 mb-1">Jatuh Tempo</label><input type="date" id="inv-due" class="w-full px-3 py-2 border rounded-lg text-sm"></div>
+            <div><label class="block text-xs font-medium text-gray-500 mb-1">Status</label>
+              <select id="inv-status" class="w-full px-3 py-2 border rounded-lg text-sm">
+                <option>Belum Dibayar</option><option>DP Dibayar</option><option>Dibayar Sebagian</option><option>Lunas</option><option>Jatuh Tempo</option>
+              </select>
+            </div>
+          </div>
+
+          <h3 class="text-sm font-bold mb-2 mt-4">Klien</h3>
+          <div class="grid sm:grid-cols-2 gap-3 mb-4">
+            <div><label class="block text-xs font-medium text-gray-500 mb-1">Nama Klien / Bisnis</label><input id="inv-client-name" class="w-full px-3 py-2 border rounded-lg text-sm"></div>
+            <div><label class="block text-xs font-medium text-gray-500 mb-1">PIC</label><input id="inv-client-pic" class="w-full px-3 py-2 border rounded-lg text-sm"></div>
+            <div><label class="block text-xs font-medium text-gray-500 mb-1">Email</label><input id="inv-client-email" class="w-full px-3 py-2 border rounded-lg text-sm"></div>
+            <div><label class="block text-xs font-medium text-gray-500 mb-1">WhatsApp</label><input id="inv-client-wa" class="w-full px-3 py-2 border rounded-lg text-sm"></div>
+            <div><label class="block text-xs font-medium text-gray-500 mb-1">Kota</label><input id="inv-client-city" class="w-full px-3 py-2 border rounded-lg text-sm"></div>
+            <div><label class="block text-xs font-medium text-gray-500 mb-1">Catatan / Order ID</label><input id="inv-client-note" class="w-full px-3 py-2 border rounded-lg text-sm"></div>
+          </div>
+
+          <div class="flex items-center justify-between mb-2 mt-4">
+            <h3 class="text-sm font-bold">Item Layanan</h3>
+            <button type="button" onclick="addInvItem()" class="px-3 py-1 rounded-lg bg-orange text-white text-xs font-semibold">+ Item</button>
+          </div>
+          <div class="overflow-x-auto border rounded-xl mb-4">
+            <table class="w-full text-sm min-w-[600px]">
+              <thead class="bg-gray-50 text-[11px] uppercase text-gray-500">
+                <tr><th class="px-2 py-2">No</th><th class="px-2 py-2">Nama</th><th class="px-2 py-2">Deskripsi</th><th class="px-2 py-2">Qty</th><th class="px-2 py-2">Harga</th><th class="px-2 py-2">Diskon</th><th class="px-2 py-2">Subtotal</th></tr>
+              </thead>
+              <tbody id="inv-items-body"></tbody>
+            </table>
+          </div>
+
+          <div class="grid sm:grid-cols-4 gap-3 mb-4">
+            <div><label class="block text-xs font-medium text-gray-500 mb-1">Diskon Invoice (Rp)</label><input type="number" id="inv-discount" value="0" min="0" class="w-full px-3 py-2 border rounded-lg text-sm" oninput="recalcInv()"></div>
+            <div><label class="block text-xs font-medium text-gray-500 mb-1">Pajak (%)</label><input type="number" id="inv-tax" value="0" min="0" step="0.01" class="w-full px-3 py-2 border rounded-lg text-sm" oninput="recalcInv()"></div>
+            <div><label class="block text-xs font-medium text-gray-500 mb-1">Biaya Tambahan</label><input type="number" id="inv-extra" value="0" min="0" class="w-full px-3 py-2 border rounded-lg text-sm" oninput="recalcInv()"></div>
+            <div><label class="block text-xs font-medium text-gray-500 mb-1">DP / Sudah Dibayar</label><input type="number" id="inv-dp" value="0" min="0" class="w-full px-3 py-2 border rounded-lg text-sm" oninput="recalcInv()"></div>
+          </div>
+
+          <div class="max-w-xs ml-auto bg-gray-50 rounded-xl p-4 text-sm space-y-1 mb-4">
+            <div class="flex justify-between"><span>Subtotal</span><span id="inv-s-sub">Rp0</span></div>
+            <div class="flex justify-between"><span>Diskon</span><span id="inv-s-disc">- Rp0</span></div>
+            <div class="flex justify-between"><span>Pajak</span><span id="inv-s-tax">Rp0</span></div>
+            <div class="flex justify-between"><span>Biaya Tambahan</span><span id="inv-s-extra">Rp0</span></div>
+            <div class="flex justify-between font-extrabold text-base border-t pt-2"><span>Total</span><span id="inv-s-total">Rp0</span></div>
+            <div class="flex justify-between"><span>Dibayar</span><span id="inv-s-paid">Rp0</span></div>
+            <div class="flex justify-between font-bold text-red-600"><span>Sisa</span><span id="inv-s-remain">Rp0</span></div>
+          </div>
+
+          <div class="grid sm:grid-cols-1 gap-3 mb-4">
+            <div><label class="block text-xs font-medium text-gray-500 mb-1">Catatan</label><textarea id="inv-notes" rows="2" class="w-full px-3 py-2 border rounded-lg text-sm"></textarea></div>
+            <div><label class="block text-xs font-medium text-gray-500 mb-1">Syarat & Ketentuan</label><textarea id="inv-terms" rows="4" class="w-full px-3 py-2 border rounded-lg text-sm"></textarea></div>
+          </div>
+
+          <div class="flex flex-wrap gap-2">
+            <button type="button" onclick="previewInvoiceDoc()" class="px-4 py-2 rounded-lg bg-navy text-white text-sm font-semibold">Preview</button>
+            <button type="button" onclick="printInvoiceDoc()" class="px-4 py-2 rounded-lg bg-orange text-white text-sm font-semibold">Cetak / PDF</button>
+            <button type="button" onclick="waInvoiceDoc()" class="px-4 py-2 rounded-lg border text-sm font-semibold hover:border-orange hover:text-orange">Kirim via WhatsApp</button>
+          </div>
+        </div>
+
+        <div id="inv-preview-wrap" class="hidden bg-gray-200 rounded-xl p-4 overflow-auto max-h-[80vh]">
+          <div id="inv-preview" class="bg-white shadow-lg mx-auto"></div>
+        </div>
+      </div>
+
       <!-- TAB: PASSWORD -->
       <div id="tab-password" class="tab-content hidden bg-white rounded-xl shadow-sm p-6 max-w-md">
         <h2 class="text-lg font-bold mb-4">Ganti Password Admin</h2>
@@ -234,5 +360,6 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="js/firebase-config.js"></script>
   <script src="js/admin.js"></script>
+  <script src="js/orders-invoice.js"></script>
 </body>
 </html>
