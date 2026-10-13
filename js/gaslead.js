@@ -25,13 +25,95 @@
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
-  function toWa(phone) {
+  const WA_TEMPLATE_KEY = 'gaslead_wa_template';
+  const DEFAULT_WA_TEMPLATE =
+    'Halo, saya dari *GasWeb*.\n\n' +
+    'Saya lihat bisnis *{{nama}}* di {{alamat}}.\n\n' +
+    'Apakah saat ini sudah punya website profesional?\n' +
+    'Kami bantu UMKM & bisnis lokal punya website yang siap jadi wajah digital.\n\n' +
+    'Boleh saya kirim contoh hasil kerja kami?';
+
+  function toWaNumber(phone) {
     if (!phone) return '';
     let n = String(phone).replace(/\D/g, '');
     if (n.startsWith('0')) n = '62' + n.slice(1);
     else if (n.startsWith('8') && n.length >= 9 && n.length <= 13) n = '62' + n;
     if (n.length < 10) return '';
-    return 'https://wa.me/' + n;
+    return n;
+  }
+
+  function getWaTemplate() {
+    const el = document.getElementById('gl-wa-template');
+    if (el && el.value.trim()) return el.value;
+    return localStorage.getItem(WA_TEMPLATE_KEY) || DEFAULT_WA_TEMPLATE;
+  }
+
+  function applyWaTemplate(tpl, p) {
+    return String(tpl)
+      .replace(/\{\{nama\}\}/gi, p.name || '')
+      .replace(/\{\{kategori\}\}/gi, p.cat || '')
+      .replace(/\{\{alamat\}\}/gi, p.addr || '')
+      .replace(/\{\{telepon\}\}/gi, p.phone || '');
+  }
+
+  function toWa(phone, prospect) {
+    const num = toWaNumber(phone);
+    if (!num) return '';
+    if (!prospect) return 'https://wa.me/' + num;
+    const msg = applyWaTemplate(getWaTemplate(), prospect);
+    return 'https://wa.me/' + num + '?text=' + encodeURIComponent(msg);
+  }
+
+  window.glSaveWaTemplate = function () {
+    const el = document.getElementById('gl-wa-template');
+    if (!el) return;
+    localStorage.setItem(WA_TEMPLATE_KEY, el.value);
+    const hint = document.getElementById('gl-wa-saved-hint');
+    if (hint) {
+      hint.classList.remove('hidden');
+      setTimeout(function () { hint.classList.add('hidden'); }, 2500);
+    }
+    toast('Template WA disimpan.');
+  };
+
+  window.glWaFmt = function (marker) {
+    const ta = document.getElementById('gl-wa-template');
+    if (!ta) return;
+    const start = ta.selectionStart;
+    const end = ta.selectionEnd;
+    const val = ta.value;
+    const selected = val.slice(start, end) || 'teks';
+    const wrap = marker === '```' ? '```' + selected + '```' : marker + selected + marker;
+    ta.value = val.slice(0, start) + wrap + val.slice(end);
+    ta.focus();
+    const pos = start + wrap.length;
+    ta.setSelectionRange(pos, pos);
+  };
+
+  window.glWaInsert = function (text) {
+    const ta = document.getElementById('gl-wa-template');
+    if (!ta) return;
+    const start = ta.selectionStart;
+    const end = ta.selectionEnd;
+    ta.value = ta.value.slice(0, start) + text + ta.value.slice(end);
+    ta.focus();
+    const pos = start + text.length;
+    ta.setSelectionRange(pos, pos);
+  };
+
+  window.glOpenWa = function (id) {
+    id = String(id);
+    const p = searchResults.find(function (x) { return String(x.id) === id; }) || store[id];
+    if (!p || !p.phone) return toast('Nomor telepon tidak ada.', true);
+    const url = toWa(p.phone, p);
+    if (!url) return toast('Nomor tidak valid.', true);
+    window.open(url, '_blank');
+  };
+
+  function initWaTemplate() {
+    const el = document.getElementById('gl-wa-template');
+    if (!el) return;
+    el.value = localStorage.getItem(WA_TEMPLATE_KEY) || DEFAULT_WA_TEMPLATE;
   }
 
   async function api(action, extra) {
@@ -202,7 +284,7 @@
     tbody.innerHTML = slice.map(function (p) {
       const pid = String(p.id);
       const s = store[pid];
-      const wa = toWa(p.phone);
+      const wa = toWa(p.phone, p);
       const stOpts = STATUS_LIST.map(function (x) {
         return '<option value="' + esc(x) + '"' + (s && s.st === x ? ' selected' : '') + '>' + esc(x) + '</option>';
       }).join('');
@@ -212,7 +294,7 @@
         '<div class="text-[11px] text-gray-500">' + esc(p.cat || '') + '</div></td>' +
         '<td class="px-3 py-2.5 text-xs text-gray-600 max-w-[200px]">' + esc(p.addr || '') + '</td>' +
         '<td class="px-3 py-2.5 text-xs">' +
-          (wa ? '<a class="text-green-700 font-semibold hover:underline" href="' + esc(wa) + '" target="_blank" rel="noopener">' + esc(p.phone) + '</a>' : esc(p.phone || '-')) +
+          (p.phone ? '<button type="button" class="text-green-700 font-semibold hover:underline text-left" onclick="glOpenWa(\'' + esc(pid).replace(/'/g, "\\'") + '\')">' + esc(p.phone) + '</button>' : '-') +
         '</td>' +
         '<td class="px-3 py-2.5 text-xs">' +
           (p.web ? '<a class="text-orange hover:underline" href="' + esc(p.web) + '" target="_blank" rel="noopener">Web</a>' : '<span class="text-gray-400">—</span>') +
@@ -227,7 +309,7 @@
         '</td>' +
         '<td class="px-3 py-2.5 whitespace-nowrap">' +
           (p.url ? '<a class="text-xs px-2 py-1 rounded border hover:border-orange mr-1" href="' + esc(p.url) + '" target="_blank" rel="noopener">Maps</a>' : '') +
-          (wa ? '<a class="text-xs px-2 py-1 rounded border hover:border-green-600 text-green-700" href="' + esc(wa) + '" target="_blank" rel="noopener">WA</a>' : '') +
+          (p.phone ? '<button type="button" class="text-xs px-2 py-1 rounded border hover:border-green-600 text-green-700" onclick="glOpenWa(\'' + esc(pid).replace(/'/g, "\\'") + '\')">WA</button>' : '') +
         '</td></tr>';
     }).join('');
   }
@@ -361,9 +443,11 @@
 
   // Hook tab
   document.addEventListener('DOMContentLoaded', function () {
+    initWaTemplate();
     document.querySelectorAll('.tab-btn').forEach(function (btn) {
       btn.addEventListener('click', function () {
         if (btn.dataset.tab === 'gaslead') {
+          initWaTemplate();
           if (!Object.keys(store).length) loadProspects().catch(function () {});
         }
       });
