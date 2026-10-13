@@ -6,7 +6,7 @@
   'use strict';
 
   // === KONFIG — samakan token & URL setelah deploy ===
-  const GASLEAD_URL = 'https://script.google.com/macros/s/AKfycbysDC2qbuXSN-IXJx8HDVgA5tdgevMhPQ0aZbYaevdb681sGvcaeaXE0Eh3jsvkIMNn/exec';
+  const GASLEAD_URL = 'https://script.google.com/macros/s/AKfycbzhyIfLnderIAWdV6Kk3E3jskGhxYcvwTpsEjmDpgIU2g4zpervymck91EummdUX85Z/exec';
   const ADMIN_TOKEN = 'gasweb-admin-2026';
 
   const STATUS_LIST = ['Baru', 'Akan Dihubungi', 'Sudah Dihubungi', 'Tertarik', 'Follow-up', 'Closing', 'Tidak Tertarik'];
