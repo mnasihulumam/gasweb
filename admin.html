@@ -111,6 +111,7 @@
         <div class="sidebar-section">Bisnis</div>
         <button class="tab-btn" data-tab="orders"><i class="fa-solid fa-cart-shopping"></i> Orders</button>
         <button class="tab-btn" data-tab="invoice"><i class="fa-solid fa-file-invoice"></i> Invoice</button>
+        <button class="tab-btn" data-tab="gaslead"><i class="fa-solid fa-crosshairs"></i> GasLead</button>
 
         <div class="sidebar-section">Akun</div>
         <button class="tab-btn" data-tab="password"><i class="fa-solid fa-lock"></i> Ganti Password</button>
@@ -473,6 +474,109 @@
         </div>
       </div>
 
+
+      <!-- TAB: GASLEAD -->
+      <div id="tab-gaslead" class="tab-content hidden space-y-4">
+        <div class="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h2 class="text-xl font-bold text-navy">GasLead Finder</h2>
+            <p class="text-sm text-gray-500">Cari prospek bisnis via Google Maps · simpan ke Spreadsheet · follow-up WA</p>
+          </div>
+          <div class="flex gap-2">
+            <button type="button" data-gl-view="search" onclick="glSetView('search')" class="px-3 py-1.5 rounded-lg text-sm font-semibold bg-orange text-white">Pencarian</button>
+            <button type="button" data-gl-view="saved" onclick="glSetView('saved')" class="px-3 py-1.5 rounded-lg text-sm font-semibold bg-gray-100">Prospek saya</button>
+          </div>
+        </div>
+
+        <div id="gl-spin" class="hidden h-1 rounded bg-gradient-to-r from-transparent via-orange to-transparent animate-pulse"></div>
+
+        <form id="gl-search-form" class="bg-white rounded-xl border border-gray-100 shadow-sm p-5" onsubmit="glSearch(event)">
+          <div class="grid sm:grid-cols-2 lg:grid-cols-5 gap-3">
+            <div class="lg:col-span-2">
+              <label class="block text-xs font-medium text-gray-500 mb-1">Kata kunci bisnis</label>
+              <input id="gl-kw" class="w-full px-3 py-2 border rounded-lg text-sm" placeholder="LPK, klinik, kontraktor, toko..." required>
+            </div>
+            <div class="lg:col-span-2">
+              <label class="block text-xs font-medium text-gray-500 mb-1">Lokasi</label>
+              <input id="gl-loc" class="w-full px-3 py-2 border rounded-lg text-sm" placeholder="Kota / kecamatan / alamat">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-500 mb-1">Radius (km)</label>
+              <select id="gl-rad" class="w-full px-3 py-2 border rounded-lg text-sm">
+                <option>1</option><option>3</option><option selected>5</option><option>10</option><option>25</option><option>50</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-500 mb-1">Jumlah hasil</label>
+              <select id="gl-lim" class="w-full px-3 py-2 border rounded-lg text-sm">
+                <option>20</option><option>40</option><option>60</option>
+              </select>
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-2 mt-3">
+            <button type="submit" class="px-4 py-2 rounded-lg bg-orange text-white text-sm font-semibold hover:bg-orange-600">Cari prospek</button>
+            <button type="button" onclick="glUseMyLocation()" class="px-4 py-2 rounded-lg border text-sm font-medium hover:border-orange">Lokasi saya</button>
+          </div>
+        </form>
+
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div class="bg-navy text-white rounded-xl p-4"><div class="text-2xl font-extrabold text-orange" id="gl-s1">0</div><div class="text-xs text-white/60">Hasil pencarian</div></div>
+          <div class="bg-navy text-white rounded-xl p-4"><div class="text-2xl font-extrabold text-orange" id="gl-s2">0</div><div class="text-xs text-white/60">Punya telepon</div></div>
+          <div class="bg-navy text-white rounded-xl p-4"><div class="text-2xl font-extrabold text-orange" id="gl-s3">0</div><div class="text-xs text-white/60">Belum ada website</div></div>
+          <div class="bg-navy text-white rounded-xl p-4"><div class="text-2xl font-extrabold text-orange" id="gl-s4">0</div><div class="text-xs text-white/60">Prospek tersimpan</div></div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
+          <div class="flex flex-wrap gap-2 items-center mb-3">
+            <input type="search" id="gl-q" placeholder="Cari dalam hasil..." class="px-3 py-1.5 border rounded-lg text-sm flex-1 min-w-[140px]" oninput="glFilter()">
+            <label class="text-xs flex items-center gap-1"><input type="checkbox" id="gl-fp" onchange="glFilter()"> Punya telepon</label>
+            <label class="text-xs flex items-center gap-1"><input type="checkbox" id="gl-fw" onchange="glFilter()"> Belum ada web</label>
+            <select id="gl-fr" class="text-xs border rounded-lg px-2 py-1.5" onchange="glFilter()">
+              <option value="0">Semua rating</option>
+              <option value="3">3+</option>
+              <option value="4">4+</option>
+              <option value="4.5">4.5+</option>
+            </select>
+            <select id="gl-ts" class="text-xs border rounded-lg px-2 py-1.5" onchange="glFilter()">
+              <option value="near">Terdekat</option>
+              <option value="rating">Rating</option>
+              <option value="rel">Relevan</option>
+            </select>
+            <button type="button" onclick="glSaveAll()" class="px-3 py-1.5 rounded-lg bg-orange text-white text-xs font-semibold">Simpan semua</button>
+            <button type="button" onclick="glExportCsv()" class="px-3 py-1.5 rounded-lg border text-xs font-medium">CSV</button>
+            <button type="button" onclick="glOpenSheet()" class="px-3 py-1.5 rounded-lg border text-xs font-medium">Buka Sheet</button>
+          </div>
+          <div class="overflow-x-auto border rounded-xl">
+            <table class="w-full text-left min-w-[900px]">
+              <thead class="bg-gray-50 text-[11px] uppercase text-gray-500">
+                <tr>
+                  <th class="px-3 py-2">Bisnis</th>
+                  <th class="px-3 py-2">Alamat</th>
+                  <th class="px-3 py-2">Telepon</th>
+                  <th class="px-3 py-2">Web</th>
+                  <th class="px-3 py-2">Rating</th>
+                  <th class="px-3 py-2">Jarak</th>
+                  <th class="px-3 py-2">Prospek</th>
+                  <th class="px-3 py-2">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="gl-tbody"></tbody>
+            </table>
+            <div id="gl-empty" class="text-center text-gray-400 py-10 text-sm">Isi kata kunci &amp; lokasi, lalu klik Cari prospek.</div>
+          </div>
+          <div class="flex items-center justify-between mt-3 text-sm">
+            <span id="gl-info" class="text-gray-500 text-xs"></span>
+            <div class="flex items-center gap-2">
+              <button type="button" id="gl-pv" onclick="glPage(-1)" class="px-2 py-1 rounded border text-xs">Sebelumnya</button>
+              <span id="gl-pg" class="text-xs text-gray-500"></span>
+              <button type="button" id="gl-nx" onclick="glPage(1)" class="px-2 py-1 rounded border text-xs">Berikutnya</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="gl-toast" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2"></div>
+      </div>
+
       <!-- TAB: PASSWORD -->
       <div id="tab-password" class="tab-content hidden bg-white rounded-xl shadow-sm p-6 max-w-md">
         <h2 class="text-lg font-bold mb-4">Ganti Password Admin</h2>
@@ -494,6 +598,7 @@
   <script src="js/firebase-config.js"></script>
   <script src="js/admin.js"></script>
   <script src="js/orders-invoice.js"></script>
+  <script src="js/gaslead.js"></script>
   <script>
     function openAdminSidebar() {
       document.getElementById('admin-sidebar').classList.add('open');
