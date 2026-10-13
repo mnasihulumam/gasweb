@@ -6,11 +6,13 @@
   'use strict';
 
   // === KONFIG — samakan token & URL setelah deploy ===
-  const GASLEAD_URL = 'https://script.google.com/macros/s/AKfycbzhyIfLnderIAWdV6Kk3E3jskGhxYcvwTpsEjmDpgIU2g4zpervymck91EummdUX85Z/exec';
+  const GASLEAD_URL = 'https://script.google.com/macros/s/AKfycbxH97OOsWYe46Co9g2GCTT0MwoCNYpBYpH8AWQvFQCivRMAg_OBGUpHBWH6H_8xXhi9/exec';
   const ADMIN_TOKEN = 'gasweb-admin-2026';
 
   const STATUS_LIST = ['Baru', 'Akan Dihubungi', 'Sudah Dihubungi', 'Tertarik', 'Follow-up', 'Closing', 'Tidak Tertarik'];
   const PAGE_SIZE = 10;
+  let sortKey = '';
+  let sortDir = 1; // 1 asc, -1 desc
 
   let store = {};
   let searchResults = [];
@@ -27,11 +29,15 @@
 
   const WA_TEMPLATE_KEY = 'gaslead_wa_template';
   const DEFAULT_WA_TEMPLATE =
-    'Halo, saya dari *GasWeb*.\n\n' +
-    'Saya lihat bisnis *{{nama}}* di {{alamat}}.\n\n' +
-    'Apakah saat ini sudah punya website profesional?\n' +
-    'Kami bantu UMKM & bisnis lokal punya website yang siap jadi wajah digital.\n\n' +
-    'Boleh saya kirim contoh hasil kerja kami?';
+    'Assalamu\'alaikum, Bapak/Ibu pengelola *{{nama}}*.\n\n' +
+    'Perkenalkan, saya dari *GasWeb* — jasa pembuatan website profesional.\n\n' +
+    'Saya lihat LPK Anda di {{alamat}}. Banyak lembaga pelatihan yang sudah mulai tampil profesional di internet biar lebih mudah ditemukan calon siswa.\n\n' +
+    'Berikut contoh website LPK yang pernah kami buatkan:\n' +
+    '👉 https://lpknusakarya.netlify.app/\n\n' +
+    'Atau bisa cek profil kami di:\n' +
+    '🌐 https://gasweb.id\n\n' +
+    'Kalau berkenan, saya bantu buatkan website serupa untuk *{{nama}}* — mulai dari landing page sampai sistem pendaftaran siswa.\n\n' +
+    'Boleh saya kirim penawaran singkatnya, Bapak/Ibu?';
 
   function toWaNumber(phone) {
     if (!phone) return '';
@@ -64,16 +70,22 @@
     return 'https://wa.me/' + num + '?text=' + encodeURIComponent(msg);
   }
 
-  window.glSaveWaTemplate = function () {
+  window.glSaveWaTemplate = async function () {
     const el = document.getElementById('gl-wa-template');
     if (!el) return;
     localStorage.setItem(WA_TEMPLATE_KEY, el.value);
-    const hint = document.getElementById('gl-wa-saved-hint');
-    if (hint) {
-      hint.classList.remove('hidden');
-      setTimeout(function () { hint.classList.add('hidden'); }, 2500);
+    try {
+      await api('saveWaTemplate', { template: el.value });
+      const hint = document.getElementById('gl-wa-saved-hint');
+      if (hint) {
+        hint.textContent = 'Template tersimpan ke Spreadsheet.';
+        hint.classList.remove('hidden');
+        setTimeout(function () { hint.classList.add('hidden'); }, 3000);
+      }
+      toast('Template WA disimpan ke Spreadsheet.');
+    } catch (err) {
+      toast('Gagal simpan ke Sheet: ' + err.message + ' (tersimpan lokal)', true);
     }
-    toast('Template WA disimpan.');
   };
 
   window.glWaFmt = function (marker) {
@@ -110,10 +122,18 @@
     window.open(url, '_blank');
   };
 
-  function initWaTemplate() {
+  async function initWaTemplate() {
     const el = document.getElementById('gl-wa-template');
     if (!el) return;
+    // local dulu biar cepat
     el.value = localStorage.getItem(WA_TEMPLATE_KEY) || DEFAULT_WA_TEMPLATE;
+    try {
+      const data = await api('getWaTemplate');
+      if (data.template && String(data.template).trim()) {
+        el.value = data.template;
+        localStorage.setItem(WA_TEMPLATE_KEY, data.template);
+      }
+    } catch (e) { /* fallback lokal */ }
   }
 
   async function api(action, extra) {
@@ -224,7 +244,8 @@
     const fp = (document.getElementById('gl-fp') || {}).checked;
     const fw = (document.getElementById('gl-fw') || {}).checked;
     const mr = +((document.getElementById('gl-fr') || {}).value || 0);
-    const sort = ((document.getElementById('gl-ts') || {}).value) || 'near';
+    const stFilter = ((document.getElementById('gl-st-filter') || {}).value) || '';
+    const sortSel = ((document.getElementById('gl-ts') || {}).value) || 'near';
 
     if (q) r = r.filter(function (p) {
       return [p.name, p.cat, p.addr, p.phone].join(' ').toLowerCase().indexOf(q) >= 0;
@@ -232,10 +253,53 @@
     if (fp) r = r.filter(function (p) { return p.phone && String(p.phone).trim(); });
     if (fw) r = r.filter(function (p) { return !p.web || !String(p.web).trim(); });
     if (mr) r = r.filter(function (p) { return (Number(p.rating) || 0) >= mr; });
-    if (sort === 'near') r.sort(function (a, b) { return (Number(a.dist) || 1e9) - (Number(b.dist) || 1e9); });
-    if (sort === 'rating') r.sort(function (a, b) { return (Number(b.rating) || -1) - (Number(a.rating) || -1); });
+    if (stFilter) {
+      r = r.filter(function (p) {
+        const st = (store[String(p.id)] && store[String(p.id)].st) || p.st || 'Baru';
+        return st === stFilter;
+      });
+    }
+
+    // Sort: thead click overrides dropdown
+    if (sortKey) {
+      r.sort(function (a, b) {
+        var va, vb;
+        if (sortKey === 'st') {
+          va = ((store[String(a.id)] && store[String(a.id)].st) || a.st || '');
+          vb = ((store[String(b.id)] && store[String(b.id)].st) || b.st || '');
+        } else if (sortKey === 'rating' || sortKey === 'dist' || sortKey === 'rev') {
+          va = Number(a[sortKey]) || 0;
+          vb = Number(b[sortKey]) || 0;
+          return (va - vb) * sortDir;
+        } else {
+          va = String(a[sortKey] || '').toLowerCase();
+          vb = String(b[sortKey] || '').toLowerCase();
+        }
+        if (va < vb) return -1 * sortDir;
+        if (va > vb) return 1 * sortDir;
+        return 0;
+      });
+    } else {
+      if (sortSel === 'near') r.sort(function (a, b) { return (Number(a.dist) || 1e9) - (Number(b.dist) || 1e9); });
+      if (sortSel === 'rating') r.sort(function (a, b) { return (Number(b.rating) || -1) - (Number(a.rating) || -1); });
+    }
     return r;
   }
+
+  window.glResetSort = function () { sortKey = ''; sortDir = 1; };
+  window.glSortBy = function (key) {
+    if (sortKey === key) sortDir = -sortDir;
+    else { sortKey = key; sortDir = 1; }
+    page = 1;
+    renderTable();
+    // update thead arrows
+    document.querySelectorAll('[data-gl-sort]').forEach(function (th) {
+      const k = th.getAttribute('data-gl-sort');
+      const base = th.getAttribute('data-label') || th.textContent.replace(/[↑↓]\s*$/, '').trim();
+      th.setAttribute('data-label', base);
+      th.innerHTML = base + (k === sortKey ? (sortDir === 1 ? ' ↑' : ' ↓') : '');
+    });
+  };
 
   function renderStats() {
     const set = function (id, v) { const el = document.getElementById(id); if (el) el.textContent = v; };
@@ -243,6 +307,31 @@
     set('gl-s2', searchResults.filter(function (p) { return p.phone; }).length);
     set('gl-s3', searchResults.filter(function (p) { return !p.web; }).length);
     set('gl-s4', Object.keys(store).length);
+    renderProspectDash();
+  }
+
+  function renderProspectDash() {
+    const set = function (id, v) { const el = document.getElementById(id); if (el) el.textContent = v; };
+    const list = Object.values(store);
+    set('dash-prospek-total', list.length);
+    const counts = {};
+    STATUS_LIST.forEach(function (s) { counts[s] = 0; });
+    list.forEach(function (p) {
+      const st = p.st || 'Baru';
+      counts[st] = (counts[st] || 0) + 1;
+    });
+    set('dash-prospek-baru', counts['Baru'] || 0);
+    set('dash-prospek-fu', (counts['Akan Dihubungi'] || 0) + (counts['Follow-up'] || 0));
+    set('dash-prospek-tertarik', counts['Tertarik'] || 0);
+    set('dash-prospek-closing', counts['Closing'] || 0);
+    set('dash-prospek-tolak', counts['Tidak Tertarik'] || 0);
+    // breakdown text
+    const br = document.getElementById('dash-prospek-breakdown');
+    if (br) {
+      br.innerHTML = STATUS_LIST.map(function (s) {
+        return '<div class="flex justify-between text-sm py-1 border-b border-gray-50"><span class="text-gray-500">' + s + '</span><span class="font-semibold">' + (counts[s] || 0) + '</span></div>';
+      }).join('');
+    }
   }
 
   function renderTable() {
@@ -309,7 +398,8 @@
         '</td>' +
         '<td class="px-3 py-2.5 whitespace-nowrap">' +
           (p.url ? '<a class="text-xs px-2 py-1 rounded border hover:border-orange mr-1" href="' + esc(p.url) + '" target="_blank" rel="noopener">Maps</a>' : '') +
-          (p.phone ? '<button type="button" class="text-xs px-2 py-1 rounded border hover:border-green-600 text-green-700" onclick="glOpenWa(\'' + esc(pid).replace(/'/g, "\\'") + '\')">WA</button>' : '') +
+          (p.phone ? '<button type="button" class="text-xs px-2 py-1 rounded border hover:border-green-600 text-green-700 mr-1" onclick="glOpenWa(\'' + esc(pid).replace(/'/g, "\\'") + '\')">WA</button>' : '') +
+          (store[pid] ? '<button type="button" class="text-xs px-2 py-1 rounded border border-red-200 text-red-600 hover:bg-red-50" onclick="glDeleteProspect(\'' + esc(pid).replace(/'/g, "\\'") + '\')" title="Hapus prospek">Hapus</button>' : '') +
         '</td></tr>';
     }).join('');
   }
@@ -450,7 +540,21 @@
           initWaTemplate();
           if (!Object.keys(store).length) loadProspects().catch(function () {});
         }
+        if (btn.dataset.tab === 'dashboard') {
+          if (!Object.keys(store).length) loadProspects().catch(function () {});
+          else renderProspectDash();
+        }
       });
     });
+    // Load prospek saat admin terbuka (dashboard default)
+    const adminScreen = document.getElementById('admin-screen');
+    if (adminScreen) {
+      const obs = new MutationObserver(function () {
+        if (!adminScreen.classList.contains('hidden') && !Object.keys(store).length) {
+          loadProspects().catch(function () {});
+        }
+      });
+      obs.observe(adminScreen, { attributes: true, attributeFilter: ['class'] });
+    }
   });
 })();
