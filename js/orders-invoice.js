@@ -8,7 +8,7 @@
   'use strict';
 
   // Harus sama dengan CONFIG.ADMIN_TOKEN di Code.gs
-  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzxRfPy9i_TeGQ5FVJK-9nuSuQQIr-F1zsSE7okUOiJIsJEk0EbJuuqd_SOGC8NP1M/exec';
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby-j-fk45s5ln5Pv66R9H9IAwRHuNNm-0yL1IkFGIGvwpLSRP9Pthd0EGPrfO6zJVHX/exec';
   const ADMIN_TOKEN = 'gasweb-admin-2026';
 
   let ordersCache = [];
