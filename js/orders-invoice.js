@@ -74,20 +74,61 @@
   function renderOrdersStats() {
     const total = ordersCache.length;
     let menunggu = 0, proses = 0, selesai = 0, belumBayar = 0;
+    let nilaiTotal = 0, nilaiBayar = 0;
     ordersCache.forEach(function (o) {
       const so = String(o['Status Order'] || '');
       const sp = String(o['Status Pembayaran'] || '');
+      const harga = Number(o['Harga Paket']) || 0;
+      nilaiTotal += harga;
+      if (/lunas/i.test(sp)) nilaiBayar += harga;
+      else if (/dp/i.test(sp)) nilaiBayar += Math.round(harga * 0.7);
+      else if (/sebagian/i.test(sp)) nilaiBayar += Math.round(harga * 0.5);
       if (/menunggu/i.test(so)) menunggu++;
       else if (/selesai|done|completed/i.test(so)) selesai++;
-      else proses++;
+      else if (/batal/i.test(so)) { /* skip from proses */ }
+      else if (so) proses++;
       if (/belum/i.test(sp)) belumBayar++;
     });
     const set = function (id, v) { const el = document.getElementById(id); if (el) el.textContent = v; };
+    // Orders tab stats
     set('ord-stat-total', total);
     set('ord-stat-menunggu', menunggu);
     set('ord-stat-proses', proses);
     set('ord-stat-selesai', selesai);
     set('ord-stat-belumbayar', belumBayar);
+    // Dashboard stats
+    set('dash-stat-total', total);
+    set('dash-stat-menunggu', menunggu);
+    set('dash-stat-proses', proses);
+    set('dash-stat-selesai', selesai);
+    set('dash-stat-belumbayar', belumBayar);
+    set('dash-nilai-total', formatRp(nilaiTotal));
+    set('dash-nilai-bayar', formatRp(nilaiBayar));
+    set('dash-nilai-sisa', formatRp(Math.max(0, nilaiTotal - nilaiBayar)));
+    renderDashboardRecent();
+  }
+
+  function renderDashboardRecent() {
+    const tbody = document.getElementById('dash-recent-body');
+    if (!tbody) return;
+    const list = ordersCache.slice(0, 8);
+    if (!list.length) {
+      tbody.innerHTML = '<tr><td colspan="5" class="text-center text-gray-400 py-8 text-sm">Belum ada order.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = list.map(function (o) {
+      const harga = Number(o['Harga Paket']) || 0;
+      const so = o['Status Order'] || '-';
+      return '<tr class="border-b border-gray-50 hover:bg-gray-50">' +
+        '<td class="py-2.5 pr-2 font-mono text-xs font-semibold text-navy">' + esc(o['Order ID'] || '') + '</td>' +
+        '<td class="py-2.5 pr-2"><div class="font-medium text-sm">' + esc(o['Nama Pemesan'] || '') + '</div>' +
+        '<div class="text-xs text-gray-400">' + esc(o['Nama Bisnis'] || '') + '</div></td>' +
+        '<td class="py-2.5 pr-2 text-xs">' + esc(o['Paket'] || '') + '</td>' +
+        '<td class="py-2.5 pr-2"><span class="text-[11px] px-2 py-0.5 rounded-full bg-gray-100">' + esc(so) + '</span></td>' +
+        '<td class="py-2.5 text-right text-sm font-semibold">' + (harga > 0 ? formatRp(harga) : 'Custom') + '</td></tr>';
+    }).join('');
+    const st = document.getElementById('dash-status');
+    if (st) st.textContent = ordersCache.length + ' order · diperbarui ' + new Date().toLocaleTimeString('id-ID');
   }
 
   function renderOrdersTable() {
@@ -426,15 +467,29 @@
     window.open('https://wa.me/' + wa + '?text=' + encodeURIComponent(msg), '_blank');
   };
 
-  // Hook: load orders when Orders tab clicked
+  // Hook: load orders when Dashboard / Orders tab clicked
   document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.tab-btn').forEach(function (btn) {
       btn.addEventListener('click', function () {
-        if (btn.dataset.tab === 'orders') {
+        const tab = btn.dataset.tab;
+        if (tab === 'orders' || tab === 'dashboard') {
           if (!ordersCache.length) loadOrders();
-          else { renderOrdersStats(); renderOrdersTable(); }
+          else {
+            renderOrdersStats();
+            if (tab === 'orders') renderOrdersTable();
+          }
         }
       });
     });
+    // Auto-load when admin screen becomes visible (default tab = dashboard)
+    const adminScreen = document.getElementById('admin-screen');
+    if (adminScreen) {
+      const obs = new MutationObserver(function () {
+        if (!adminScreen.classList.contains('hidden') && !ordersCache.length) {
+          loadOrders();
+        }
+      });
+      obs.observe(adminScreen, { attributes: true, attributeFilter: ['class'] });
+    }
   });
 })();
