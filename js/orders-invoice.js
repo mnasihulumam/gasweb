@@ -115,20 +115,39 @@
       return;
     }
 
-    tbody.innerHTML = list.map(function (o, idx) {
+    const statusOrderOpts = ['Menunggu Konfirmasi', 'Dikonfirmasi', 'On Progress', 'Revisi', 'Selesai', 'Dibatalkan'];
+    const statusBayarOpts = ['Belum Dibayar', 'DP Dibayar', 'Dibayar Sebagian', 'Lunas'];
+
+    function optHtml(opts, current) {
+      const cur = String(current || '').trim();
+      let found = false;
+      let html = opts.map(function (o) {
+        const sel = o === cur ? ' selected' : '';
+        if (sel) found = true;
+        return '<option value="' + esc(o) + '"' + sel + '>' + esc(o) + '</option>';
+      }).join('');
+      if (cur && !found) html = '<option value="' + esc(cur) + '" selected>' + esc(cur) + '</option>' + html;
+      return html;
+    }
+
+    tbody.innerHTML = list.map(function (o) {
       const id = esc(o['Order ID'] || '');
       const harga = Number(o['Harga Paket']) || 0;
       const realIdx = ordersCache.indexOf(o);
+      const so = o['Status Order'] || 'Menunggu Konfirmasi';
+      const sp = o['Status Pembayaran'] || 'Belum Dibayar';
       return '<tr class="border-b border-gray-100 hover:bg-orange-50/50">' +
         '<td class="px-3 py-2.5 text-xs font-mono font-semibold text-navy">' + id + '</td>' +
         '<td class="px-3 py-2.5 text-xs text-gray-500">' + esc(formatDateID(String(o['Timestamp'] || '').slice(0, 10))) + '</td>' +
         '<td class="px-3 py-2.5 text-sm"><div class="font-medium">' + esc(o['Nama Pemesan']) + '</div><div class="text-xs text-gray-500">' + esc(o['Nama Bisnis']) + '</div></td>' +
         '<td class="px-3 py-2.5 text-xs">' + esc(o['Paket']) + '</td>' +
         '<td class="px-3 py-2.5 text-sm font-semibold">' + (harga > 0 ? formatRp(harga) : 'Custom') + '</td>' +
-        '<td class="px-3 py-2.5"><span class="text-xs px-2 py-0.5 rounded-full bg-gray-100">' + esc(o['Status Order'] || '-') + '</span></td>' +
-        '<td class="px-3 py-2.5"><span class="text-xs px-2 py-0.5 rounded-full ' +
-          (/belum/i.test(o['Status Pembayaran'] || '') ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-700') +
-          '">' + esc(o['Status Pembayaran'] || '-') + '</span></td>' +
+        '<td class="px-3 py-2.5">' +
+          '<select class="text-xs border rounded-lg px-1.5 py-1 max-w-[150px] bg-white" onchange="updateOrderStatusField(' + realIdx + ',\'statusOrder\',this.value)">' +
+          optHtml(statusOrderOpts, so) + '</select></td>' +
+        '<td class="px-3 py-2.5">' +
+          '<select class="text-xs border rounded-lg px-1.5 py-1 max-w-[140px] bg-white" onchange="updateOrderStatusField(' + realIdx + ',\'statusPembayaran\',this.value)">' +
+          optHtml(statusBayarOpts, sp) + '</select></td>' +
         '<td class="px-3 py-2.5 text-xs text-gray-500">' + esc(o['Kota']) + '</td>' +
         '<td class="px-3 py-2.5 whitespace-nowrap">' +
           '<button type="button" onclick="openInvoiceFromOrder(' + realIdx + ')" class="px-2.5 py-1 rounded-lg bg-orange text-white text-xs font-semibold hover:bg-orange-600 mr-1">Invoice</button>' +
@@ -137,6 +156,44 @@
     }).join('');
   }
   window.renderOrdersTable = renderOrdersTable;
+
+  window.updateOrderStatusField = async function (idx, field, value) {
+    const o = ordersCache[idx];
+    if (!o || !o['Order ID']) return;
+    const orderId = o['Order ID'];
+    const prevOrder = o['Status Order'];
+    const prevPay = o['Status Pembayaran'];
+
+    if (field === 'statusOrder') o['Status Order'] = value;
+    if (field === 'statusPembayaran') o['Status Pembayaran'] = value;
+    renderOrdersStats();
+
+    const payload = {
+      action: 'updateStatus',
+      token: ADMIN_TOKEN,
+      orderId: orderId,
+      statusOrder: field === 'statusOrder' ? value : undefined,
+      statusPembayaran: field === 'statusPembayaran' ? value : undefined
+    };
+
+    try {
+      const res = await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message || 'Gagal update');
+      const st = document.getElementById('orders-status');
+      if (st) st.textContent = 'Status ' + orderId + ' diperbarui · ' + new Date().toLocaleTimeString('id-ID');
+    } catch (err) {
+      o['Status Order'] = prevOrder;
+      o['Status Pembayaran'] = prevPay;
+      renderOrdersTable();
+      renderOrdersStats();
+      alert('Gagal update status: ' + (err.message || err));
+    }
+  };
 
   window.waOrder = function (idx) {
     const o = ordersCache[idx];
