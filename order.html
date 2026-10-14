@@ -477,39 +477,8 @@
 
         <div class="form-group" id="group-paket">
           <label>Pilih Paket <span class="required">*</span></label>
-          <div class="packages">
-            <label class="package-option" data-package="Landing Page Starter">
-              <input type="radio" name="paket" value="Landing Page Starter" required>
-              <div class="package-header">
-                <div class="package-name">Landing Page Starter</div>
-                <div class="package-price">Rp1.999.000</div>
-              </div>
-              <div class="package-features">
-                Landing page responsif • Profil bisnis & layanan • Integrasi WhatsApp • SEO dasar • Domain + hosting 1 tahun
-              </div>
-            </label>
-
-            <label class="package-option" data-package="Company Profile Business">
-              <input type="radio" name="paket" value="Company Profile Business">
-              <div class="package-header">
-                <div class="package-name">Company Profile Business</div>
-                <div class="package-price">Rp2.999.000</div>
-              </div>
-              <div class="package-features">
-                Website company profile • Profil & layanan • Galeri/portofolio • Integrasi WhatsApp • SEO dasar • Domain + hosting 1 tahun • Support 30 hari
-              </div>
-            </label>
-
-            <label class="package-option" data-package="Website Custom">
-              <input type="radio" name="paket" value="Website Custom">
-              <div class="package-header">
-                <div class="package-name">Website Custom</div>
-                <div class="package-price">Harga setelah konsultasi</div>
-              </div>
-              <div class="package-features">
-                Solusi sesuai kebutuhan spesifik. Harga final ditentukan setelah diskusi kebutuhan.
-              </div>
-            </label>
+          <div class="packages" id="packages-container">
+            <p id="packages-loading" style="color: var(--gray-text); font-size: 0.9rem; padding: 12px 0;">Memuat paket...</p>
           </div>
           <div class="error-msg">Silakan pilih salah satu paket.</div>
         </div>
@@ -655,6 +624,9 @@
     </div>
   </div>
 
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
   <script>
     // ============================================================
     // KONFIGURASI — ISI NILAI INI
@@ -662,12 +634,18 @@
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby-j-fk45s5ln5Pv66R9H9IAwRHuNNm-0yL1IkFGIGvwpLSRP9Pthd0EGPrfO6zJVHX/exec";   // Hasil deploy Web App
     const ADMIN_WHATSAPP  = "6285111429032";                    // Nomor WhatsApp admin (format 62...)
 
-    // Harga paket (bisa diubah di sini)
-    const PACKAGE_PRICES = {
-      "Landing Page Starter": 1999000,
-      "Company Profile Business": 2999000,
-      "Website Custom": 0
-    };
+    // REST endpoint publik (bisa dipakai tanpa Firebase SDK)
+    const PACKAGES_REST_URL = "https://gasweb-id-default-rtdb.asia-southeast1.firebasedatabase.app/packages.json";
+
+    // Fallback terakhir jika REST + SDK gagal
+    const DEFAULT_PACKAGES = [
+      { name: 'Website Ekonomis', badge: 'Paling Hemat', price: 'Rp 999k', description: 'Website profesional dengan harga terjangkau', features: ['Desain website statis 1 halaman (maks. 5 section)', 'Gratis domain tahun pertama (.COM / .MY.ID / .BIZ.ID)', 'Hosting gratis tanpa biaya bulanan*', 'Mobile responsive', 'Integrasi WhatsApp', 'Basic SEO', '2x revisi', 'Garansi bug 30 hari'], isPopular: false },
+      { name: 'Landing Page', badge: 'Starter', price: 'Rp 1.999k', description: 'Cocok untuk promosi produk atau jasa fokus konversi.', features: ['Desain modern 1 halaman (maks. 10 section)', 'Gratis domain tahun pertama (.COM / .MY.ID / .BIZ.ID)', 'Hosting 1 tahun', 'Mobile responsive', 'Integrasi WhatsApp', 'Basic SEO', '2x revisi', 'Garansi bug 30 hari'], isPopular: true },
+      { name: 'Company Profile', badge: 'Business', price: 'Rp 2.999k', description: 'Tampilkan bisnis secara profesional', features: ['Maks. 5 halaman profesional', 'Gratis domain tahun pertama (.COM / .MY.ID / .BIZ.ID)', 'Hosting 1 tahun', 'Mobile responsive', 'SEO dasar + WhatsApp', 'Galeri & halaman layanan', '3x revisi', 'Support 1 bulan', 'Garansi bug 30 hari'], isPopular: false }
+    ];
+
+    // Map nama paket → harga numerik (diisi saat render dari Firebase)
+    let PACKAGE_PRICES = {};
 
     // ============================================================
     // UTILITIES
@@ -675,6 +653,41 @@
     function formatRupiah(num) {
       if (num === 0) return "Menunggu penawaran";
       return "Rp" + num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    /** Parse string harga Firebase → angka. Contoh: "Rp1.999.000", "Rp 999k", "Custom" → 0 */
+    function parsePrice(priceStr) {
+      if (priceStr == null) return 0;
+      const s = String(priceStr).trim().toLowerCase();
+      if (!s || /custom|konsultasi|penawaran|hubungi|tbd|n\/a/.test(s)) return 0;
+      // "999k" / "1.5jt" / "2rb"
+      const kMatch = s.match(/([\d.,]+)\s*(k|rb|ribu)\b/);
+      if (kMatch) {
+        const n = parseFloat(kMatch[1].replace(/\./g, "").replace(",", "."));
+        return isNaN(n) ? 0 : Math.round(n * 1000);
+      }
+      const jtMatch = s.match(/([\d.,]+)\s*(jt|juta)\b/);
+      if (jtMatch) {
+        const n = parseFloat(jtMatch[1].replace(/\./g, "").replace(",", "."));
+        return isNaN(n) ? 0 : Math.round(n * 1000000);
+      }
+      // Ambil digit saja (abaikan titik pemisah ribuan)
+      const digits = s.replace(/[^\d]/g, "");
+      const num = parseInt(digits, 10);
+      return isNaN(num) ? 0 : num;
+    }
+
+    function packageDisplayName(pkg) {
+      // Pakai nama paket saja (badge ditampilkan terpisah di UI)
+      return (pkg.name || pkg.badge || "Paket").trim();
+    }
+
+    function escapeHtml(str) {
+      return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
     }
 
     function normalizeWhatsApp(num) {
@@ -694,40 +707,161 @@
     }
 
     // ============================================================
-    // PACKAGE SELECTION & PRICE DISPLAY
+    // PACKAGE SELECTION & PRICE DISPLAY (dari Firebase)
     // ============================================================
-    const packageOptions = document.querySelectorAll(".package-option");
+    const packagesContainer = document.getElementById("packages-container");
     const paymentBox = document.getElementById("paymentBox");
 
-    packageOptions.forEach(opt => {
-      opt.addEventListener("click", () => {
-        packageOptions.forEach(o => o.classList.remove("selected"));
-        opt.classList.add("selected");
-        opt.querySelector("input").checked = true;
-
-        const paket = opt.dataset.package;
-        const harga = PACKAGE_PRICES[paket] || 0;
-
-        if (paket === "Website Custom") {
-          document.getElementById("displayHarga").textContent = "Menunggu penawaran";
-          document.getElementById("displayDP").textContent = "-";
-          document.getElementById("displayPelunasan").textContent = "-";
-          document.getElementById("displayTotal").textContent = "-";
-          document.getElementById("paymentNote").textContent =
-            "Untuk paket Website Custom, pembayaran mengikuti penawaran final setelah konsultasi dengan admin.";
-        } else {
-          const dp = Math.round(harga * 0.7);
-          const pelunasan = harga - dp;
-          document.getElementById("displayHarga").textContent = formatRupiah(harga);
-          document.getElementById("displayDP").textContent = formatRupiah(dp);
-          document.getElementById("displayPelunasan").textContent = formatRupiah(pelunasan);
-          document.getElementById("displayTotal").textContent = formatRupiah(harga);
-          document.getElementById("paymentNote").textContent =
-            "Pembayaran baru dilakukan setelah penawaran dikonfirmasi oleh admin GasWeb. DP 70% dibayar di awal, pelunasan 30% setelah website selesai.";
+    function selectPackage(paketName) {
+      if (!paketName) return false;
+      const packageOptions = document.querySelectorAll(".package-option");
+      const normalized = paketName.trim().toLowerCase();
+      let matched = null;
+      packageOptions.forEach(opt => {
+        const name = (opt.dataset.package || "").trim();
+        if (
+          name.toLowerCase() === normalized ||
+          name.toLowerCase().includes(normalized) ||
+          normalized.includes(name.toLowerCase())
+        ) {
+          matched = opt;
         }
-        paymentBox.classList.add("visible");
       });
-    });
+      if (!matched) return false;
+
+      packageOptions.forEach(o => o.classList.remove("selected"));
+      matched.classList.add("selected");
+      matched.querySelector("input").checked = true;
+
+      const paket = matched.dataset.package;
+      const harga = PACKAGE_PRICES[paket] || 0;
+
+      if (harga <= 0) {
+        document.getElementById("displayHarga").textContent = "Menunggu penawaran";
+        document.getElementById("displayDP").textContent = "-";
+        document.getElementById("displayPelunasan").textContent = "-";
+        document.getElementById("displayTotal").textContent = "-";
+        document.getElementById("paymentNote").textContent =
+          "Untuk paket ini, pembayaran mengikuti penawaran final setelah konsultasi dengan admin.";
+      } else {
+        const dp = Math.round(harga * 0.7);
+        const pelunasan = harga - dp;
+        document.getElementById("displayHarga").textContent = formatRupiah(harga);
+        document.getElementById("displayDP").textContent = formatRupiah(dp);
+        document.getElementById("displayPelunasan").textContent = formatRupiah(pelunasan);
+        document.getElementById("displayTotal").textContent = formatRupiah(harga);
+        document.getElementById("paymentNote").textContent =
+          "Pembayaran baru dilakukan setelah penawaran dikonfirmasi oleh admin GasWeb. DP 70% dibayar di awal, pelunasan 30% setelah website selesai.";
+      }
+      paymentBox.classList.add("visible");
+      return true;
+    }
+
+    function bindPackageClicks() {
+      document.querySelectorAll(".package-option").forEach(opt => {
+        opt.addEventListener("click", () => {
+          selectPackage(opt.dataset.package);
+        });
+      });
+    }
+
+    function renderPackages(packages) {
+      const list = Array.isArray(packages) ? packages : Object.values(packages || {});
+      PACKAGE_PRICES = {};
+
+      if (!list.length) {
+        packagesContainer.innerHTML = '<p style="color: var(--gray-text); font-size: 0.9rem;">Belum ada paket tersedia. Hubungi admin.</p>';
+        return;
+      }
+
+      packagesContainer.innerHTML = list.map((pkg, i) => {
+        const displayName = packageDisplayName(pkg);
+        const priceLabel = (pkg.price || "").trim() || "Harga setelah konsultasi";
+        const hargaNum = parsePrice(pkg.price);
+        PACKAGE_PRICES[displayName] = hargaNum;
+
+        const features = Array.isArray(pkg.features) ? pkg.features : [];
+        const featuresText = features.length
+          ? features.join(" • ")
+          : (pkg.description || "");
+        const badge = (pkg.badge || "").trim();
+        const badgeHtml = badge
+          ? `<div style="font-size:0.7rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;">${escapeHtml(badge)}</div>`
+          : "";
+
+        return `
+          <label class="package-option" data-package="${escapeHtml(displayName)}" data-price="${hargaNum}">
+            <input type="radio" name="paket" value="${escapeHtml(displayName)}" ${i === 0 ? "required" : ""}>
+            <div class="package-header">
+              <div>
+                ${badgeHtml}
+                <div class="package-name">${escapeHtml(displayName)}</div>
+              </div>
+              <div class="package-price">${escapeHtml(priceLabel)}</div>
+            </div>
+            <div class="package-features">${escapeHtml(featuresText)}</div>
+          </label>
+        `;
+      }).join("");
+
+      bindPackageClicks();
+
+      // Auto-select dari URL setelah paket ter-render
+      const params = new URLSearchParams(window.location.search);
+      const paketParam = params.get("paket") || params.get("package") || params.get("p");
+      if (paketParam) {
+        selectPackage(decodeURIComponent(paketParam));
+      }
+    }
+
+    function loadPackagesFromFirebase() {
+      // 1) Coba Firebase SDK (kalau script + config ke-load)
+      function trySdk() {
+        return new Promise((resolve, reject) => {
+          try {
+            if (typeof db === "undefined" || !db) {
+              reject(new Error("Firebase db tidak tersedia"));
+              return;
+            }
+            db.ref("packages").once("value")
+              .then(snap => {
+                const val = snap.val();
+                if (val) resolve(val);
+                else reject(new Error("packages kosong"));
+              })
+              .catch(reject);
+          } catch (e) {
+            reject(e);
+          }
+        });
+      }
+
+      // 2) Fallback: REST API publik (jalan meski buka file lokal / SDK gagal)
+      function tryRest() {
+        return fetch(PACKAGES_REST_URL)
+          .then(r => {
+            if (!r.ok) throw new Error("REST status " + r.status);
+            return r.json();
+          })
+          .then(val => {
+            if (!val) throw new Error("REST packages kosong");
+            return val;
+          });
+      }
+
+      trySdk()
+        .catch(err => {
+          console.warn("SDK gagal, coba REST:", err && err.message);
+          return tryRest();
+        })
+        .then(val => renderPackages(val))
+        .catch(err => {
+          console.warn("REST juga gagal, pakai default:", err && err.message);
+          renderPackages(DEFAULT_PACKAGES);
+        });
+    }
+
+    loadPackagesFromFirebase();
 
     // ============================================================
     // VALIDATION
