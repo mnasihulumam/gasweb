@@ -8,10 +8,13 @@
   'use strict';
 
   // Harus sama dengan CONFIG.ADMIN_TOKEN di Code.gs
-  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby-j-fk45s5ln5Pv66R9H9IAwRHuNNm-0yL1IkFGIGvwpLSRP9Pthd0EGPrfO6zJVHX/exec';
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzpz6EeywSpKqUhlu0Fw0Lk7OppyD-PNCYONZszCiuNFdroGAVZCacWozrUKwIG-q5c/exec';
   const ADMIN_TOKEN = 'gasweb-admin-2026';
 
   let ordersCache = [];
+  let paymentsByOrder = {};   // { orderId: [payment, ...] }
+  let paymentsError = '';
+  let payBusy = false;
   let currentOrder = null;
   let invItems = [];
 
@@ -45,6 +48,11 @@
     return 'INV/GW/' + new Date().getFullYear() + '/' + String(n).padStart(3, '0');
   }
 
+  function paidTotal(o) {
+    const list = paymentsByOrder[o['Order ID']] || [];
+    return list.reduce(function (t, p) { return t + (Number(p['Jumlah']) || 0); }, 0);
+  }
+
   // ---------- Load orders ----------
   async function loadOrders() {
     const statusEl = document.getElementById('orders-status');
@@ -54,10 +62,27 @@
 
     try {
       const url = APPS_SCRIPT_URL + '?action=listOrders&token=' + encodeURIComponent(ADMIN_TOKEN);
-      const res = await fetch(url);
+      const [res, payRes] = await Promise.all([
+        fetch(url),
+        fetch(APPS_SCRIPT_URL + '?action=listPayments&token=' + encodeURIComponent(ADMIN_TOKEN)).catch(function () { return null; })
+      ]);
       const data = await res.json();
       if (!data.success) throw new Error(data.message || 'Gagal memuat');
       ordersCache = data.orders || [];
+
+      // Riwayat pembayaran (opsional: kalau Code.gs belum di-deploy ulang, order tetap tampil)
+      paymentsByOrder = {};
+      paymentsError = '';
+      try {
+        const pd = payRes ? await payRes.json() : null;
+        if (!pd || !pd.success) throw new Error((pd && pd.message) || 'listPayments belum tersedia');
+        (pd.payments || []).forEach(function (pm) {
+          const k = pm['Order ID'];
+          (paymentsByOrder[k] = paymentsByOrder[k] || []).push(pm);
+        });
+      } catch (pe) {
+        paymentsError = pe.message || 'Gagal memuat riwayat pembayaran';
+      }
       renderOrdersStats();
       renderOrdersTable();
       if (statusEl) statusEl.textContent = ordersCache.length + ' order dimuat · ' + new Date().toLocaleTimeString('id-ID');
@@ -80,7 +105,9 @@
       const sp = String(o['Status Pembayaran'] || '');
       const harga = Number(o['Harga Paket']) || 0;
       nilaiTotal += harga;
-      if (/lunas/i.test(sp)) nilaiBayar += harga;
+      const pays = paymentsByOrder[o['Order ID']];
+      if (pays && pays.length) nilaiBayar += paidTotal(o);   // riwayat pembayaran nyata
+      else if (/lunas/i.test(sp)) nilaiBayar += harga;      // fallback: estimasi dari status
       else if (/dp/i.test(sp)) nilaiBayar += Math.round(harga * 0.7);
       else if (/sebagian/i.test(sp)) nilaiBayar += Math.round(harga * 0.5);
       if (/menunggu/i.test(so)) menunggu++;
@@ -192,6 +219,7 @@
         '<td class="px-3 py-2.5 text-xs text-gray-500">' + esc(o['Kota']) + '</td>' +
         '<td class="px-3 py-2.5 whitespace-nowrap">' +
           '<button type="button" onclick="openOrderDetail(' + realIdx + ')" class="px-2.5 py-1 rounded-lg border border-navy text-navy text-xs font-semibold hover:bg-navy hover:text-white mr-1">Detail</button>' +
+          '<button type="button" onclick="openOrderDetail(' + realIdx + ',true)" class="px-2.5 py-1 rounded-lg border border-green-600 text-green-700 text-xs font-semibold hover:bg-green-600 hover:text-white mr-1">Bayar</button>' +
           '<button type="button" onclick="openInvoiceFromOrder(' + realIdx + ')" class="px-2.5 py-1 rounded-lg bg-orange text-white text-xs font-semibold hover:bg-orange-600 mr-1">Invoice</button>' +
           '<button type="button" onclick="waOrder(' + realIdx + ')" class="px-2.5 py-1 rounded-lg border text-xs font-medium hover:border-orange hover:text-orange">WA</button>' +
         '</td></tr>';
@@ -247,19 +275,21 @@
     window.open('https://wa.me/' + wa + '?text=' + encodeURIComponent(msg), '_blank');
   };
 
-  // ---------- Detail order (semua isian dari order.html) ----------
+  // ---------- Detail order (semua isian dari order.html + riwayat pembayaran) ----------
   const DETAIL_GROUPS = [
-    { title: 'Data Pemesan', match: /order id|timestamp|tanggal|nama pemesan|^nama$|nama bisnis|bisnis|whatsapp|^wa$|email|kota/i },
-    { title: 'Paket & Pembayaran', match: /paket|harga|dp|pelunasan|total|status|bayar/i },
-    { title: 'Kebutuhan Website', match: /jenis|tujuan|fitur|referensi|deskripsi|target|materi|domain|setuju|catatan/i }
+    { title: 'Data Pemesan', keys: ['Order ID', 'Timestamp', 'Nama Pemesan', 'Nama Bisnis', 'Nomor WhatsApp', 'Email', 'Kota'] },
+    { title: 'Paket & Pembayaran', keys: ['Paket', 'Harga Paket', 'Estimasi DP', 'Estimasi Pelunasan', 'Status Order', 'Status Pembayaran'] },
+    { title: 'Kebutuhan Website', keys: ['Jenis Bisnis', 'Tujuan Website', 'Fitur', 'Referensi Website', 'Deskripsi Kebutuhan', 'Target Pengerjaan', 'Status Materi', 'Preferensi Domain'] }
   ];
+  const MONEY_KEYS = ['Harga Paket', 'Estimasi DP', 'Estimasi Pelunasan'];
+  const PAY_METHODS = ['Transfer Bank', 'QRIS / E-Wallet', 'Tunai', 'Lainnya'];
 
   function detailValueHtml(key, val) {
     const v = val == null ? '' : String(val).trim();
-    if (!v) return '<span class="text-gray-300">-</span>';
-    if (/harga|dp|pelunasan|total/i.test(key) && /^\d+(\.\d+)?$/.test(v)) {
-      return Number(v) > 0 ? esc(formatRp(v)) : 'Custom / belum ditentukan';
+    if (MONEY_KEYS.indexOf(key) >= 0) {
+      return Number(v) > 0 ? esc(formatRp(v)) : '<span class="text-gray-400">Belum ditentukan</span>';
     }
+    if (!v) return '<span class="text-gray-300">-</span>';
     if (/^https?:\/\//i.test(v)) {
       return '<a href="' + esc(v) + '" target="_blank" rel="noopener" class="text-orange underline break-all">' + esc(v) + '</a>';
     }
@@ -270,7 +300,74 @@
     return esc(v).replace(/\n/g, '<br>');
   }
 
-  window.openOrderDetail = function (idx) {
+  function paymentSectionHtml(idx, o) {
+    const id = o['Order ID'];
+    const list = paymentsByOrder[id] || [];
+    const harga = Number(o['Harga Paket']) || 0;
+    const dp = Number(o['Estimasi DP']) || 0;
+    const paid = paidTotal(o);
+    const sisa = Math.max(0, harga - paid);
+    const lebih = harga > 0 && paid > harga ? paid - harga : 0;
+    const inp = 'w-full px-2 py-1.5 border rounded-lg text-sm bg-white';
+
+    let html = '<div id="od-pay" class="mb-5 rounded-xl border border-gray-200 p-4 bg-gray-50/60">' +
+      '<h4 class="text-[11px] font-bold uppercase tracking-wide text-gray-400 mb-3">Riwayat Pembayaran</h4>';
+
+    if (paymentsError) {
+      html += '<div class="mb-3 text-xs rounded-lg bg-red-50 text-red-600 px-3 py-2">Riwayat pembayaran belum bisa dimuat (' + esc(paymentsError) + '). Pastikan Code.gs terbaru sudah di-deploy sebagai versi baru.</div>';
+    }
+
+    // ringkasan
+    html += '<div class="grid grid-cols-3 gap-2 mb-3">' +
+      '<div class="rounded-lg bg-white border p-2"><div class="text-[10px] uppercase text-gray-400">Total</div><div class="text-sm font-bold">' + (harga > 0 ? formatRp(harga) : '<span class="text-gray-400 font-medium">Belum ada</span>') + '</div></div>' +
+      '<div class="rounded-lg bg-white border p-2"><div class="text-[10px] uppercase text-green-600">Terbayar</div><div class="text-sm font-bold text-green-600">' + formatRp(paid) + '</div></div>' +
+      '<div class="rounded-lg bg-white border p-2"><div class="text-[10px] uppercase text-red-500">Sisa</div><div class="text-sm font-bold text-red-500">' + (harga > 0 ? formatRp(sisa) : '-') + '</div></div>' +
+      '</div>';
+    if (lebih) html += '<div class="mb-2 text-xs text-amber-600">Terbayar melebihi total sebesar ' + esc(formatRp(lebih)) + '.</div>';
+    if (!list.length && /lunas|dp|sebagian/i.test(o['Status Pembayaran'] || '') && !/belum/i.test(o['Status Pembayaran'] || '')) {
+      html += '<div class="mb-2 text-xs text-gray-500">Status sudah "' + esc(o['Status Pembayaran']) + '" tetapi belum ada transaksi tercatat. Catat pembayarannya di bawah agar riwayat lengkap.</div>';
+    }
+
+    // harga disepakati
+    html += '<div class="flex items-end gap-2 mb-4">' +
+      '<div class="flex-1"><label class="text-xs text-gray-500">Harga disepakati (Rp)</label>' +
+      '<input id="pay-harga" type="number" min="0" step="1000" value="' + (harga || '') + '" placeholder="mis. 1500000" class="' + inp + '"></div>' +
+      '<button type="button" onclick="saveHargaFromModal(' + idx + ')" class="px-3 py-1.5 rounded-lg border text-xs font-semibold hover:border-orange hover:text-orange">Simpan harga</button></div>';
+
+    // daftar transaksi
+    if (list.length) {
+      html += '<div class="overflow-x-auto mb-4"><table class="w-full text-sm"><thead><tr class="text-left text-[11px] uppercase text-gray-400">' +
+        '<th class="py-1 pr-2">Tanggal</th><th class="py-1 pr-2">Metode</th><th class="py-1 pr-2">Catatan</th><th class="py-1 pr-2 text-right">Jumlah</th><th></th></tr></thead><tbody>' +
+        list.map(function (pm) {
+          return '<tr class="border-t border-gray-200">' +
+            '<td class="py-1.5 pr-2 whitespace-nowrap">' + esc(formatDateID(pm['Tanggal'])) + '</td>' +
+            '<td class="py-1.5 pr-2 text-xs">' + esc(pm['Metode'] || '-') + '</td>' +
+            '<td class="py-1.5 pr-2 text-xs text-gray-500">' + esc(pm['Catatan'] || '') + '</td>' +
+            '<td class="py-1.5 pr-2 text-right font-semibold whitespace-nowrap">' + esc(formatRp(pm['Jumlah'])) + '</td>' +
+            '<td class="py-1.5 text-right"><button type="button" title="Hapus transaksi" onclick="deletePaymentFromModal(' + idx + ',\'' + esc(pm['Payment ID']) + '\')" class="text-gray-300 hover:text-red-500 text-base leading-none">&times;</button></td></tr>';
+        }).join('') + '</tbody></table></div>';
+    } else {
+      html += '<div class="mb-4 text-xs text-gray-400">Belum ada transaksi tercatat.</div>';
+    }
+
+    // form tambah
+    html += '<div class="rounded-lg bg-white border p-3"><div class="text-xs font-semibold mb-2">Catat pembayaran baru</div>' +
+      '<div class="grid grid-cols-2 gap-2 mb-2">' +
+        '<div><label class="text-xs text-gray-500">Tanggal bayar</label><input id="pay-date" type="date" value="' + todayStr() + '" class="' + inp + '"></div>' +
+        '<div><label class="text-xs text-gray-500">Jumlah (Rp)</label><input id="pay-amount" type="number" min="1" step="1000" placeholder="0" class="' + inp + '"></div>' +
+        '<div><label class="text-xs text-gray-500">Metode</label><select id="pay-method" class="' + inp + '">' +
+          PAY_METHODS.map(function (m) { return '<option>' + esc(m) + '</option>'; }).join('') + '</select></div>' +
+        '<div><label class="text-xs text-gray-500">Catatan (opsional)</label><input id="pay-note" type="text" maxlength="200" placeholder="mis. DP 70%" class="' + inp + '"></div>' +
+      '</div>' +
+      '<div class="flex items-center gap-2 flex-wrap">' +
+        '<button type="button" onclick="addPaymentFromModal(' + idx + ')" class="px-3 py-1.5 rounded-lg bg-orange text-white text-xs font-semibold hover:bg-orange-600">+ Catat pembayaran</button>' +
+        (dp > 0 ? '<button type="button" onclick="fillPayAmount(' + dp + ',\'DP\')" class="px-2 py-1 rounded-lg border text-xs hover:border-orange">Isi DP (' + esc(formatRp(dp)) + ')</button>' : '') +
+        (harga > 0 && sisa > 0 ? '<button type="button" onclick="fillPayAmount(' + sisa + ',\'Pelunasan\')" class="px-2 py-1 rounded-lg border text-xs hover:border-orange">Isi sisa (' + esc(formatRp(sisa)) + ')</button>' : '') +
+      '</div></div></div>';
+    return html;
+  }
+
+  function renderOrderDetailModal(idx, focusPay) {
     const o = ordersCache[idx];
     if (!o) return;
     currentOrder = o;
@@ -284,25 +381,29 @@
       document.body.appendChild(modal);
       document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeOrderDetail(); });
     }
+    const prevBody = document.getElementById('od-body');
+    const prevScroll = prevBody ? prevBody.scrollTop : 0;
 
-    // Kelompokkan semua kolom order (tanpa menyembunyikan apa pun)
     const keys = Object.keys(o);
     const used = {};
     const groups = DETAIL_GROUPS.map(function (g) {
-      const ks = keys.filter(function (k) { if (used[k]) return false; if (g.match.test(k)) { used[k] = true; return true; } return false; });
+      const ks = g.keys.filter(function (k) { return keys.indexOf(k) >= 0; });
+      ks.forEach(function (k) { used[k] = true; });
       return { title: g.title, keys: ks };
     });
     const rest = keys.filter(function (k) { return !used[k]; });
     if (rest.length) groups.push({ title: 'Data Lainnya', keys: rest });
 
     const body = groups.filter(function (g) { return g.keys.length; }).map(function (g) {
-      return '<div class="mb-5"><h4 class="text-[11px] font-bold uppercase tracking-wide text-gray-400 mb-2">' + esc(g.title) + '</h4>' +
+      let html = '<div class="mb-5"><h4 class="text-[11px] font-bold uppercase tracking-wide text-gray-400 mb-2">' + esc(g.title) + '</h4>' +
         '<dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">' +
         g.keys.map(function (k) {
           const long = String(o[k] || '').length > 60 || /tujuan|fitur|deskripsi/i.test(k);
           return '<div class="' + (long ? 'sm:col-span-2' : '') + '"><dt class="text-xs text-gray-500">' + esc(k) + '</dt>' +
             '<dd class="text-sm font-medium text-gray-800 mt-0.5">' + detailValueHtml(k, o[k]) + '</dd></div>';
         }).join('') + '</dl></div>';
+      if (g.title === 'Paket & Pembayaran') html += paymentSectionHtml(idx, o);
+      return html;
     }).join('');
 
     modal.innerHTML =
@@ -312,7 +413,7 @@
           '<p class="text-xs font-mono text-gray-500">' + esc(o['Order ID'] || '') + '</p></div>' +
           '<button type="button" onclick="closeOrderDetail()" class="text-gray-400 hover:text-gray-700 text-xl leading-none" aria-label="Tutup">&times;</button>' +
         '</div>' +
-        '<div class="px-5 py-4 overflow-y-auto">' + body + '</div>' +
+        '<div id="od-body" class="px-5 py-4 overflow-y-auto">' + body + '</div>' +
         '<div class="flex gap-2 justify-end px-5 py-3 border-t bg-gray-50 rounded-b-2xl">' +
           '<button type="button" onclick="waOrder(' + idx + ')" class="px-3 py-1.5 rounded-lg border text-sm font-medium hover:border-orange hover:text-orange">WA</button>' +
           '<button type="button" onclick="closeOrderDetail();openInvoiceFromOrder(' + idx + ')" class="px-3 py-1.5 rounded-lg bg-orange text-white text-sm font-semibold hover:bg-orange-600">Buat Invoice</button>' +
@@ -320,11 +421,111 @@
       '</div>';
     modal.classList.remove('hidden');
     modal.classList.add('flex');
-  };
+    modal.dataset.idx = String(idx);
 
+    const bodyEl = document.getElementById('od-body');
+    if (focusPay) {
+      const pay = document.getElementById('od-pay');
+      if (pay) bodyEl.scrollTop = pay.offsetTop - 8;
+    } else {
+      bodyEl.scrollTop = prevScroll;
+    }
+  }
+
+  window.openOrderDetail = function (idx, focusPay) { renderOrderDetailModal(idx, !!focusPay); };
   window.closeOrderDetail = function () {
     const m = document.getElementById('order-detail-modal');
     if (m) { m.classList.add('hidden'); m.classList.remove('flex'); }
+  };
+
+  async function postAdmin(payload) {
+    payload.token = ADMIN_TOKEN;
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message || 'Permintaan gagal');
+    return data;
+  }
+
+  function afterPaymentChange(idx) {
+    renderOrdersTable();
+    renderOrdersStats();
+    renderOrderDetailModal(idx, false);
+  }
+
+  window.fillPayAmount = function (n, note) {
+    const a = document.getElementById('pay-amount');
+    const nt = document.getElementById('pay-note');
+    if (a) a.value = n;
+    if (nt && !nt.value) nt.value = note || '';
+  };
+
+  window.addPaymentFromModal = async function (idx) {
+    const o = ordersCache[idx];
+    if (!o || payBusy) return;
+    const tanggal = (document.getElementById('pay-date') || {}).value || '';
+    const jumlah = Number((document.getElementById('pay-amount') || {}).value);
+    const metode = (document.getElementById('pay-method') || {}).value || '';
+    const catatan = (document.getElementById('pay-note') || {}).value || '';
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(tanggal)) { alert('Tanggal bayar belum diisi.'); return; }
+    if (!(jumlah > 0)) { alert('Jumlah pembayaran harus lebih dari 0.'); return; }
+
+    payBusy = true;
+    try {
+      const data = await postAdmin({ action: 'addPayment', orderId: o['Order ID'], tanggal: tanggal, jumlah: jumlah, metode: metode, catatan: catatan });
+      const id = o['Order ID'];
+      (paymentsByOrder[id] = paymentsByOrder[id] || []).push(data.payment);
+      paymentsByOrder[id].sort(function (a, b) { return String(a['Tanggal'] + a['Dicatat Pada']).localeCompare(String(b['Tanggal'] + b['Dicatat Pada'])); });
+      if (data.statusPembayaran) o['Status Pembayaran'] = data.statusPembayaran;
+      paymentsError = '';
+      afterPaymentChange(idx);
+    } catch (err) {
+      alert('Gagal mencatat pembayaran: ' + (err.message || err));
+    } finally {
+      payBusy = false;
+    }
+  };
+
+  window.deletePaymentFromModal = async function (idx, paymentId) {
+    const o = ordersCache[idx];
+    if (!o || payBusy) return;
+    if (!confirm('Hapus transaksi ini dari riwayat pembayaran?')) return;
+    payBusy = true;
+    try {
+      const data = await postAdmin({ action: 'deletePayment', paymentId: paymentId });
+      const id = o['Order ID'];
+      paymentsByOrder[id] = (paymentsByOrder[id] || []).filter(function (p) { return p['Payment ID'] !== paymentId; });
+      if (data.statusPembayaran) o['Status Pembayaran'] = data.statusPembayaran;
+      afterPaymentChange(idx);
+    } catch (err) {
+      alert('Gagal menghapus: ' + (err.message || err));
+    } finally {
+      payBusy = false;
+    }
+  };
+
+  window.saveHargaFromModal = async function (idx) {
+    const o = ordersCache[idx];
+    if (!o || payBusy) return;
+    const raw = (document.getElementById('pay-harga') || {}).value;
+    const harga = Number(raw);
+    if (raw === '' || isNaN(harga) || harga < 0) { alert('Isi harga dengan angka yang valid.'); return; }
+    payBusy = true;
+    try {
+      const data = await postAdmin({ action: 'setHarga', orderId: o['Order ID'], harga: harga });
+      o['Harga Paket'] = data.harga;
+      o['Estimasi DP'] = data.dp;
+      o['Estimasi Pelunasan'] = data.pelunasan;
+      if (data.statusPembayaran) o['Status Pembayaran'] = data.statusPembayaran;
+      afterPaymentChange(idx);
+    } catch (err) {
+      alert('Gagal menyimpan harga: ' + (err.message || err));
+    } finally {
+      payBusy = false;
+    }
   };
 
   // ---------- Invoice from order ----------
