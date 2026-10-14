@@ -515,13 +515,13 @@
         <div class="form-group" id="group-tujuan">
           <label for="tujuan">Tujuan Website <span class="required">*</span></label>
           <textarea id="tujuan" name="tujuan" maxlength="500" placeholder="Apa tujuan utama website ini? (branding, penjualan, informasi, dll)" required></textarea>
-          <div class="error-msg">Tujuan website wajib diisi.</div>
+          <div class="error-msg">Tujuan website wajib diisi (min. 3 karakter).</div>
         </div>
 
         <div class="form-group" id="group-fitur">
           <label for="fitur">Fitur yang Dibutuhkan <span class="required">*</span></label>
           <textarea id="fitur" name="fitur" maxlength="800" placeholder="Contoh: Form kontak, galeri, blog, multi bahasa, integrasi pembayaran, dll" required></textarea>
-          <div class="error-msg">Fitur yang dibutuhkan wajib diisi.</div>
+          <div class="error-msg">Fitur yang dibutuhkan wajib diisi (min. 3 karakter).</div>
         </div>
 
         <div class="form-group" id="group-referensi">
@@ -532,7 +532,7 @@
         <div class="form-group" id="group-deskripsi">
           <label for="deskripsi">Deskripsi Kebutuhan <span class="required">*</span></label>
           <textarea id="deskripsi" name="deskripsi" maxlength="1500" placeholder="Jelaskan lebih detail kebutuhan website Anda" required></textarea>
-          <div class="error-msg">Deskripsi kebutuhan wajib diisi.</div>
+          <div class="error-msg">Deskripsi kebutuhan wajib diisi (min. 3 karakter).</div>
         </div>
 
         <div class="form-group" id="group-target">
@@ -631,7 +631,7 @@
     // ============================================================
     // KONFIGURASI — ISI NILAI INI
     // ============================================================
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxlRI51eJI561rB_-HtqWye_3rESfx2di4T4LTok0vdGyFbU798FNX3V-RQVld3uD8i/exec";   // Hasil deploy Web App
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyGWCPf7JST4McZYhir2TKNRF-vHFaYqS6Of0pXPteBUDZNuMLfgF1ydR787UHtsnxx/exec";   // Hasil deploy Web App
     const ADMIN_WHATSAPP  = "6285111429032";                    // Nomor WhatsApp admin (format 62...)
 
     // REST endpoint publik (bisa dipakai tanpa Firebase SDK)
@@ -900,9 +900,9 @@
       if (kota.length < 2) { showError("group-kota"); valid = false; }
       if (!paket) { showError("group-paket"); valid = false; }
       if (jenisBisnis.length < 2) { showError("group-jenisBisnis"); valid = false; }
-      if (tujuan.length < 5) { showError("group-tujuan"); valid = false; }
-      if (fitur.length < 5) { showError("group-fitur"); valid = false; }
-      if (deskripsi.length < 10) { showError("group-deskripsi"); valid = false; }
+      if (tujuan.length < 3) { showError("group-tujuan"); valid = false; }
+      if (fitur.length < 3) { showError("group-fitur"); valid = false; }
+      if (deskripsi.length < 3) { showError("group-deskripsi"); valid = false; }
       if (!target) { showError("group-target"); valid = false; }
       if (!materi) { showError("group-materi"); valid = false; }
       if (domain.length < 2) { showError("group-domain"); valid = false; }
