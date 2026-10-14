@@ -191,6 +191,7 @@
           optHtml(statusBayarOpts, sp) + '</select></td>' +
         '<td class="px-3 py-2.5 text-xs text-gray-500">' + esc(o['Kota']) + '</td>' +
         '<td class="px-3 py-2.5 whitespace-nowrap">' +
+          '<button type="button" onclick="openOrderDetail(' + realIdx + ')" class="px-2.5 py-1 rounded-lg border border-navy text-navy text-xs font-semibold hover:bg-navy hover:text-white mr-1">Detail</button>' +
           '<button type="button" onclick="openInvoiceFromOrder(' + realIdx + ')" class="px-2.5 py-1 rounded-lg bg-orange text-white text-xs font-semibold hover:bg-orange-600 mr-1">Invoice</button>' +
           '<button type="button" onclick="waOrder(' + realIdx + ')" class="px-2.5 py-1 rounded-lg border text-xs font-medium hover:border-orange hover:text-orange">WA</button>' +
         '</td></tr>';
@@ -244,6 +245,86 @@
     if (!wa) { alert('Nomor WhatsApp kosong'); return; }
     const msg = 'Halo ' + (o['Nama Pemesan'] || '') + ', terima kasih sudah order di GasWeb.\n\nOrder ID: ' + (o['Order ID'] || '') + '\nPaket: ' + (o['Paket'] || '') + '\n\nAda yang bisa kami bantu?';
     window.open('https://wa.me/' + wa + '?text=' + encodeURIComponent(msg), '_blank');
+  };
+
+  // ---------- Detail order (semua isian dari order.html) ----------
+  const DETAIL_GROUPS = [
+    { title: 'Data Pemesan', match: /order id|timestamp|tanggal|nama pemesan|^nama$|nama bisnis|bisnis|whatsapp|^wa$|email|kota/i },
+    { title: 'Paket & Pembayaran', match: /paket|harga|dp|pelunasan|total|status|bayar/i },
+    { title: 'Kebutuhan Website', match: /jenis|tujuan|fitur|referensi|deskripsi|target|materi|domain|setuju|catatan/i }
+  ];
+
+  function detailValueHtml(key, val) {
+    const v = val == null ? '' : String(val).trim();
+    if (!v) return '<span class="text-gray-300">-</span>';
+    if (/harga|dp|pelunasan|total/i.test(key) && /^\d+(\.\d+)?$/.test(v)) {
+      return Number(v) > 0 ? esc(formatRp(v)) : 'Custom / belum ditentukan';
+    }
+    if (/^https?:\/\//i.test(v)) {
+      return '<a href="' + esc(v) + '" target="_blank" rel="noopener" class="text-orange underline break-all">' + esc(v) + '</a>';
+    }
+    if (/referensi/i.test(key) && /\./.test(v) && !/\s/.test(v)) {
+      const href = 'https://' + v.replace(/^\/+/, '');
+      return '<a href="' + esc(href) + '" target="_blank" rel="noopener" class="text-orange underline break-all">' + esc(v) + '</a>';
+    }
+    return esc(v).replace(/\n/g, '<br>');
+  }
+
+  window.openOrderDetail = function (idx) {
+    const o = ordersCache[idx];
+    if (!o) return;
+    currentOrder = o;
+
+    let modal = document.getElementById('order-detail-modal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'order-detail-modal';
+      modal.className = 'fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4';
+      modal.addEventListener('click', function (e) { if (e.target === modal) closeOrderDetail(); });
+      document.body.appendChild(modal);
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeOrderDetail(); });
+    }
+
+    // Kelompokkan semua kolom order (tanpa menyembunyikan apa pun)
+    const keys = Object.keys(o);
+    const used = {};
+    const groups = DETAIL_GROUPS.map(function (g) {
+      const ks = keys.filter(function (k) { if (used[k]) return false; if (g.match.test(k)) { used[k] = true; return true; } return false; });
+      return { title: g.title, keys: ks };
+    });
+    const rest = keys.filter(function (k) { return !used[k]; });
+    if (rest.length) groups.push({ title: 'Data Lainnya', keys: rest });
+
+    const body = groups.filter(function (g) { return g.keys.length; }).map(function (g) {
+      return '<div class="mb-5"><h4 class="text-[11px] font-bold uppercase tracking-wide text-gray-400 mb-2">' + esc(g.title) + '</h4>' +
+        '<dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">' +
+        g.keys.map(function (k) {
+          const long = String(o[k] || '').length > 60 || /tujuan|fitur|deskripsi/i.test(k);
+          return '<div class="' + (long ? 'sm:col-span-2' : '') + '"><dt class="text-xs text-gray-500">' + esc(k) + '</dt>' +
+            '<dd class="text-sm font-medium text-gray-800 mt-0.5">' + detailValueHtml(k, o[k]) + '</dd></div>';
+        }).join('') + '</dl></div>';
+    }).join('');
+
+    modal.innerHTML =
+      '<div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">' +
+        '<div class="flex items-start justify-between px-5 py-4 border-b">' +
+          '<div><h3 class="font-bold text-navy">Detail Order</h3>' +
+          '<p class="text-xs font-mono text-gray-500">' + esc(o['Order ID'] || '') + '</p></div>' +
+          '<button type="button" onclick="closeOrderDetail()" class="text-gray-400 hover:text-gray-700 text-xl leading-none" aria-label="Tutup">&times;</button>' +
+        '</div>' +
+        '<div class="px-5 py-4 overflow-y-auto">' + body + '</div>' +
+        '<div class="flex gap-2 justify-end px-5 py-3 border-t bg-gray-50 rounded-b-2xl">' +
+          '<button type="button" onclick="waOrder(' + idx + ')" class="px-3 py-1.5 rounded-lg border text-sm font-medium hover:border-orange hover:text-orange">WA</button>' +
+          '<button type="button" onclick="closeOrderDetail();openInvoiceFromOrder(' + idx + ')" class="px-3 py-1.5 rounded-lg bg-orange text-white text-sm font-semibold hover:bg-orange-600">Buat Invoice</button>' +
+        '</div>' +
+      '</div>';
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  };
+
+  window.closeOrderDetail = function () {
+    const m = document.getElementById('order-detail-modal');
+    if (m) { m.classList.add('hidden'); m.classList.remove('flex'); }
   };
 
   // ---------- Invoice from order ----------
