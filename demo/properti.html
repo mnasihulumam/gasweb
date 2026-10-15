@@ -1,0 +1,1580 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARVANA LIVING | Ruang untuk Hidup Lebih Baik</title>
+    <meta name="description" content="ARVANA LIVING - Developer properti dengan konsep hunian modern, fungsional, dan memperhatikan kualitas desain serta kenyamanan penghuni.">
+    <meta name="keywords" content="Arvana Living, developer rumah, hunian modern, rumah minimalis, properti eksklusif">
+    
+    <!-- Open Graph Metadata -->
+    <meta property="og:title" content="ARVANA LIVING | Ruang untuk Hidup Lebih Baik">
+    <meta property="og:description" content="Developer properti dengan konsep hunian modern, fungsional, dan memperhatikan kualitas desain serta kenyamanan.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=85">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome Free Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0F52BA',
+                        primaryHover: '#0043A4',
+                        lightBg: '#F8F9FA',
+                        cardBg: '#FFFFFF',
+                        darkText: '#111827',
+                        slateText: '#64748B',
+                    },
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --color-primary: #0F52BA;
+            --color-light-bg: #F8F9FA;
+            --color-dark: #111827;
+        }
+
+        body {
+            background-color: #FFFFFF;
+            color: var(--color-dark);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Hero Diagonal Mask Cutout matching reference image */
+        .hero-diagonal-mask {
+            clip-path: polygon(18% 0%, 100% 0%, 100% 100%, 0% 100%);
+            border-top-left-radius: 40px;
+            border-bottom-left-radius: 40px;
+        }
+
+        @media (max-width: 1023px) {
+            .hero-diagonal-mask {
+                clip-path: none;
+                border-radius: 24px;
+            }
+        }
+
+        /* Focus States for Accessibility */
+        a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+            outline: 2px solid var(--color-primary);
+            outline-offset: 2px;
+        }
+
+        img {
+            background-color: #E2E8F0;
+        }
+
+        /* Scroll Animations */
+        .reveal-element {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reveal-element.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .reveal-element {
+                transition: none !important;
+                opacity: 1 !important;
+                transform: none !important;
+            }
+            html {
+                scroll-behavior: auto !important;
+            }
+        }
+
+        .modal-backdrop {
+            background-color: rgba(17, 24, 39, 0.7);
+            backdrop-filter: blur(4px);
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F8F9FA;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #0F52BA;
+        }
+    </style>
+</head>
+<body class="antialiased text-darkText selection:bg-primary selection:text-white">
+
+    <!-- A. Top Announcement Bar -->
+    <aside class="bg-primary text-white text-xs sm:text-sm py-2 px-4 sm:px-8 border-b border-white/10 font-normal">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-house text-xs opacity-90"></i>
+                <span>Temukan hunian yang sesuai dengan rencana hidup Anda.</span>
+            </div>
+            <a href="#proyek" class="hidden sm:flex items-center gap-1.5 font-medium hover:underline opacity-95">
+                <span>#RumahUntukMasaDepan</span>
+                <i class="fa-solid fa-chevron-right text-[10px]"></i>
+            </a>
+        </div>
+    </aside>
+
+    <!-- B. Main Navigation Header -->
+    <header id="main-header" class="sticky top-0 z-40 w-full transition-all duration-300 bg-white/95 backdrop-blur-md border-b border-slate-100 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                
+                <!-- Brand Logo (Double Chevron + Bold Text) -->
+                <a href="#" class="flex items-center gap-3 focus:outline-none group">
+                    <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M12 19L19 12L12 5M5 19L12 12L5 5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="font-extrabold text-xl tracking-wider text-darkText leading-none">ARVANA</span>
+                        <span class="text-[11px] tracking-[0.3em] text-primary uppercase font-bold mt-1">LIVING</span>
+                    </div>
+                </a>
+
+                <!-- Desktop Nav Links -->
+                <nav class="hidden md:flex items-center space-x-9 text-sm font-semibold text-slate-600">
+                    <a href="#hero" class="text-primary border-b-2 border-primary pb-1 font-bold">Beranda</a>
+                    <a href="#proyek" class="hover:text-primary transition-colors py-1">Proyek</a>
+                    <a href="#tipe-hunian" class="hover:text-primary transition-colors py-1">Tipe Hunian</a>
+                    <a href="#tentang-kami" class="hover:text-primary transition-colors py-1">Tentang Kami</a>
+                    <a href="#kontak" class="hover:text-primary transition-colors py-1">Kontak</a>
+                </nav>
+
+                <!-- Desktop CTA Button -->
+                <div class="hidden md:flex items-center">
+                    <a href="#kontak" class="inline-flex items-center justify-center px-6 py-3 text-sm font-semibold text-white bg-primary hover:bg-primaryHover transition-all rounded-full shadow-md shadow-primary/20 hover:shadow-lg">
+                        <i class="fa-regular fa-calendar-check mr-2 text-sm"></i>
+                        <span>Jadwalkan Kunjungan</span>
+                        <i class="fa-solid fa-arrow-right text-xs ml-2"></i>
+                    </a>
+                </div>
+
+                <!-- Mobile Navigation Button -->
+                <button id="mobile-menu-btn" type="button" class="md:hidden p-2 rounded-lg text-darkText hover:bg-slate-100 focus:outline-none" aria-label="Buka Menu Navigasi">
+                    <i class="fa-solid fa-bars text-xl" id="menu-icon-bars"></i>
+                    <i class="fa-solid fa-xmark text-xl hidden" id="menu-icon-close"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Nav Menu Drawer -->
+        <div id="mobile-menu" class="hidden md:hidden border-b border-slate-200 bg-white px-4 pt-2 pb-6 space-y-3">
+            <a href="#hero" class="mobile-nav-link block px-3 py-2 text-base font-semibold text-primary bg-primary/5 rounded-lg">Beranda</a>
+            <a href="#proyek" class="mobile-nav-link block px-3 py-2 text-base font-semibold text-slate-700 hover:bg-slate-100 rounded-lg">Proyek</a>
+            <a href="#tipe-hunian" class="mobile-nav-link block px-3 py-2 text-base font-semibold text-slate-700 hover:bg-slate-100 rounded-lg">Tipe Hunian</a>
+            <a href="#tentang-kami" class="mobile-nav-link block px-3 py-2 text-base font-semibold text-slate-700 hover:bg-slate-100 rounded-lg">Tentang Kami</a>
+            <a href="#kontak" class="mobile-nav-link block px-3 py-2 text-base font-semibold text-slate-700 hover:bg-slate-100 rounded-lg">Kontak</a>
+            <div class="pt-2">
+                <a href="#kontak" class="mobile-nav-link w-full text-center block px-5 py-3 text-sm font-semibold text-white bg-primary rounded-full">
+                    Jadwalkan Kunjungan <i class="fa-solid fa-arrow-right text-xs ml-2"></i>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- C. Hero Section (Asymmetric Split Matching Reference Image) -->
+    <section id="hero" class="relative pt-8 pb-16 lg:pt-12 lg:pb-24 bg-white overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-6 items-center">
+                
+                <!-- Left Text Side -->
+                <div class="lg:col-span-6 reveal-element">
+                    <div class="inline-flex items-center gap-2 mb-6">
+                        <span class="text-xs font-extrabold tracking-widest text-primary uppercase">RESIDENTIAL COLLECTION</span>
+                        <span class="w-8 h-[2px] bg-slate-300"></span>
+                    </div>
+
+                    <h1 class="text-4xl sm:text-5xl lg:text-[54px] font-extrabold text-darkText tracking-tight leading-[1.15] mb-6">
+                        Lebih dari Sebuah Rumah. <br>
+                        <span class="text-primary">Awal dari Cerita Baru.</span>
+                    </h1>
+
+                    <p class="text-base sm:text-lg text-slateText mb-8 max-w-xl font-normal leading-relaxed">
+                        Temukan inspirasi hunian modern yang dirancang untuk menemani setiap tahap kehidupan Anda. Keseimbangan harmonis antara estetika arsitektur dan kenyamanan ruang.
+                    </p>
+
+                    <!-- CTA Buttons -->
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mb-10">
+                        <a href="#proyek" class="inline-flex items-center justify-center px-7 py-3.5 text-base font-semibold text-white bg-primary hover:bg-primaryHover transition-all rounded-xl shadow-lg shadow-primary/25">
+                            <span>Jelajahi Hunian</span>
+                            <i class="fa-solid fa-arrow-right text-sm ml-3"></i>
+                        </a>
+                        <a href="#kontak" class="inline-flex items-center justify-center px-7 py-3.5 text-base font-semibold text-primary bg-white border-2 border-primary/20 hover:border-primary hover:bg-primary/5 transition-all rounded-xl">
+                            <i class="fa-regular fa-comment-dots mr-2 text-lg"></i>
+                            <span>Konsultasi Properti</span>
+                        </a>
+                    </div>
+
+                    <!-- Sub-footer Badges -->
+                    <div class="pt-6 border-t border-slate-100 flex flex-wrap items-center gap-6 text-xs font-semibold text-slateText">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-location-dot text-primary text-sm"></i>
+                            <span>Kawasan Hunian Modern</span>
+                        </div>
+                        <span class="text-slate-200">|</span>
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-layer-group text-primary text-sm"></i>
+                            <span>Desain Arsitektur Modern</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Visual Side with Custom Mask & Floating Cards -->
+                <div class="lg:col-span-6 reveal-element relative">
+                    <div class="relative overflow-hidden shadow-2xl bg-slate-100 hero-diagonal-mask aspect-[4/3] sm:aspect-[14/10]">
+                        <img 
+                            src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=85" 
+                            alt="Fasad Rumah Modern Minimalis Arvana Living" 
+                            class="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700"
+                            fetchpriority="high"
+                            onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=85';"
+                        >
+
+                        <!-- Top Right Floating Badge -->
+                        <div class="absolute top-6 right-6 bg-white/90 backdrop-blur-md px-4 py-2.5 rounded-2xl shadow-lg border border-white/50 text-right">
+                            <p class="text-xs font-extrabold text-primary leading-tight">Hunian Modern</p>
+                            <p class="text-[11px] font-semibold text-slateText">untuk Masa Depan</p>
+                        </div>
+
+                        <!-- Bottom Right Floating Slider Pagination -->
+                        <div class="absolute bottom-6 right-6 bg-white/95 backdrop-blur-md px-4 py-2 rounded-full shadow-lg border border-slate-100 flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
+                            <span class="w-2 h-2 rounded-full bg-slate-300"></span>
+                            <span class="w-2 h-2 rounded-full bg-slate-300"></span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- D. Feature Highlight Strip (3 Columns matching reference bar) -->
+    <section class="py-8 bg-lightBg border-y border-slate-200/60">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-0 divide-y md:divide-y-0 md:divide-x divide-slate-200">
+                
+                <!-- Feature 1 -->
+                <div class="flex items-start gap-4 md:px-6 py-2 reveal-element">
+                    <div class="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center text-xl shrink-0">
+                        <i class="fa-solid fa-house-chimney-window"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-darkText mb-1">Desain Modern & Fungsional</h3>
+                        <p class="text-xs text-slateText leading-relaxed">Setiap ruang dirancang untuk kenyamanan dan gaya hidup masa kini.</p>
+                    </div>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="flex items-start gap-4 md:px-6 py-2 pt-6 md:pt-2 reveal-element">
+                    <div class="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center text-xl shrink-0">
+                        <i class="fa-solid fa-leaf"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-darkText mb-1">Lingkungan Asri & Nyaman</h3>
+                        <p class="text-xs text-slateText leading-relaxed">Ruang hijau yang menyejukkan setiap langkah Anda.</p>
+                    </div>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="flex items-start gap-4 md:px-6 py-2 pt-6 md:pt-2 reveal-element">
+                    <div class="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center text-xl shrink-0">
+                        <i class="fa-solid fa-handshake-simple"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-darkText mb-1">Terbuka untuk Kolaborasi</h3>
+                        <p class="text-xs text-slateText leading-relaxed">Bersama membangun peluang di sektor properti.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- E. Project Showcase Section -->
+    <section id="proyek" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 reveal-element">
+                <div>
+                    <div class="inline-flex items-center gap-2 mb-3">
+                        <span class="text-xs font-extrabold tracking-widest text-primary uppercase">PROYEK KAMI</span>
+                        <span class="w-8 h-[2px] bg-slate-300"></span>
+                    </div>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-darkText tracking-tight">Temukan Hunian yang Tepat.</h2>
+                    <p class="text-slateText text-sm sm:text-base mt-2 max-w-xl">
+                        Jelajahi pilihan konsep hunian dengan karakter dan kebutuhan ruang yang berbeda.
+                    </p>
+                </div>
+                
+                <!-- Slider Nav Arrows -->
+                <div class="flex items-center gap-3 mt-6 md:mt-0">
+                    <button type="button" class="w-10 h-10 rounded-full border border-slate-200 hover:border-primary hover:bg-primary hover:text-white flex items-center justify-center text-slate-600 transition-colors" aria-label="Proyek sebelumnya">
+                        <i class="fa-solid fa-chevron-left text-xs"></i>
+                    </button>
+                    <button type="button" class="w-10 h-10 rounded-full border border-slate-200 hover:border-primary hover:bg-primary hover:text-white flex items-center justify-center text-slate-600 transition-colors" aria-label="Proyek berikutnya">
+                        <i class="fa-solid fa-chevron-right text-xs"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Projects Cards Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                
+                <!-- Project Card 1 -->
+                <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 flex flex-col group reveal-element">
+                    <div class="relative overflow-hidden aspect-[4/3] bg-slate-100">
+                        <img 
+                            src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=85" 
+                            alt="Arvana Garden Residence" 
+                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            loading="lazy"
+                        >
+                        <div class="absolute top-4 left-4 bg-primary text-white text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full shadow-md">
+                            Konsep Hunian
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs text-slateText block mb-1">
+                                <i class="fa-solid fa-location-dot text-primary mr-1"></i> Sektor Gardenia (Demo)
+                            </span>
+                            <h3 class="text-xl font-bold text-darkText mb-2">Arvana Garden Residence</h3>
+                            <p class="text-sm text-slateText leading-relaxed mb-6">
+                                Rumah keluarga modern berorientasi lingkungan hijau dengan pemanfaatan lanskap terintegrasi.
+                            </p>
+                        </div>
+                        <button 
+                            type="button"
+                            class="open-project-modal-btn w-full inline-flex items-center justify-between pt-4 border-t border-slate-100 text-xs font-extrabold text-primary tracking-wider uppercase group-hover:text-primaryHover transition-colors"
+                            data-title="Arvana Garden Residence"
+                            data-concept="Modern Family Living"
+                            data-location="Sektor Gardenia (Konsep Demo)"
+                            data-desc="Arvana Garden Residence menyajikan tata ruang terbuka yang menghubungkan ruang keluarga langsung ke taman halaman belakang. Dirancang untuk menghadirkan kehangatan aktivitas keluarga muda dengan material alami."
+                            data-img="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1000&q=85"
+                        >
+                            <span>Lihat Detail Konsep</span>
+                            <i class="fa-solid fa-arrow-right text-xs transform group-hover:translate-x-1 transition-transform"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Project Card 2 -->
+                <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 flex flex-col group reveal-element">
+                    <div class="relative overflow-hidden aspect-[4/3] bg-slate-100">
+                        <img 
+                            src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=85" 
+                            alt="Arvana Urban House" 
+                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            loading="lazy"
+                        >
+                        <div class="absolute top-4 left-4 bg-primary text-white text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full shadow-md">
+                            Konsep Hunian
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs text-slateText block mb-1">
+                                <i class="fa-solid fa-location-dot text-primary mr-1"></i> Sektor Central (Demo)
+                            </span>
+                            <h3 class="text-xl font-bold text-darkText mb-2">Arvana Urban House</h3>
+                            <p class="text-sm text-slateText leading-relaxed mb-6">
+                                Fasad geometris modern dengan efisiensi tata ruang optimal untuk gaya hidup profesional urban.
+                            </p>
+                        </div>
+                        <button 
+                            type="button"
+                            class="open-project-modal-btn w-full inline-flex items-center justify-between pt-4 border-t border-slate-100 text-xs font-extrabold text-primary tracking-wider uppercase group-hover:text-primaryHover transition-colors"
+                            data-title="Arvana Urban House"
+                            data-concept="Contemporary Urban Living"
+                            data-location="Sektor Central (Konsep Demo)"
+                            data-desc="Gaya hidup perkotaan membutuhkan kemudahan dan kepraktisan tanpa mengorbankan kenyamanan visual. Arvana Urban House menawarkan fungsi kompak dengan sistem smart space distribution."
+                            data-img="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1000&q=85"
+                        >
+                            <span>Lihat Detail Konsep</span>
+                            <i class="fa-solid fa-arrow-right text-xs transform group-hover:translate-x-1 transition-transform"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Project Card 3 -->
+                <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 flex flex-col group reveal-element">
+                    <div class="relative overflow-hidden aspect-[4/3] bg-slate-100">
+                        <img 
+                            src="https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=85" 
+                            alt="Arvana Hillside" 
+                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            loading="lazy"
+                        >
+                        <div class="absolute top-4 left-4 bg-primary text-white text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full shadow-md">
+                            Konsep Hunian
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs text-slateText block mb-1">
+                                <i class="fa-solid fa-location-dot text-primary mr-1"></i> Sektor Highland (Demo)
+                            </span>
+                            <h3 class="text-xl font-bold text-darkText mb-2">Arvana Hillside</h3>
+                            <p class="text-sm text-slateText leading-relaxed mb-6">
+                                Hunian yang bertengger manis dengan lanskap hijau alami, menyatu harmonis bersama kontur alam.
+                            </p>
+                        </div>
+                        <button 
+                            type="button"
+                            class="open-project-modal-btn w-full inline-flex items-center justify-between pt-4 border-t border-slate-100 text-xs font-extrabold text-primary tracking-wider uppercase group-hover:text-primaryHover transition-colors"
+                            data-title="Arvana Hillside"
+                            data-concept="Nature-Inspired Residence"
+                            data-location="Sektor Highland (Konsep Demo)"
+                            data-desc="Didesain bagi Anda yang mendambakan ketenangan suasana alam setelah beraktivitas seharian. Mengakomodasi pencahayaan siluet matahari sore dan pandangan terbuka."
+                            data-img="https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=1000&q=85"
+                        >
+                            <span>Lihat Detail Konsep</span>
+                            <i class="fa-solid fa-arrow-right text-xs transform group-hover:translate-x-1 transition-transform"></i>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- F. Featured Residence Section -->
+    <section class="py-20 bg-lightBg border-t border-slate-200/60">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                
+                <div class="lg:col-span-7 reveal-element">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-4">
+                            <div class="overflow-hidden rounded-2xl bg-slate-200 aspect-[3/4]">
+                                <img 
+                                    src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=800&q=85" 
+                                    alt="Interior Ruang Keluarga Arvana" 
+                                    class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                                    loading="lazy"
+                                >
+                            </div>
+                            <div class="bg-primary/5 p-5 rounded-2xl border border-primary/10">
+                                <p class="text-xs font-extrabold text-primary uppercase tracking-wider mb-1">Tata Ruang Terbuka</p>
+                                <p class="text-xs text-slateText">Integrasi antara area tamu, ruang makan, dan taman dalam satu alur visual.</p>
+                            </div>
+                        </div>
+                        <div class="space-y-4 pt-8">
+                            <div class="bg-primary text-white p-5 rounded-2xl shadow-lg shadow-primary/20">
+                                <p class="text-3xl font-extrabold text-white mb-1">98%</p>
+                                <p class="text-xs text-white/80">Pencahayaan alami masuk optimal di siang hari tanpa menyilaukan.</p>
+                            </div>
+                            <div class="overflow-hidden rounded-2xl bg-slate-200 aspect-[3/4]">
+                                <img 
+                                    src="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=800&q=85" 
+                                    alt="Detail Dapur Modern Arvana" 
+                                    class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                                    loading="lazy"
+                                >
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-5 reveal-element">
+                    <span class="text-xs font-extrabold text-primary uppercase tracking-widest block mb-2">FOKUS UNGGULAN</span>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-darkText mb-6">
+                        Arvana Signature House. <br>
+                        <span class="text-primary">Harmoni Dalam Detail.</span>
+                    </h2>
+                    <p class="text-slateText text-sm sm:text-base leading-relaxed mb-6">
+                        Setiap lekuk arsitektur dan pemilihan material dalam koleksi Signature House dikaji untuk menciptakan ketenangan emosional bagi para penghuninya.
+                    </p>
+
+                    <div class="space-y-4 mb-8">
+                        <div class="flex items-start gap-3">
+                            <div class="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs mt-1 shrink-0">
+                                <i class="fa-solid fa-check"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-darkText">Pencahayaan & Ventilasi Silang</h4>
+                                <p class="text-xs text-slateText mt-0.5">Bukaan jendela dirancang presisi mengikuti arah edar sinar matahari alami.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3">
+                            <div class="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs mt-1 shrink-0">
+                                <i class="fa-solid fa-check"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-darkText">Material Bertema Alami</h4>
+                                <p class="text-xs text-slateText mt-0.5">Penggunaan kombinasi tekstur batu alam, kayu warm-tone, dan cat tahan cuaca.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3">
+                            <div class="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs mt-1 shrink-0">
+                                <i class="fa-solid fa-check"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-darkText">Pemanfaatan Ruang Efisien</h4>
+                                <p class="text-xs text-slateText mt-0.5">Tanpa sudut mati, memaksimalkan area simpan dan kebebasan bergerak.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="#kontak" class="inline-flex items-center justify-center px-6 py-3.5 text-sm font-bold text-white bg-primary hover:bg-primaryHover transition-all rounded-xl shadow-md">
+                        <span>Tanyakan Detail Hunian</span>
+                        <i class="fa-solid fa-arrow-right text-xs ml-2"></i>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- G. Interactive House Type Selector -->
+    <section id="tipe-hunian" class="py-20 bg-white border-t border-slate-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-12 reveal-element">
+                <span class="text-xs font-extrabold text-primary uppercase tracking-widest block mb-2">EKSPLORASI SPESIFIKASI</span>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-darkText">Eksplorasi Tipe Hunian</h2>
+                <p class="text-slateText text-sm mt-3">
+                    Pilih tipe konsep hunian yang paling selaras dengan kebutuhan anggota keluarga dan rencana jangka panjang Anda.
+                </p>
+            </div>
+
+            <!-- Tab Buttons -->
+            <div class="flex justify-center mb-10 reveal-element">
+                <div class="inline-flex p-1 bg-slate-100 rounded-full space-x-1 border border-slate-200">
+                    <button type="button" class="house-type-tab active px-6 py-2.5 text-xs sm:text-sm font-bold rounded-full transition-all bg-primary text-white shadow-sm" data-type="compact">
+                        Compact Living
+                    </button>
+                    <button type="button" class="house-type-tab px-6 py-2.5 text-xs sm:text-sm font-bold rounded-full transition-all text-slate-600 hover:text-primary hover:bg-white" data-type="family">
+                        Family Residence
+                    </button>
+                    <button type="button" class="house-type-tab px-6 py-2.5 text-xs sm:text-sm font-bold rounded-full transition-all text-slate-600 hover:text-primary hover:bg-white" data-type="signature">
+                        Signature Residence
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tab Content Container -->
+            <div class="bg-lightBg rounded-3xl shadow-sm border border-slate-200/80 p-6 sm:p-10 reveal-element">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                    
+                    <div class="lg:col-span-6 overflow-hidden rounded-2xl bg-slate-200 aspect-[16/10]">
+                        <img 
+                            id="type-image"
+                            src="https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1000&q=85" 
+                            alt="Tipe Hunian Compact Living" 
+                            class="w-full h-full object-cover transition-all duration-500"
+                        >
+                    </div>
+
+                    <div class="lg:col-span-6 space-y-6">
+                        <div>
+                            <span id="type-badge" class="px-3 py-1 bg-primary/10 text-primary text-xs font-extrabold uppercase tracking-wider rounded-full inline-block mb-2">
+                                Konsep Efisiensi Modern
+                            </span>
+                            <h3 id="type-title" class="text-2xl sm:text-3xl font-extrabold text-darkText">Compact Living</h3>
+                            <p id="type-desc" class="text-slateText text-sm leading-relaxed mt-2">
+                                Dirancang khusus untuk profesional muda atau pasangan baru yang menyukai efisiensi tata ruang modern tanpa meninggalkan nilai estetika arsitektur.
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4 py-4 border-y border-slate-200">
+                            <div>
+                                <span class="text-xs text-slateText block uppercase font-bold tracking-wider">Luas Lahan</span>
+                                <span id="type-land" class="text-xl font-extrabold text-darkText">60 m²</span>
+                            </div>
+                            <div>
+                                <span class="text-xs text-slateText block uppercase font-bold tracking-wider">Luas Bangunan</span>
+                                <span id="type-building" class="text-xl font-extrabold text-darkText">36 m²</span>
+                            </div>
+                            <div>
+                                <span class="text-xs text-slateText block uppercase font-bold tracking-wider">Kamar Tidur</span>
+                                <span id="type-bedrooms" class="text-xl font-extrabold text-darkText">2 Kamar</span>
+                            </div>
+                            <div>
+                                <span class="text-xs text-slateText block uppercase font-bold tracking-wider">Kamar Mandi</span>
+                                <span id="type-bathrooms" class="text-xl font-extrabold text-darkText">1 Kamar Mandi</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <span class="text-xs font-bold text-darkText uppercase tracking-wider block mb-2">Keunggulan Konsep Ruang:</span>
+                            <ul id="type-features" class="text-xs sm:text-sm text-slateText space-y-1.5 list-disc list-inside">
+                                <li>Ruang tamu fleksibel bersambung dengan meja makan.</li>
+                                <li>Carport untuk 1 mobil dengan peneduh estetis.</li>
+                                <li>Area laundry mini terbuka di sisi belakang.</li>
+                            </ul>
+                        </div>
+
+                        <div class="pt-2">
+                            <a href="#kontak" class="inline-flex items-center justify-center px-6 py-3 text-sm font-bold text-white bg-primary hover:bg-primaryHover transition-all rounded-xl">
+                                <span>Konsultasikan Pilihan Tipe</span>
+                                <i class="fa-solid fa-arrow-right text-xs ml-2"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- H. Architecture & Interior Gallery -->
+    <section class="py-20 bg-lightBg border-t border-slate-200/60">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-14 reveal-element">
+                <span class="text-xs font-extrabold text-primary uppercase tracking-widest block mb-2">DOKUMENTASI VISUAL</span>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-darkText">Galeri Arsitektur & Interior</h2>
+                <p class="text-slateText text-sm mt-3">
+                    Klik pada gambar untuk melihat tampilan detail sudut-sudut hunian Arvana Living.
+                </p>
+            </div>
+
+            <!-- Asymmetric Grid Gallery -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 reveal-element">
+                
+                <div class="gallery-item group relative overflow-hidden rounded-2xl cursor-pointer aspect-[4/3] bg-slate-200" data-full="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1600&q=90" data-caption="Fasad Depan Modern Minimalis">
+                    <img 
+                        src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=85" 
+                        alt="Fasad Rumah Modern Minimalis" 
+                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        loading="lazy"
+                    >
+                    <div class="absolute inset-0 bg-darkText/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                        <span class="text-white text-xs font-bold tracking-wide">
+                            <i class="fa-solid fa-magnifying-glass-plus mr-1.5 text-primary"></i> Fasad Utama Modern
+                        </span>
+                    </div>
+                </div>
+
+                <div class="gallery-item group relative overflow-hidden rounded-2xl cursor-pointer aspect-[4/3] bg-slate-200" data-full="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1600&q=90" data-caption="Ruang Keluarga dengan Pencahayaan Alami">
+                    <img 
+                        src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=800&q=85" 
+                        alt="Interior Ruang Keluarga Modern" 
+                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        loading="lazy"
+                    >
+                    <div class="absolute inset-0 bg-darkText/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                        <span class="text-white text-xs font-bold tracking-wide">
+                            <i class="fa-solid fa-magnifying-glass-plus mr-1.5 text-primary"></i> Interior Ruang Keluarga
+                        </span>
+                    </div>
+                </div>
+
+                <div class="gallery-item group relative overflow-hidden rounded-2xl cursor-pointer aspect-[4/3] bg-slate-200" data-full="https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=1600&q=90" data-caption="Dapur Clean & Minimalis">
+                    <img 
+                        src="https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=800&q=85" 
+                        alt="Dapur Modern Elegan" 
+                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        loading="lazy"
+                    >
+                    <div class="absolute inset-0 bg-darkText/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                        <span class="text-white text-xs font-bold tracking-wide">
+                            <i class="fa-solid fa-magnifying-glass-plus mr-1.5 text-primary"></i> Area Dapur Modern
+                        </span>
+                    </div>
+                </div>
+
+                <div class="gallery-item group relative overflow-hidden rounded-2xl cursor-pointer aspect-[4/3] bg-slate-200" data-full="https://images.unsplash.com/photo-1616594039964-ae9021a400a0?auto=format&fit=crop&w=1600&q=90" data-caption="Kamar Tidur Utama dengan Akses Sinar Pagi">
+                    <img 
+                        src="https://images.unsplash.com/photo-1616594039964-ae9021a400a0?auto=format&fit=crop&w=800&q=85" 
+                        alt="Kamar Tidur Nyaman Minimalis" 
+                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        loading="lazy"
+                    >
+                    <div class="absolute inset-0 bg-darkText/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                        <span class="text-white text-xs font-bold tracking-wide">
+                            <i class="fa-solid fa-magnifying-glass-plus mr-1.5 text-primary"></i> Kamar Tidur Utama
+                        </span>
+                    </div>
+                </div>
+
+                <div class="gallery-item group relative overflow-hidden rounded-2xl cursor-pointer aspect-[4/3] bg-slate-200 sm:col-span-2 lg:col-span-2" data-full="https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?auto=format&fit=crop&w=1600&q=90" data-caption="Teras Belakang & Lanskap Hijau Asri">
+                    <img 
+                        src="https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?auto=format&fit=crop&w=1200&q=85" 
+                        alt="Taman Belakang & Area Hijau" 
+                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        loading="lazy"
+                    >
+                    <div class="absolute inset-0 bg-darkText/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                        <span class="text-white text-xs font-bold tracking-wide">
+                            <i class="fa-solid fa-magnifying-glass-plus mr-1.5 text-primary"></i> Area Taman & Teras Belakang
+                        </span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- I. Why Arvana Section -->
+    <section id="tentang-kami" class="py-20 bg-white border-t border-slate-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-16 reveal-element">
+                <span class="text-xs font-extrabold text-primary uppercase tracking-widest block mb-2">FILOSOFI PENGEMBANGAN</span>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-darkText">Dirancang dengan Memikirkan Kehidupan Anda.</h2>
+                <p class="text-slateText text-sm mt-3">
+                    Kami memfokuskan setiap detail pengembangan pada kenyamanan jangka panjang para penghuninya.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 reveal-element">
+                
+                <div class="bg-lightBg p-8 rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="w-12 h-12 rounded-xl bg-primary text-white flex items-center justify-center text-xl mb-6 shadow-md shadow-primary/20">
+                        <i class="fa-solid fa-compass-drafting"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-darkText mb-3">Desain Fungsional</h3>
+                    <p class="text-sm text-slateText leading-relaxed">
+                        Pemanfaatan ruang yang efisien, mengoptimalkan setiap meter persegi untuk mendukung mobilitas harian seluruh anggota keluarga.
+                    </p>
+                </div>
+
+                <div class="bg-lightBg p-8 rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="w-12 h-12 rounded-xl bg-primary text-white flex items-center justify-center text-xl mb-6 shadow-md shadow-primary/20">
+                        <i class="fa-solid fa-tree"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-darkText mb-3">Pendekatan Modern & Asri</h3>
+                    <p class="text-sm text-slateText leading-relaxed">
+                        Mengombinasikan arsitektur kontemporer yang bersih dengan alokasi ruang terbuka hijau untuk menjaga kesegaran udara sekitar.
+                    </p>
+                </div>
+
+                <div class="bg-lightBg p-8 rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="w-12 h-12 rounded-xl bg-primary text-white flex items-center justify-center text-xl mb-6 shadow-md shadow-primary/20">
+                        <i class="fa-solid fa-comments"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-darkText mb-3">Pendampingan Personal</h3>
+                    <p class="text-sm text-slateText leading-relaxed">
+                        Tim konsultan kami siap mendengarkan rencana hidup dan kebutuhan ruang Anda sebelum Anda menentukan pilihan hunian.
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- J. Location & Neighborhood Section -->
+    <section class="py-20 bg-lightBg border-t border-slate-200/60">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                
+                <div class="lg:col-span-5 reveal-element">
+                    <span class="text-xs font-extrabold text-primary uppercase tracking-widest block mb-2">LINGKUNGAN KHUSUS</span>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-darkText mb-6">
+                        Pentingnya Lingkungan <br>
+                        <span class="text-primary">Tempat Anda Tumbuh.</span>
+                    </h2>
+                    <p class="text-slateText text-sm leading-relaxed mb-8">
+                        Sebuah rumah bukan sekadar bangunan fisik, melainkan kawasan terintegrasi yang memudahkan akses aktivitas harian serta mendukung tumbuh kembang keluarga.
+                    </p>
+
+                    <div class="grid grid-cols-2 gap-4 mb-8">
+                        <div class="p-4 bg-white rounded-xl border border-slate-200">
+                            <i class="fa-solid fa-route text-primary mb-2 text-lg"></i>
+                            <h4 class="text-xs font-extrabold text-darkText uppercase tracking-wider">Aksesibilitas</h4>
+                            <p class="text-xs text-slateText mt-1">Kemudahan konektivitas jalan utama.</p>
+                        </div>
+                        <div class="p-4 bg-white rounded-xl border border-slate-200">
+                            <i class="fa-solid fa-store text-primary mb-2 text-lg"></i>
+                            <h4 class="text-xs font-extrabold text-darkText uppercase tracking-wider">Fasilitas Sekitar</h4>
+                            <p class="text-xs text-slateText mt-1">Dekat pusat pemenuhan kebutuhan.</p>
+                        </div>
+                        <div class="p-4 bg-white rounded-xl border border-slate-200">
+                            <i class="fa-solid fa-seedling text-primary mb-2 text-lg"></i>
+                            <h4 class="text-xs font-extrabold text-darkText uppercase tracking-wider">Ruang Terbuka</h4>
+                            <p class="text-xs text-slateText mt-1">Taman kawasan terawat.</p>
+                        </div>
+                        <div class="p-4 bg-white rounded-xl border border-slate-200">
+                            <i class="fa-solid fa-shield-halved text-primary mb-2 text-lg"></i>
+                            <h4 class="text-xs font-extrabold text-darkText uppercase tracking-wider">Kenyamanan</h4>
+                            <p class="text-xs text-slateText mt-1">Suasana lingkungan yang tenang.</p>
+                        </div>
+                    </div>
+
+                    <a href="#kontak" class="inline-flex items-center justify-center px-6 py-3 text-sm font-bold text-primary border-2 border-primary/30 hover:border-primary hover:bg-primary/5 transition-all rounded-xl">
+                        <span>Diskusikan Kebutuhan Lokasi</span>
+                    </a>
+                </div>
+
+                <div class="lg:col-span-7 reveal-element">
+                    <div class="relative overflow-hidden rounded-2xl bg-slate-200 aspect-[16/10] shadow-lg">
+                        <img 
+                            src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1200&q=85" 
+                            alt="Lingkungan Kawasan Perumahan Modern" 
+                            class="w-full h-full object-cover"
+                            loading="lazy"
+                        >
+                        <div class="absolute bottom-4 right-4 bg-darkText/80 text-white text-xs px-3 py-1.5 rounded-full backdrop-blur-sm">
+                            <i class="fa-solid fa-circle-info text-primary mr-1"></i> Visual Lingkungan Konsep Demo
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- K. Mortgage & Payment Calculator -->
+    <section class="py-20 bg-white border-t border-slate-100">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-10 reveal-element">
+                <span class="text-xs font-extrabold text-primary uppercase tracking-widest block mb-2">SIMULASI ILUSTRATIF</span>
+                <h2 class="text-3xl font-extrabold text-darkText">Kalkulator Estimasi Cicilan</h2>
+                <p class="text-xs sm:text-sm text-slateText mt-2 max-w-lg mx-auto">
+                    Simulasi ini bersifat ilustratif untuk memberikan gambaran awal anggaran, bukan merupakan penawaran pembiayaan atau persetujuan KPR resmi.
+                </p>
+            </div>
+
+            <div class="bg-lightBg rounded-3xl shadow-sm border border-slate-200 p-6 sm:p-8 reveal-element">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    
+                    <div class="space-y-5">
+                        <div>
+                            <label class="block text-xs font-extrabold text-darkText uppercase tracking-wider mb-2">Estimasi Harga Properti (Rp)</label>
+                            <input type="number" id="calc-price" value="850000000" step="10000000" class="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-primary focus:border-primary">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-extrabold text-darkText uppercase tracking-wider mb-2">Uang Muka / DP (<span id="calc-dp-val">20</span>%)</label>
+                            <input type="range" id="calc-dp-percent" min="10" max="50" step="5" value="20" class="w-full accent-primary">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-extrabold text-darkText uppercase tracking-wider mb-2">Tenor (Tahun)</label>
+                                <select id="calc-tenure" class="w-full px-3 py-3 bg-white border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-primary">
+                                    <option value="5">5 Tahun</option>
+                                    <option value="10">10 Tahun</option>
+                                    <option value="15" selected>15 Tahun</option>
+                                    <option value="20">20 Tahun</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-extrabold text-darkText uppercase tracking-wider mb-2">Suku Bunga (% p.a)</label>
+                                <input type="number" id="calc-interest" value="7.5" step="0.1" class="w-full px-3 py-3 bg-white border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-primary">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-primary text-white p-6 rounded-2xl text-center space-y-4 flex flex-col justify-center h-full shadow-lg shadow-primary/20">
+                        <span class="text-xs uppercase tracking-widest text-white/80 font-bold">Estimasi Cicilan Per Bulan</span>
+                        <div id="calc-result" class="text-3xl sm:text-4xl font-extrabold text-white">
+                            Rp 0
+                        </div>
+                        <div class="pt-4 border-t border-white/20 text-xs text-white/90 space-y-1">
+                            <div class="flex justify-between">
+                                <span>Nilai Pinjaman Pokok:</span>
+                                <span id="calc-loan-principal" class="font-bold">Rp 0</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Nominal DP:</span>
+                                <span id="calc-dp-amount" class="font-bold">Rp 0</span>
+                            </div>
+                        </div>
+                        <p class="text-[10px] text-white/70 italic pt-2">
+                            *Suku bunga dan syarat cicilan aktual bergantung pada ketentuan lembaga penyedia KPR.
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- L. Property Consultation Form Section -->
+    <section id="kontak" class="py-20 bg-lightBg border-t border-slate-200/60">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-xl mx-auto mb-12 reveal-element">
+                <span class="text-xs font-extrabold text-primary uppercase tracking-widest block mb-2">KONSULTASI GRATIS</span>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-darkText">Mari Temukan Hunian yang Sesuai dengan Rencana Anda.</h2>
+                <p class="text-slateText text-sm mt-3">
+                    Isi formulir singkat di bawah ini. Permintaan Anda akan diteruskan secara aman ke WhatsApp tim konsultan kami.
+                </p>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-10 shadow-sm reveal-element">
+                <form id="consultation-form" class="space-y-6" novalidate>
+                    
+                    <div id="form-error-alert" class="hidden p-4 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl">
+                        <i class="fa-solid fa-circle-exclamation mr-1.5"></i> Mohon lengkapi seluruh kolom wajib bertanda bintang (*).
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div>
+                            <label for="form-name" class="block text-xs font-extrabold text-darkText uppercase tracking-wider mb-2">
+                                Nama Lengkap <span class="text-red-500">*</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                id="form-name" 
+                                required 
+                                placeholder="Contoh: Budi Santoso"
+                                class="w-full px-4 py-3 bg-lightBg border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-primary focus:border-primary"
+                            >
+                        </div>
+
+                        <div>
+                            <label for="form-whatsapp" class="block text-xs font-extrabold text-darkText uppercase tracking-wider mb-2">
+                                Nomor WhatsApp <span class="text-red-500">*</span>
+                            </label>
+                            <input 
+                                type="tel" 
+                                id="form-whatsapp" 
+                                required 
+                                placeholder="Contoh: 081234567890"
+                                class="w-full px-4 py-3 bg-lightBg border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-primary focus:border-primary"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div>
+                            <label for="form-house-type" class="block text-xs font-extrabold text-darkText uppercase tracking-wider mb-2">
+                                Pilihan Tipe Hunian <span class="text-red-500">*</span>
+                            </label>
+                            <select id="form-house-type" required class="w-full px-4 py-3 bg-lightBg border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-primary">
+                                <option value="" disabled selected>-- Pilih Tipe --</option>
+                                <option value="Compact Living">Compact Living (Lahan 60 m²)</option>
+                                <option value="Family Residence">Family Residence (Lahan 90 m²)</option>
+                                <option value="Signature Residence">Signature Residence (Lahan 120 m²)</option>
+                                <option value="Belum Ditentukan">Masih Ingin Berkonsultasi</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="form-budget" class="block text-xs font-extrabold text-darkText uppercase tracking-wider mb-2">
+                                Kisaran Anggaran <span class="text-red-500">*</span>
+                            </label>
+                            <select id="form-budget" required class="w-full px-4 py-3 bg-lightBg border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-primary">
+                                <option value="" disabled selected>-- Pilih Anggaran --</option>
+                                <option value="< 600 Juta">&lt; Rp 600 Juta</option>
+                                <option value="600 Juta - 1 Miliar">Rp 600 Juta - 1 Miliar</option>
+                                <option value="1 Miliar - 1.5 Miliar">Rp 1 Miliar - 1.5 Miliar</option>
+                                <option value="> 1.5 Miliar">&gt; Rp 1.5 Miliar</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="form-notes" class="block text-xs font-extrabold text-darkText uppercase tracking-wider mb-2">
+                            Catatan Tambahan (Opsional)
+                        </label>
+                        <textarea 
+                            id="form-notes" 
+                            rows="3" 
+                            placeholder="Sampaikan pertanyaan khusus atau waktu terbaik untuk dihubungi..."
+                            class="w-full px-4 py-3 bg-lightBg border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-primary focus:border-primary"
+                        ></textarea>
+                    </div>
+
+                    <div class="pt-2">
+                        <button type="submit" class="w-full inline-flex items-center justify-center px-8 py-4 text-base font-bold text-white bg-primary hover:bg-primaryHover transition-all rounded-xl shadow-md shadow-primary/20">
+                            <i class="fa-brands fa-whatsapp text-lg mr-2"></i>
+                            <span>Kirim Permintaan Konsultasi via WhatsApp</span>
+                        </button>
+                    </div>
+
+                    <p class="text-[11px] text-slateText text-center">
+                        *Dengan mengklik tombol di atas, pesan terformat otomatis akan dibuka pada aplikasi WhatsApp Anda.
+                    </p>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- M. FAQ Accordion Section -->
+    <section class="py-20 bg-white border-t border-slate-100">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12 reveal-element">
+                <span class="text-xs font-extrabold text-primary uppercase tracking-widest block mb-2">INFORMASI KONSULTASI</span>
+                <h2 class="text-3xl font-extrabold text-darkText">Pertanyaan Umum (FAQ)</h2>
+            </div>
+
+            <div class="space-y-4 reveal-element" id="faq-accordion">
+                
+                <div class="border border-slate-200 bg-lightBg rounded-2xl overflow-hidden">
+                    <button type="button" class="faq-toggle w-full px-6 py-4 text-left flex justify-between items-center font-bold text-darkText text-sm sm:text-base focus:outline-none">
+                        <span>Bagaimana cara mengetahui detail lengkap proyek Arvana Living?</span>
+                        <i class="fa-solid fa-plus text-xs text-primary transition-transform duration-300"></i>
+                    </button>
+                    <div class="faq-content hidden px-6 pb-4 text-xs sm:text-sm text-slateText leading-relaxed border-t border-slate-200/60 pt-3">
+                        Anda dapat memilih tombol "Jadwalkan Kunjungan" atau mengisi formulir konsultasi untuk terhubung langsung dengan tim kami.
+                    </div>
+                </div>
+
+                <div class="border border-slate-200 bg-lightBg rounded-2xl overflow-hidden">
+                    <button type="button" class="faq-toggle w-full px-6 py-4 text-left flex justify-between items-center font-bold text-darkText text-sm sm:text-base focus:outline-none">
+                        <span>Apakah tipe hunian dapat dikonsultasikan sesuai kebutuhan?</span>
+                        <i class="fa-solid fa-plus text-xs text-primary transition-transform duration-300"></i>
+                    </button>
+                    <div class="faq-content hidden px-6 pb-4 text-xs sm:text-sm text-slateText leading-relaxed border-t border-slate-200/60 pt-3">
+                        Ya, tim konsultan kami melayani diskusi penyesuaian fungsi tata ruang internal agar selaras dengan rencana hunian Anda.
+                    </div>
+                </div>
+
+                <div class="border border-slate-200 bg-lightBg rounded-2xl overflow-hidden">
+                    <button type="button" class="faq-toggle w-full px-6 py-4 text-left flex justify-between items-center font-bold text-darkText text-sm sm:text-base focus:outline-none">
+                        <span>Bagaimana cara menjadwalkan kunjungan ke area demo?</span>
+                        <i class="fa-solid fa-plus text-xs text-primary transition-transform duration-300"></i>
+                    </button>
+                    <div class="faq-content hidden px-6 pb-4 text-xs sm:text-sm text-slateText leading-relaxed border-t border-slate-200/60 pt-3">
+                        Jadwal kunjungan dapat diatur sesuai waktu luang Anda melalui konfirmasi WhatsApp dengan konsultan kami.
+                    </div>
+                </div>
+
+                <div class="border border-slate-200 bg-lightBg rounded-2xl overflow-hidden">
+                    <button type="button" class="faq-toggle w-full px-6 py-4 text-left flex justify-between items-center font-bold text-darkText text-sm sm:text-base focus:outline-none">
+                        <span>Apakah informasi estimasi harga sudah tersedia?</span>
+                        <i class="fa-solid fa-plus text-xs text-primary transition-transform duration-300"></i>
+                    </button>
+                    <div class="faq-content hidden px-6 pb-4 text-xs sm:text-sm text-slateText leading-relaxed border-t border-slate-200/60 pt-3">
+                        Estimasi range kisaran anggaran dapat dilihat pada modul kalkulator di atas. Rincian lebih mendalam dapat dibahas langsung saat sesi konsultasi.
+                    </div>
+                </div>
+
+                <div class="border border-slate-200 bg-lightBg rounded-2xl overflow-hidden">
+                    <button type="button" class="faq-toggle w-full px-6 py-4 text-left flex justify-between items-center font-bold text-darkText text-sm sm:text-base focus:outline-none">
+                        <span>Bagaimana alur proses konsultasi properti?</span>
+                        <i class="fa-solid fa-plus text-xs text-primary transition-transform duration-300"></i>
+                    </button>
+                    <div class="faq-content hidden px-6 pb-4 text-xs sm:text-sm text-slateText leading-relaxed border-t border-slate-200/60 pt-3">
+                        Proses dimulai dari diskusi kebutuhan ruang & anggaran, review denah konsep, hingga peninjauan lokasi demo bersama perwakilan Arvana Living.
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- N. Final CTA Banner -->
+    <section class="py-20 bg-primary text-white relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+            <span class="text-xs font-extrabold text-white/80 uppercase tracking-widest block mb-3">LANGKAH PERTAMA</span>
+            <h2 class="text-3xl sm:text-5xl font-extrabold tracking-tight mb-6">
+                Langkah Pertama Menuju Rumah Anda.
+            </h2>
+            <p class="text-white/80 text-sm sm:text-base max-w-xl mx-auto mb-8 font-normal leading-relaxed">
+                Mulai percakapan tentang hunian yang sesuai dengan kebutuhan dan rencana masa depan Anda bersama tim Arvana Living.
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+                <a href="#kontak" class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-base font-bold text-primary bg-white hover:bg-slate-100 transition-all rounded-full shadow-lg">
+                    <span>Jadwalkan Konsultasi</span>
+                    <i class="fa-solid fa-arrow-right text-xs ml-2"></i>
+                </a>
+                <a href="#proyek" class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-base font-bold text-white border-2 border-white/30 hover:border-white transition-all rounded-full">
+                    <span>Jelajahi Proyek</span>
+                </a>
+            </div>
+        </div>
+        <div class="absolute -right-20 -bottom-20 w-96 h-96 border border-white/10 rounded-full pointer-events-none"></div>
+    </section>
+
+    <!-- O. Footer Section -->
+    <footer class="bg-darkText text-slate-400 border-t border-slate-800 pt-16 pb-12 text-xs">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-10 pb-12 border-b border-slate-800">
+                
+                <div class="md:col-span-4 space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 bg-primary text-white flex items-center justify-center rounded-lg font-bold">
+                            <i class="fa-solid fa-angles-right text-xs"></i>
+                        </div>
+                        <span class="font-extrabold text-lg tracking-wider text-white">ARVANA LIVING</span>
+                    </div>
+                    <p class="text-slate-400 leading-relaxed font-normal">
+                        Ruang untuk Hidup Lebih Baik. Developer properti dengan konsep hunian modern, fungsional, dan memperhatikan kualitas desain serta kenyamanan.
+                    </p>
+                    <p class="text-[10px] text-slate-500 italic">
+                        *Website ini adalah contoh demo portofolio desain web. Seluruh informasi perusahaan dan proyek bersifat konseptual/fiktif.
+                    </p>
+                </div>
+
+                <div class="md:col-span-3 space-y-3">
+                    <h4 class="text-white font-extrabold uppercase tracking-wider text-[11px]">Navigasi Utama</h4>
+                    <ul class="space-y-2 font-medium">
+                        <li><a href="#hero" class="hover:text-white transition-colors">Beranda</a></li>
+                        <li><a href="#proyek" class="hover:text-white transition-colors">Portofolio Proyek</a></li>
+                        <li><a href="#tipe-hunian" class="hover:text-white transition-colors">Eksplorasi Tipe Hunian</a></li>
+                        <li><a href="#tentang-kami" class="hover:text-white transition-colors">Tentang Arvana</a></li>
+                        <li><a href="#kontak" class="hover:text-white transition-colors">Formulir Konsultasi</a></li>
+                    </ul>
+                </div>
+
+                <div class="md:col-span-3 space-y-3">
+                    <h4 class="text-white font-extrabold uppercase tracking-wider text-[11px]">Kontak Konsultasi</h4>
+                    <ul class="space-y-2 font-medium">
+                        <li class="flex items-center gap-2">
+                            <i class="fa-brands fa-whatsapp text-primary"></i>
+                            <span>[Nomor WhatsApp Config]</span>
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <i class="fa-regular fa-envelope text-primary"></i>
+                            <span>[Email Konfigurasi Demo]</span>
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <i class="fa-solid fa-location-dot text-primary"></i>
+                            <span>[Area Layanan Demo]</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="md:col-span-2 space-y-3">
+                    <h4 class="text-white font-extrabold uppercase tracking-wider text-[11px]">Sosial Media</h4>
+                    <div class="flex space-x-3 text-sm">
+                        <a href="#" class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center hover:bg-primary hover:text-white transition-colors" aria-label="Instagram">
+                            <i class="fa-brands fa-instagram"></i>
+                        </a>
+                        <a href="#" class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center hover:bg-primary hover:text-white transition-colors" aria-label="Facebook">
+                            <i class="fa-brands fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center hover:bg-primary hover:text-white transition-colors" aria-label="LinkedIn">
+                            <i class="fa-brands fa-linkedin-in"></i>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="pt-8 flex flex-col sm:flex-row justify-between items-center text-slate-500 text-[11px]">
+                <p>&copy; <span id="copyright-year">2026</span> ARVANA LIVING. Hak Cipta Dilindungi (Demo Portofolio).</p>
+                <div class="flex space-x-4 mt-4 sm:mt-0">
+                    <a href="#" class="hover:underline">Kebijakan Privasi</a>
+                    <a href="#" class="hover:underline">Syarat & Ketentuan</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back To Top Button -->
+    <button id="back-to-top" type="button" class="fixed bottom-6 right-6 w-11 h-11 bg-primary text-white rounded-full shadow-lg flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300 z-30 hover:bg-primaryHover" aria-label="Kembali ke atas">
+        <i class="fa-solid fa-arrow-up text-xs"></i>
+    </button>
+
+    <!-- Modal Project Detail -->
+    <div id="project-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+        <div class="modal-backdrop fixed inset-0"></div>
+        <div class="relative bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto z-10 border border-slate-100 p-6 sm:p-8">
+            <button type="button" id="close-modal-btn" class="absolute top-4 right-4 text-slate-400 hover:text-darkText text-xl p-2 focus:outline-none" aria-label="Tutup modal">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="space-y-4">
+                <span id="modal-concept" class="px-3 py-1 bg-primary/10 text-primary text-xs font-extrabold uppercase tracking-wider rounded-full inline-block">
+                    Konsep
+                </span>
+                <h3 id="modal-title" class="text-2xl font-extrabold text-darkText">Nama Proyek</h3>
+                <p id="modal-location" class="text-xs text-slateText">
+                    <i class="fa-solid fa-location-dot text-primary mr-1"></i> Lokasi Demo
+                </p>
+                <div class="overflow-hidden rounded-2xl bg-slate-100 aspect-[16/9] my-4">
+                    <img id="modal-img" src="" alt="Detail Proyek" class="w-full h-full object-cover">
+                </div>
+                <p id="modal-desc" class="text-sm text-slateText leading-relaxed">
+                    Deskripsi detail proyek.
+                </p>
+                <div class="pt-4 border-t border-slate-100 flex justify-end">
+                    <a href="#kontak" id="modal-cta-btn" class="px-6 py-3 bg-primary text-white text-xs font-bold rounded-xl hover:bg-primaryHover transition-colors">
+                        Konsultasikan Proyek Ini
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lightbox Modal -->
+    <div id="lightbox-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+        <div class="modal-backdrop fixed inset-0"></div>
+        <div class="relative max-w-4xl w-full z-10 flex flex-col items-center">
+            <button type="button" id="close-lightbox-btn" class="absolute -top-10 right-0 text-white hover:text-primary text-2xl p-2 focus:outline-none" aria-label="Tutup gambar">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="overflow-hidden rounded-2xl max-h-[80vh] bg-black">
+                <img id="lightbox-img" src="" alt="Tampilan Penuh" class="max-h-[80vh] w-auto object-contain">
+            </div>
+            <p id="lightbox-caption" class="text-white text-xs sm:text-sm mt-3 tracking-wide text-center bg-darkText/80 px-4 py-1.5 rounded-full">
+                Keterangan Foto
+            </p>
+        </div>
+    </div>
+
+    <!-- Vanilla JavaScript Core Logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            // Copyright Year
+            const copyYearEl = document.getElementById('copyright-year');
+            if (copyYearEl) copyYearEl.textContent = new Date().getFullYear();
+
+            // Mobile Nav Toggle
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const menuIconBars = document.getElementById('menu-icon-bars');
+            const menuIconClose = document.getElementById('menu-icon-close');
+            const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+
+            function toggleMobileMenu() {
+                const isExpanded = mobileMenu.classList.contains('hidden');
+                if (isExpanded) {
+                    mobileMenu.classList.remove('hidden');
+                    menuIconBars.classList.add('hidden');
+                    menuIconClose.classList.remove('hidden');
+                } else {
+                    mobileMenu.classList.add('hidden');
+                    menuIconBars.classList.remove('hidden');
+                    menuIconClose.classList.add('hidden');
+                }
+            }
+
+            if (mobileMenuBtn) mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+            mobileNavLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if (!mobileMenu.classList.contains('hidden')) toggleMobileMenu();
+                });
+            });
+
+            // Scroll Reveal Animation
+            const revealElements = document.querySelectorAll('.reveal-element');
+            if ('IntersectionObserver' in window) {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('is-visible');
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.1 });
+
+                revealElements.forEach(el => observer.observe(el));
+            } else {
+                revealElements.forEach(el => el.classList.add('is-visible'));
+            }
+
+            // Back To Top Button
+            const backToTopBtn = document.getElementById('back-to-top');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 400) {
+                    backToTopBtn.classList.remove('opacity-0', 'pointer-events-none');
+                    backToTopBtn.classList.add('opacity-100');
+                } else {
+                    backToTopBtn.classList.add('opacity-0', 'pointer-events-none');
+                    backToTopBtn.classList.remove('opacity-100');
+                }
+            });
+
+            if (backToTopBtn) {
+                backToTopBtn.addEventListener('click', () => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            }
+
+            // Interactive House Type Switcher Data
+            const houseTypesData = {
+                compact: {
+                    title: "Compact Living",
+                    badge: "Konsep Efisiensi Modern",
+                    desc: "Dirancang khusus untuk profesional muda atau pasangan baru yang menyukai efisiensi tata ruang modern tanpa meninggalkan nilai estetika arsitektur.",
+                    land: "60 m²",
+                    building: "36 m²",
+                    bedrooms: "2 Kamar",
+                    bathrooms: "1 Kamar Mandi",
+                    image: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1000&q=85",
+                    features: [
+                        "Ruang tamu fleksibel bersambung dengan meja makan.",
+                        "Carport untuk 1 mobil dengan peneduh estetis.",
+                        "Area laundry mini terbuka di sisi belakang."
+                    ]
+                },
+                family: {
+                    title: "Family Residence",
+                    badge: "Ruang Keluarga Fleksibel",
+                    desc: "Pilihan idaman untuk keluarga berkembang dengan alokasi kamar tidur fleksibel dan taman samping sebagai sumber ventilasi alami.",
+                    land: "90 m²",
+                    building: "60 m²",
+                    bedrooms: "3 Kamar",
+                    bathrooms: "2 Kamar Mandi",
+                    image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1000&q=85",
+                    features: [
+                        "Dua lantai dengan kamar utama ber-balkon.",
+                        "Taman dalam (inner courtyard) pencahayaan.",
+                        "Dua slot parkir kendaraan roda empat."
+                    ]
+                },
+                signature: {
+                    title: "Signature Residence",
+                    badge: "Hunian Eksklusif",
+                    desc: "Gaya hidup premium dengan kapasitas ruang maksimal, langit-langit tinggi, serta material finishing berkualitas untuk kenyamanan superior.",
+                    land: "120 m²",
+                    building: "90 m²",
+                    bedrooms: "4 Kamar",
+                    bathrooms: "3 Kamar Mandi",
+                    image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1000&q=85",
+                    features: [
+                        "Master bedroom dengan ruang rias terpisah.",
+                        "Area dapur bersih dan dapur kotor terpisah.",
+                        "Bukaan kaca penuh menghadap landscape taman belakang."
+                    ]
+                }
+            };
+
+            const typeTabs = document.querySelectorAll('.house-type-tab');
+            const typeTitle = document.getElementById('type-title');
+            const typeDesc = document.getElementById('type-desc');
+            const typeLand = document.getElementById('type-land');
+            const typeBuilding = document.getElementById('type-building');
+            const typeBedrooms = document.getElementById('type-bedrooms');
+            const typeBathrooms = document.getElementById('type-bathrooms');
+            const typeImage = document.getElementById('type-image');
+            const typeBadge = document.getElementById('type-badge');
+            const typeFeatures = document.getElementById('type-features');
+
+            typeTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    typeTabs.forEach(t => {
+                        t.classList.remove('bg-primary', 'text-white', 'shadow-sm', 'active');
+                        t.classList.add('text-slate-600');
+                    });
+                    this.classList.add('bg-primary', 'text-white', 'shadow-sm', 'active');
+                    this.classList.remove('text-slate-600');
+
+                    const selectedType = this.getAttribute('data-type');
+                    const data = houseTypesData[selectedType];
+
+                    if (data) {
+                        typeTitle.textContent = data.title;
+                        typeDesc.textContent = data.desc;
+                        typeLand.textContent = data.land;
+                        typeBuilding.textContent = data.building;
+                        typeBedrooms.textContent = data.bedrooms;
+                        typeBathrooms.textContent = data.bathrooms;
+                        typeImage.src = data.image;
+                        typeBadge.textContent = data.badge;
+
+                        typeFeatures.innerHTML = '';
+                        data.features.forEach(feat => {
+                            const li = document.createElement('li');
+                            li.textContent = feat;
+                            typeFeatures.appendChild(li);
+                        });
+                    }
+                });
+            });
+
+            // Project Modal
+            const projectModal = document.getElementById('project-modal');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            const openProjectBtns = document.querySelectorAll('.open-project-modal-btn');
+            const modalTitle = document.getElementById('modal-title');
+            const modalConcept = document.getElementById('modal-concept');
+            const modalLocation = document.getElementById('modal-location');
+            const modalDesc = document.getElementById('modal-desc');
+            const modalImg = document.getElementById('modal-img');
+            const modalCtaBtn = document.getElementById('modal-cta-btn');
+
+            function openProjectModal(btn) {
+                modalTitle.textContent = btn.getAttribute('data-title');
+                modalConcept.textContent = btn.getAttribute('data-concept');
+                modalLocation.innerHTML = `<i class="fa-solid fa-location-dot text-primary mr-1"></i> ${btn.getAttribute('data-location')}`;
+                modalDesc.textContent = btn.getAttribute('data-desc');
+                modalImg.src = btn.getAttribute('data-img');
+                
+                projectModal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeProjectModal() {
+                projectModal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }
+
+            openProjectBtns.forEach(btn => btn.addEventListener('click', () => openProjectModal(btn)));
+            if (closeModalBtn) closeModalBtn.addEventListener('click', closeProjectModal);
+
+            // Lightbox Gallery
+            const lightboxModal = document.getElementById('lightbox-modal');
+            const closeLightboxBtn = document.getElementById('close-lightbox-btn');
+            const lightboxImg = document.getElementById('lightbox-img');
+            const lightboxCaption = document.getElementById('lightbox-caption');
+            const galleryItems = document.querySelectorAll('.gallery-item');
+
+            function openLightbox(item) {
+                lightboxImg.src = item.getAttribute('data-full');
+                lightboxCaption.textContent = item.getAttribute('data-caption');
+                lightboxModal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeLightbox() {
+                lightboxModal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }
+
+            galleryItems.forEach(item => item.addEventListener('click', () => openLightbox(item)));
+            if (closeLightboxBtn) closeLightboxBtn.addEventListener('click', closeLightbox);
+
+            // Modal Backdrop and Escape Key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    if (!projectModal.classList.contains('hidden')) closeProjectModal();
+                    if (!lightboxModal.classList.contains('hidden')) closeLightbox();
+                }
+            });
+
+            [projectModal, lightboxModal].forEach(modal => {
+                if (modal) {
+                    modal.addEventListener('click', (e) => {
+                        if (e.target.classList.contains('modal-backdrop')) {
+                            closeProjectModal();
+                            closeLightbox();
+                        }
+                    });
+                }
+            });
+
+            if (modalCtaBtn) modalCtaBtn.addEventListener('click', closeProjectModal);
+
+            // FAQ Accordion
+            const faqToggles = document.querySelectorAll('.faq-toggle');
+            faqToggles.forEach(toggle => {
+                toggle.addEventListener('click', function() {
+                    const content = this.nextElementSibling;
+                    const icon = this.querySelector('i');
+
+                    const isHidden = content.classList.contains('hidden');
+                    if (isHidden) {
+                        content.classList.remove('hidden');
+                        icon.classList.remove('fa-plus');
+                        icon.classList.add('fa-minus');
+                    } else {
+                        content.classList.add('hidden');
+                        icon.classList.remove('fa-minus');
+                        icon.classList.add('fa-plus');
+                    }
+                });
+            });
+
+            // Mortgage Calculator
+            const calcPriceInput = document.getElementById('calc-price');
+            const calcDpPercentInput = document.getElementById('calc-dp-percent');
+            const calcDpValText = document.getElementById('calc-dp-val');
+            const calcTenureInput = document.getElementById('calc-tenure');
+            const calcInterestInput = document.getElementById('calc-interest');
+            const calcResultDisplay = document.getElementById('calc-result');
+            const calcLoanPrincipalDisplay = document.getElementById('calc-loan-principal');
+            const calcDpAmountDisplay = document.getElementById('calc-dp-amount');
+
+            function formatRupiah(number) {
+                return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(number);
+            }
+
+            function calculateMortgage() {
+                const price = parseFloat(calcPriceInput.value) || 0;
+                const dpPercent = parseFloat(calcDpPercentInput.value) || 20;
+                const tenureYears = parseInt(calcTenureInput.value) || 15;
+                const annualInterest = parseFloat(calcInterestInput.value) || 7.5;
+
+                calcDpValText.textContent = dpPercent;
+
+                const dpAmount = price * (dpPercent / 100);
+                const principal = price - dpAmount;
+
+                calcDpAmountDisplay.textContent = formatRupiah(dpAmount);
+                calcLoanPrincipalDisplay.textContent = formatRupiah(principal);
+
+                if (principal <= 0) {
+                    calcResultDisplay.textContent = formatRupiah(0);
+                    return;
+                }
+
+                const monthlyRate = (annualInterest / 100) / 12;
+                const totalMonths = tenureYears * 12;
+
+                const monthlyInstallment = (principal * monthlyRate * Math.pow(1 + monthlyRate, totalMonths)) / (Math.pow(1 + monthlyRate, totalMonths) - 1);
+
+                if (!isNaN(monthlyInstallment) && isFinite(monthlyInstallment)) {
+                    calcResultDisplay.textContent = formatRupiah(Math.round(monthlyInstallment));
+                } else {
+                    calcResultDisplay.textContent = 'Rp 0';
+                }
+            }
+
+            if (calcPriceInput && calcDpPercentInput && calcTenureInput && calcInterestInput) {
+                [calcPriceInput, calcDpPercentInput, calcTenureInput, calcInterestInput].forEach(elem => {
+                    elem.addEventListener('input', calculateMortgage);
+                });
+                calculateMortgage();
+            }
+
+            // WhatsApp Consultation Form
+            const consultationForm = document.getElementById('consultation-form');
+            const formErrorAlert = document.getElementById('form-error-alert');
+
+            if (consultationForm) {
+                consultationForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+
+                    const nameVal = document.getElementById('form-name').value.trim();
+                    const waVal = document.getElementById('form-whatsapp').value.trim();
+                    const houseTypeVal = document.getElementById('form-house-type').value;
+                    const budgetVal = document.getElementById('form-budget').value;
+                    const notesVal = document.getElementById('form-notes').value.trim();
+
+                    if (!nameVal || !waVal || !houseTypeVal || !budgetVal) {
+                        formErrorAlert.classList.remove('hidden');
+                        return;
+                    }
+
+                    formErrorAlert.classList.add('hidden');
+
+                    const targetPhoneNumber = "";
+
+                    let textMessage = `Halo Konsultan ARVANA LIVING,\n\nSaya ingin berkonsultasi mengenai hunian properti dengan rincian berikut:\n\n`;
+                    textMessage += `• Nama: ${nameVal}\n`;
+                    textMessage += `• Nomor WA: ${waVal}\n`;
+                    textMessage += `• Tipe Hunian Diminati: ${houseTypeVal}\n`;
+                    textMessage += `• Kisaran Anggaran: ${budgetVal}\n`;
+                    if (notesVal) {
+                        textMessage += `• Catatan Tambahan: ${notesVal}\n`;
+                    }
+                    textMessage += `\nMohon informasi ketersediaan waktu untuk sesi konsultasi lebih lanjut. Terima kasih.`;
+
+                    const encodedMessage = encodeURIComponent(textMessage);
+                    const whatsappUrl = targetPhoneNumber 
+                        ? `https://wa.me/${targetPhoneNumber}?text=${encodedMessage}` 
+                        : `https://wa.me/?text=${encodedMessage}`;
+
+                    window.open(whatsappUrl, '_blank');
+                });
+            }
+
+        });
+    </script>
+</body>
+</html>
