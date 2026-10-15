@@ -38,6 +38,9 @@ const DEFAULT_DATA = {
     pricingTitle: 'Pilih Paket Sesuai Kebutuhan.',
     pricingSubtitle: 'Harga transparan. Konsultasi dulu, baru tentukan paket yang pas.'
   },
+  bankAccounts: [
+    // Contoh: { bank: 'BCA', accountName: 'Nama Anda', accountNumber: '1234567890', notes: '' }
+  ],
   logo: { url: '', alt: 'GasWeb' },
   packages: [
     { name: 'Landing Page', badge: 'Starter', price: 'Rp XXX', description: 'Cocok untuk promosi produk atau jasa fokus konversi.', features: ['Desain modern 1 halaman', 'Mobile responsive', 'Integrasi WhatsApp', 'Domain & hosting setup'], isPopular: false, buttonText: 'Konsultasi Sekarang' },
@@ -146,7 +149,7 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 // ---------- LOAD DATA ----------
 async function loadAdminData() {
   try {
-    const paths = ['settings', 'logo', 'packages', 'portfolio', 'services', 'problems', 'features', 'steps', 'testimonials', 'faq'];
+    const paths = ['settings', 'logo', 'packages', 'portfolio', 'services', 'problems', 'features', 'steps', 'testimonials', 'faq', 'bankAccounts'];
     const results = await Promise.all(
       paths.map(p => db.ref(p).once('value').then(s => ({ key: p, val: s.val() })))
     );
@@ -207,6 +210,60 @@ function populateForms() {
   renderStepsEditor();
   renderTestimonialsEditor();
   renderFaqEditor();
+  renderBankAccountsEditor();
+}
+
+function renderBankAccountsEditor() {
+  const list = document.getElementById('bank-list');
+  if (!list) return;
+  if (!Array.isArray(currentData.bankAccounts)) currentData.bankAccounts = [];
+  if (!currentData.bankAccounts.length) {
+    list.innerHTML = '<p class="text-sm text-gray-400 py-4">Belum ada rekening. Klik <b>+ Tambah Rekening</b>.</p>';
+    return;
+  }
+  list.innerHTML = currentData.bankAccounts.map((a, i) => `
+    <div class="border rounded-xl p-4 bg-gray-50 space-y-2">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-bold text-gray-500">Rekening #${i + 1}</span>
+        <button type="button" class="text-xs text-red-600 font-semibold hover:underline" onclick="removeBankAccount(${i})">Hapus</button>
+      </div>
+      <div class="grid sm:grid-cols-2 gap-2">
+        <div>
+          <label class="text-xs text-gray-500">Bank</label>
+          <input class="w-full px-2 py-1.5 border rounded text-sm" value="${esc(a.bank || '')}" onchange="updateBankAccount(${i},'bank',this.value)" placeholder="BCA / Mandiri / BNI">
+        </div>
+        <div>
+          <label class="text-xs text-gray-500">Atas Nama</label>
+          <input class="w-full px-2 py-1.5 border rounded text-sm" value="${esc(a.accountName || '')}" onchange="updateBankAccount(${i},'accountName',this.value)" placeholder="Nama pemilik rekening">
+        </div>
+        <div class="sm:col-span-2">
+          <label class="text-xs text-gray-500">Nomor Rekening</label>
+          <input class="w-full px-2 py-1.5 border rounded text-sm font-mono" value="${esc(a.accountNumber || '')}" onchange="updateBankAccount(${i},'accountNumber',this.value)" placeholder="1234567890">
+        </div>
+        <div class="sm:col-span-2">
+          <label class="text-xs text-gray-500">Catatan (opsional)</label>
+          <input class="w-full px-2 py-1.5 border rounded text-sm" value="${esc(a.notes || '')}" onchange="updateBankAccount(${i},'notes',this.value)" placeholder="Mis. Cabang Jakarta">
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function addBankAccount() {
+  if (!Array.isArray(currentData.bankAccounts)) currentData.bankAccounts = [];
+  currentData.bankAccounts.push({ bank: '', accountName: '', accountNumber: '', notes: '' });
+  renderBankAccountsEditor();
+}
+
+function removeBankAccount(i) {
+  if (!Array.isArray(currentData.bankAccounts)) return;
+  currentData.bankAccounts.splice(i, 1);
+  renderBankAccountsEditor();
+}
+
+function updateBankAccount(i, field, value) {
+  if (!currentData.bankAccounts || !currentData.bankAccounts[i]) return;
+  currentData.bankAccounts[i][field] = value;
 }
 
 document.getElementById('logo-url').addEventListener('input', updateLogoPreview);
@@ -599,7 +656,7 @@ async function saveAll() {
 
 async function saveToFirebase(data) {
   const updates = {};
-  ['settings', 'logo', 'packages', 'portfolio', 'services', 'problems', 'features', 'steps', 'testimonials', 'faq'].forEach(key => {
+  ['settings', 'logo', 'packages', 'portfolio', 'services', 'problems', 'features', 'steps', 'testimonials', 'faq', 'bankAccounts'].forEach(key => {
     if (data[key] !== undefined) updates[key] = data[key];
   });
   await db.ref('/').update(updates);
