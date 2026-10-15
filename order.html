@@ -408,6 +408,188 @@
       color: var(--gray-text);
     }
 
+    /* Cek status & copy */
+    .header-actions {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+    .btn-outline {
+      background: transparent;
+      color: var(--navy);
+      border: 1.5px solid var(--gray-border);
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+    .btn-outline:hover {
+      border-color: var(--orange);
+      color: var(--orange);
+    }
+    .btn-sm {
+      padding: 8px 12px;
+      font-size: 13px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      font-family: inherit;
+    }
+    .btn-copy {
+      background: var(--navy);
+      color: white;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+    .btn-copy:hover { opacity: 0.9; }
+    .btn-copy.copied {
+      background: var(--success);
+    }
+    .order-id-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+    }
+    #checkStatusCard { display: none; }
+    #checkStatusCard.visible { display: block; }
+    .status-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .status-badge.pending { background: #FEF0C7; color: #B54708; }
+    .status-badge.progress { background: #D1E9FF; color: #175CD3; }
+    .status-badge.success { background: #D1FADF; color: #027A48; }
+    .status-badge.danger { background: #FEE4E2; color: #B42318; }
+    .status-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      text-align: left;
+      margin: 16px 0;
+    }
+    .status-item {
+      background: var(--gray-bg);
+      border-radius: 10px;
+      padding: 12px;
+    }
+    .status-item .label {
+      font-size: 11px;
+      color: var(--gray-text);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      margin-bottom: 4px;
+    }
+    .status-item .value {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--navy);
+      word-break: break-word;
+    }
+    .bank-list { text-align: left; margin-top: 12px; }
+    .bank-card {
+      border: 1.5px solid var(--gray-border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      background: #fff;
+    }
+    .bank-card .bank-name {
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+    .bank-card .bank-num {
+      font-family: ui-monospace, monospace;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--orange);
+      letter-spacing: 0.5px;
+    }
+    .bank-card .bank-holder {
+      font-size: 13px;
+      color: var(--gray-text);
+      margin-top: 2px;
+    }
+    .bank-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+    .timeline {
+      text-align: left;
+      margin-top: 8px;
+      border-left: 2px solid var(--gray-border);
+      padding-left: 14px;
+    }
+    .timeline-item {
+      position: relative;
+      padding-bottom: 14px;
+    }
+    .timeline-item::before {
+      content: "";
+      position: absolute;
+      left: -19px;
+      top: 4px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--orange);
+      border: 2px solid #fff;
+      box-shadow: 0 0 0 1px var(--orange);
+    }
+    .timeline-item .tl-date {
+      font-size: 11px;
+      color: var(--gray-text);
+    }
+    .timeline-item .tl-text {
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .timeline-item .tl-sub {
+      font-size: 12px;
+      color: var(--gray-text);
+    }
+    .amount-due-box {
+      background: rgba(255, 107, 0, 0.08);
+      border: 1.5px solid rgba(255, 107, 0, 0.25);
+      border-radius: 10px;
+      padding: 14px;
+      margin: 12px 0;
+      text-align: left;
+    }
+    .amount-due-box .ad-label {
+      font-size: 12px;
+      color: var(--gray-text);
+    }
+    .amount-due-box .ad-value {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--orange);
+    }
+    .check-result { display: none; margin-top: 8px; }
+    .check-result.visible { display: block; }
+    .check-loading {
+      display: none;
+      text-align: center;
+      padding: 16px;
+      color: var(--gray-text);
+      font-size: 14px;
+    }
+    .check-loading.visible { display: block; }
+
     /* Responsive */
     @media (max-width: 480px) {
       .container {
@@ -420,6 +602,9 @@
         flex-direction: column;
         gap: 4px;
       }
+      .status-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -429,10 +614,34 @@
     <div class="header">
       <div class="logo">GasWeb</div>
       <div class="tagline">Go Online, Gas Terus!</div>
+      <div class="header-actions">
+        <button type="button" class="btn-outline" id="btnOpenCheckStatus" onclick="openCheckStatus()">
+          🔍 Cek Status Pesanan
+        </button>
+      </div>
     </div>
 
     <!-- Alert -->
     <div id="alertBox" class="alert error"></div>
+
+    <!-- Cek Status Card -->
+    <div id="checkStatusCard" class="card">
+      <h2 style="margin-bottom: 8px;">🔍 Cek Status Pesanan</h2>
+      <p style="font-size: 14px; color: var(--gray-text); margin-bottom: 16px;">
+        Masukkan Order ID Anda (contoh: <code>GW-20261014-1234</code>) untuk melihat status order dan pembayaran.
+      </p>
+      <div class="form-group" style="margin-bottom: 12px;">
+        <label for="checkOrderIdInput">Order ID</label>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <input type="text" id="checkOrderIdInput" placeholder="GW-YYYYMMDD-XXXX" style="flex: 1; min-width: 180px;" autocomplete="off">
+          <button type="button" class="btn btn-primary" style="width: auto; padding: 12px 20px;" id="btnCheckOrder" onclick="runCheckOrder()">Cek Status</button>
+        </div>
+      </div>
+      <div class="check-loading" id="checkLoading">Memeriksa order...</div>
+      <div id="checkError" class="alert error" style="display:none;"></div>
+      <div id="checkResult" class="check-result"></div>
+      <button type="button" class="btn-outline" style="margin-top: 12px; width: 100%;" onclick="closeCheckStatus()">← Kembali ke Form Pesanan</button>
+    </div>
 
     <!-- Form -->
     <form id="orderForm">
@@ -594,11 +803,19 @@
       </div>
       <div class="order-id-box">
         Order ID Anda:<br>
-        <strong id="displayOrderId">-</strong>
+        <div class="order-id-row">
+          <strong id="displayOrderId">-</strong>
+          <button type="button" class="btn-sm btn-copy" id="btnCopyOrderId" onclick="copyOrderId(document.getElementById('displayOrderId').textContent, this)">
+            📋 Salin
+          </button>
+        </div>
       </div>
       <p style="font-size: 14px; color: var(--gray-text); margin-bottom: 8px;">
-        Simpan Order ID ini. Anda juga bisa langsung menghubungi admin via WhatsApp:
+        Simpan Order ID ini. Anda bisa cek status pesanan kapan saja, atau hubungi admin via WhatsApp:
       </p>
+      <button type="button" class="btn btn-primary" style="margin-bottom: 8px;" onclick="openCheckStatusFromSuccess()">
+        🔍 Cek Status Pesanan
+      </button>
       <a id="waButton" href="#" target="_blank" rel="noopener" class="btn btn-whatsapp">
         Hubungi Admin via WhatsApp
       </a>
@@ -631,11 +848,15 @@
     // ============================================================
     // KONFIGURASI — ISI NILAI INI
     // ============================================================
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyGWCPf7JST4McZYhir2TKNRF-vHFaYqS6Of0pXPteBUDZNuMLfgF1ydR787UHtsnxx/exec";   // Hasil deploy Web App
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzaC94DvbaBZzdcgh-6ivRxgKBaaYB21lCJtDvkepNqyEo2qzvc6_hMPzRlg69wHt8/exec";   // Hasil deploy Web App
     const ADMIN_WHATSAPP  = "6285111429032";                    // Nomor WhatsApp admin (format 62...)
 
     // REST endpoint publik (bisa dipakai tanpa Firebase SDK)
     const PACKAGES_REST_URL = "https://gasweb-id-default-rtdb.asia-southeast1.firebasedatabase.app/packages.json";
+    const BANK_ACCOUNTS_URL = "https://gasweb-id-default-rtdb.asia-southeast1.firebasedatabase.app/bankAccounts.json";
+
+    // Cache rekening (di-load on demand)
+    let BANK_ACCOUNTS = [];
 
     // Fallback terakhir jika REST + SDK gagal
     const DEFAULT_PACKAGES = [
@@ -705,6 +926,286 @@
       const cleaned = num.replace(/\D/g, "");
       return cleaned.length >= 10 && cleaned.length <= 15;
     }
+
+    function formatRpNum(num) {
+      const n = Number(num) || 0;
+      if (n <= 0) return "-";
+      return "Rp" + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    // ============================================================
+    // COPY + CEK STATUS ORDER
+    // ============================================================
+    function copyText(text, btn) {
+      const t = String(text || "").trim();
+      if (!t || t === "-") return;
+      const done = () => {
+        if (btn) {
+          const prev = btn.textContent;
+          btn.textContent = "✓ Disalin";
+          btn.classList.add("copied");
+          setTimeout(() => {
+            btn.textContent = prev;
+            btn.classList.remove("copied");
+          }, 1800);
+        }
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(t).then(done).catch(() => {
+          const ta = document.createElement("textarea");
+          ta.value = t;
+          document.body.appendChild(ta);
+          ta.select();
+          try { document.execCommand("copy"); } catch (e) {}
+          document.body.removeChild(ta);
+          done();
+        });
+      } else {
+        const ta = document.createElement("textarea");
+        ta.value = t;
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand("copy"); } catch (e) {}
+        document.body.removeChild(ta);
+        done();
+      }
+    }
+
+    function copyOrderId(id, btn) {
+      copyText(id, btn);
+    }
+
+    async function loadBankAccounts() {
+      if (BANK_ACCOUNTS && BANK_ACCOUNTS.length) return BANK_ACCOUNTS;
+      try {
+        const r = await fetch(BANK_ACCOUNTS_URL, { cache: "no-store" });
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        const data = await r.json();
+        if (Array.isArray(data)) {
+          BANK_ACCOUNTS = data.filter(function (a) { return a && (a.accountNumber || a.nomor); });
+        } else if (data && typeof data === "object") {
+          BANK_ACCOUNTS = Object.keys(data).map(function (k) { return data[k]; }).filter(function (a) {
+            return a && (a.accountNumber || a.nomor);
+          });
+        } else {
+          BANK_ACCOUNTS = [];
+        }
+      } catch (e) {
+        console.warn("Gagal load bankAccounts:", e);
+        BANK_ACCOUNTS = [];
+      }
+      return BANK_ACCOUNTS;
+    }
+
+    function badgeClassForStatus(text) {
+      const s = String(text || "").toLowerCase();
+      if (/lunas|selesai|selesai dikerjakan|live|done/.test(s)) return "success";
+      if (/belum|menunggu|pending/.test(s)) return "pending";
+      if (/batal|cancel|ditolak|gagal/.test(s)) return "danger";
+      return "progress";
+    }
+
+    function renderBankSection(amountDue, amountLabel, isLunas) {
+      if (isLunas) {
+        return '<div style="margin-top:12px;padding:12px;background:rgba(18,183,106,0.1);border-radius:10px;color:#027A48;font-size:14px;font-weight:600;">✓ Pembayaran sudah lunas. Terima kasih!</div>';
+      }
+      const accounts = BANK_ACCOUNTS || [];
+      let html = '<div class="bank-list"><div style="font-size:14px;font-weight:700;margin-bottom:8px;">Transfer ke rekening GasWeb</div>';
+      if (amountDue > 0) {
+        html +=
+          '<div class="amount-due-box">' +
+          '<div class="ad-label">' + escapeHtml(amountLabel || "Jumlah yang perlu dibayar") + '</div>' +
+          '<div class="ad-value">' + formatRpNum(amountDue) +
+          ' <button type="button" class="btn-sm btn-copy" onclick="copyText(\'' + amountDue + '\', this)">📋 Salin nominal</button></div>' +
+          '<div style="font-size:12px;color:var(--gray-text);margin-top:4px;">Cantumkan Order ID di berita transfer agar mudah dicocokkan.</div>' +
+          '</div>';
+      } else {
+        html +=
+          '<p style="font-size:13px;color:var(--gray-text);margin-bottom:10px;">Harga masih menunggu penawaran admin. Setelah harga disepakati, transfer sesuai nominal yang dikonfirmasi.</p>';
+      }
+      if (!accounts.length) {
+        html += '<p style="font-size:13px;color:var(--gray-text);">Nomor rekening belum tersedia. Hubungi admin via WhatsApp untuk info transfer.</p>';
+      } else {
+        accounts.forEach(function (a) {
+          const bank = a.bank || a.bankName || "Bank";
+          const nomor = String(a.accountNumber || a.nomor || "");
+          const nama = a.accountName || a.atasNama || a.nama || "";
+          const notes = a.notes || a.catatan || "";
+          const nomorJs = nomor.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+          html +=
+            '<div class="bank-card">' +
+            '<div class="bank-name">' + escapeHtml(bank) + '</div>' +
+            '<div class="bank-num">' + escapeHtml(nomor) + '</div>' +
+            (nama ? '<div class="bank-holder">a.n. ' + escapeHtml(nama) + '</div>' : '') +
+            (notes ? '<div class="bank-holder">' + escapeHtml(notes) + '</div>' : '') +
+            '<div class="bank-actions">' +
+            '<button type="button" class="btn-sm btn-copy" onclick="copyText(\'' + nomorJs + '\', this)">📋 Salin nomor</button>' +
+            (amountDue > 0
+              ? '<button type="button" class="btn-sm btn-copy" onclick="copyText(\'' + amountDue + '\', this)">📋 Salin nominal</button>'
+              : '') +
+            '</div></div>';
+        });
+      }
+      html += '</div>';
+      return html;
+    }
+
+    function renderCheckResult(data) {
+      const o = data.order || {};
+      const payments = data.payments || [];
+      const history = data.statusHistory || [];
+      let html = '';
+
+      html +=
+        '<div class="status-grid">' +
+        '<div class="status-item"><div class="label">Order ID</div><div class="value" style="color:var(--orange);">' +
+        escapeHtml(o.orderId) +
+        ' <button type="button" class="btn-sm btn-copy" onclick="copyText(\'' + escapeHtml(o.orderId) + '\', this)">Salin</button></div></div>' +
+        '<div class="status-item"><div class="label">Tanggal Order</div><div class="value">' + escapeHtml(o.timestamp || "-") + '</div></div>' +
+        '<div class="status-item"><div class="label">Paket</div><div class="value">' + escapeHtml(o.paket || "-") + '</div></div>' +
+        '<div class="status-item"><div class="label">Bisnis</div><div class="value">' + escapeHtml(o.bisnis || "-") + '</div></div>' +
+        '<div class="status-item"><div class="label">Status Order</div><div class="value"><span class="status-badge ' + badgeClassForStatus(o.statusOrder) + '">' + escapeHtml(o.statusOrder || "-") + '</span></div></div>' +
+        '<div class="status-item"><div class="label">Status Pembayaran</div><div class="value"><span class="status-badge ' + badgeClassForStatus(o.statusPembayaran) + '">' + escapeHtml(o.statusPembayaran || "-") + '</span></div></div>' +
+        '<div class="status-item"><div class="label">Harga</div><div class="value">' + (o.harga > 0 ? formatRpNum(o.harga) : "Menunggu penawaran") + '</div></div>' +
+        '<div class="status-item"><div class="label">Estimasi DP</div><div class="value">' + (o.dp > 0 ? formatRpNum(o.dp) : "-") + '</div></div>' +
+        '<div class="status-item"><div class="label">Sudah dibayar</div><div class="value">' + formatRpNum(o.totalBayar) + '</div></div>' +
+        '<div class="status-item"><div class="label">Sisa</div><div class="value">' + (o.harga > 0 ? formatRpNum(o.sisa) : "-") + '</div></div>' +
+        '</div>';
+
+      html += renderBankSection(o.amountDue, o.amountLabel, o.isLunas);
+
+      html += '<div style="margin-top:18px;text-align:left;"><div style="font-size:14px;font-weight:700;margin-bottom:8px;">Riwayat Pembayaran</div>';
+      if (!payments.length) {
+        html += '<p style="font-size:13px;color:var(--gray-text);">Belum ada pembayaran tercatat.</p>';
+      } else {
+        html += '<div class="timeline">';
+        payments.forEach(function (p) {
+          html +=
+            '<div class="timeline-item">' +
+            '<div class="tl-date">' + escapeHtml(p.tanggal || "") + '</div>' +
+            '<div class="tl-text">' + formatRpNum(p.jumlah) + (p.metode ? " · " + escapeHtml(p.metode) : "") + '</div>' +
+            (p.catatan ? '<div class="tl-sub">' + escapeHtml(p.catatan) + '</div>' : "") +
+            '</div>';
+        });
+        html += '</div>';
+      }
+      html += '</div>';
+
+      html += '<div style="margin-top:18px;text-align:left;"><div style="font-size:14px;font-weight:700;margin-bottom:8px;">Riwayat Perubahan Status</div>';
+      if (!history.length) {
+        html += '<p style="font-size:13px;color:var(--gray-text);">Belum ada riwayat status.</p>';
+      } else {
+        html += '<div class="timeline">';
+        history.slice().reverse().forEach(function (h) {
+          const change = (h.dari ? escapeHtml(h.dari) + " → " : "") + escapeHtml(h.ke || "");
+          html +=
+            '<div class="timeline-item">' +
+            '<div class="tl-date">' + escapeHtml(h.tanggal || "") + '</div>' +
+            '<div class="tl-text">' + escapeHtml(h.tipe || "Status") + ": " + change + '</div>' +
+            (h.catatan ? '<div class="tl-sub">' + escapeHtml(h.catatan) + '</div>' : "") +
+            '</div>';
+        });
+        html += '</div>';
+      }
+      html += '</div>';
+
+      html +=
+        '<p style="font-size:13px;color:var(--gray-text);margin-top:16px;text-align:left;">Butuh bantuan? ' +
+        '<a href="https://wa.me/' + ADMIN_WHATSAPP + '?text=' + encodeURIComponent("Halo Admin, saya ingin menanyakan status order " + (o.orderId || "")) + '" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;">Hubungi admin via WhatsApp</a></p>';
+
+      return html;
+    }
+
+    function openCheckStatus(prefillId) {
+      document.getElementById("orderForm").style.display = "none";
+      document.getElementById("successCard").classList.remove("visible");
+      document.getElementById("errorCard").classList.remove("visible");
+      document.getElementById("checkStatusCard").classList.add("visible");
+      document.getElementById("checkResult").classList.remove("visible");
+      document.getElementById("checkResult").innerHTML = "";
+      document.getElementById("checkError").style.display = "none";
+      document.getElementById("checkLoading").classList.remove("visible");
+      const input = document.getElementById("checkOrderIdInput");
+      if (prefillId) input.value = prefillId;
+      input.focus();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      if (!prefillId) {
+        const params = new URLSearchParams(window.location.search);
+        const q = params.get("orderId") || params.get("id");
+        if (q) {
+          input.value = q;
+          runCheckOrder();
+        }
+      }
+    }
+
+    function openCheckStatusFromSuccess() {
+      const id = document.getElementById("displayOrderId").textContent;
+      openCheckStatus(id && id !== "-" ? id : "");
+      if (id && id !== "-") runCheckOrder();
+    }
+
+    function closeCheckStatus() {
+      document.getElementById("checkStatusCard").classList.remove("visible");
+      document.getElementById("orderForm").style.display = "block";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    async function runCheckOrder() {
+      const input = document.getElementById("checkOrderIdInput");
+      const orderId = (input.value || "").trim();
+      const errEl = document.getElementById("checkError");
+      const resEl = document.getElementById("checkResult");
+      const loadEl = document.getElementById("checkLoading");
+      const btn = document.getElementById("btnCheckOrder");
+
+      errEl.style.display = "none";
+      resEl.classList.remove("visible");
+      resEl.innerHTML = "";
+
+      if (!orderId || orderId.length < 8) {
+        errEl.textContent = "Masukkan Order ID yang valid (minimal 8 karakter).";
+        errEl.style.display = "block";
+        return;
+      }
+
+      loadEl.classList.add("visible");
+      btn.disabled = true;
+      try {
+        await loadBankAccounts();
+        const url = APPS_SCRIPT_URL + "?action=checkOrder&orderId=" + encodeURIComponent(orderId);
+        const response = await fetch(url);
+        const data = await response.json();
+        if (!data.success) {
+          throw new Error(data.message || "Order tidak ditemukan.");
+        }
+        resEl.innerHTML = renderCheckResult(data);
+        resEl.classList.add("visible");
+        try {
+          const u = new URL(window.location.href);
+          u.searchParams.set("orderId", data.order.orderId);
+          history.replaceState(null, "", u.pathname + u.search);
+        } catch (e) {}
+      } catch (err) {
+        console.error(err);
+        errEl.textContent = err.message || "Gagal memeriksa status. Coba lagi nanti.";
+        errEl.style.display = "block";
+      } finally {
+        loadEl.classList.remove("visible");
+        btn.disabled = false;
+      }
+    }
+
+    (function initCheckFromQuery() {
+      const params = new URLSearchParams(window.location.search);
+      const q = params.get("orderId") || params.get("id");
+      if (q) {
+        document.addEventListener("DOMContentLoaded", function () {
+          openCheckStatus(q);
+          runCheckOrder();
+        });
+      }
+    })();
 
     // ============================================================
     // PACKAGE SELECTION & PRICE DISPLAY (dari Firebase)
