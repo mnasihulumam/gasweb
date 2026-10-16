@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Klinik Medika Sehat - Peduli Kesehatan Keluarga</title>
+    <meta name="description" content="Website Demo Klinik Medika Sehat - Pelayanan kesehatan yang profesional, nyaman, dan terpercaya untuk Anda dan keluarga.">
+    
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            light: '#69BCEB',
+                            primary: '#2586C8',
+                            dark: '#1B6396',
+                            bgLight: '#F1F9FE',
+                            textDark: '#203447',
+                            textMuted: '#6B7D8D',
+                            border: '#E2EDF5'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Adjustments & Transitions */
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: #203447;
+            background-color: #FFFFFF;
+        }
+
+        .shadow-soft {
+            box-shadow: 0 10px 30px -5px rgba(37, 134, 200, 0.08);
+        }
+
+        .shadow-card {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+        }
+
+        /* Image Fallback CSS */
+        img {
+            content-visibility: auto;
+        }
+
+        /* Active Nav Link Marker */
+        .nav-link.active {
+            color: #2586C8;
+            font-weight: 600;
+        }
+        
+        /* Modal & Mobile Nav Animations */
+        .modal-active {
+            display: flex !important;
+        }
+
+        /* Respect Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+            .animate-bounce, .transition-all {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-brand-light selection:text-white">
+
+    <!-- ==================== HEADER & NAVBAR ==================== -->
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-brand-border transition-all duration-300" id="main-header">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                
+                <!-- Brand Logo -->
+                <a href="#beranda" class="flex items-center gap-3 group focus:outline-none focus:ring-2 focus:ring-brand-primary rounded-lg p-1">
+                    <div class="w-11 h-11 rounded-xl bg-brand-light/20 flex items-center justify-center text-brand-primary group-hover:bg-brand-primary group-hover:text-white transition-colors duration-300">
+                        <i class="fa-solid fa-user-doctor text-xl"></i>
+                    </div>
+                    <div>
+                        <span class="block text-xl font-bold text-brand-textDark tracking-tight leading-none">Klinik Medika Sehat</span>
+                        <span class="text-xs font-medium text-brand-textMuted tracking-wide">Peduli Kesehatan Keluarga</span>
+                    </div>
+                </a>
+
+                <!-- Desktop Navigation -->
+                <nav class="hidden lg:flex items-center gap-8">
+                    <a href="#beranda" class="nav-link text-sm font-medium text-brand-textDark hover:text-brand-primary transition-colors py-1">Beranda</a>
+                    <a href="#layanan" class="nav-link text-sm font-medium text-brand-textDark hover:text-brand-primary transition-colors py-1">Layanan</a>
+                    <a href="#dokter" class="nav-link text-sm font-medium text-brand-textDark hover:text-brand-primary transition-colors py-1">Dokter</a>
+                    <a href="#jadwal" class="nav-link text-sm font-medium text-brand-textDark hover:text-brand-primary transition-colors py-1">Jadwal</a>
+                    <a href="#tentang" class="nav-link text-sm font-medium text-brand-textDark hover:text-brand-primary transition-colors py-1">Tentang Kami</a>
+                    <a href="#kontak" class="nav-link text-sm font-medium text-brand-textDark hover:text-brand-primary transition-colors py-1">Kontak</a>
+                </nav>
+
+                <!-- Desktop CTA Button -->
+                <div class="hidden lg:flex items-center">
+                    <a href="#booking" class="inline-flex items-center justify-center px-5 py-2.5 rounded-xl bg-brand-primary text-white font-semibold text-sm hover:bg-brand-dark transition-all duration-300 shadow-sm hover:shadow-md focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary">
+                        <i class="fa-regular fa-calendar-check mr-2"></i> Buat Janji
+                    </a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="flex lg:hidden">
+                    <button type="button" id="mobile-menu-btn" aria-label="Buka Menu Navigasi" class="inline-flex items-center justify-center p-2 rounded-lg text-brand-textDark hover:bg-brand-bgLight focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                        <i class="fa-solid fa-bars text-xl" id="menu-icon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu Dropdown -->
+        <div class="hidden lg:hidden bg-white border-b border-brand-border px-4 pt-2 pb-6 space-y-2" id="mobile-menu">
+            <a href="#beranda" class="mobile-nav-link block px-3 py-2.5 rounded-lg text-base font-medium text-brand-textDark hover:bg-brand-bgLight hover:text-brand-primary">Beranda</a>
+            <a href="#layanan" class="mobile-nav-link block px-3 py-2.5 rounded-lg text-base font-medium text-brand-textDark hover:bg-brand-bgLight hover:text-brand-primary">Layanan</a>
+            <a href="#dokter" class="mobile-nav-link block px-3 py-2.5 rounded-lg text-base font-medium text-brand-textDark hover:bg-brand-bgLight hover:text-brand-primary">Dokter</a>
+            <a href="#jadwal" class="mobile-nav-link block px-3 py-2.5 rounded-lg text-base font-medium text-brand-textDark hover:bg-brand-bgLight hover:text-brand-primary">Jadwal</a>
+            <a href="#tentang" class="mobile-nav-link block px-3 py-2.5 rounded-lg text-base font-medium text-brand-textDark hover:bg-brand-bgLight hover:text-brand-primary">Tentang Kami</a>
+            <a href="#kontak" class="mobile-nav-link block px-3 py-2.5 rounded-lg text-base font-medium text-brand-textDark hover:bg-brand-bgLight hover:text-brand-primary">Kontak</a>
+            <div class="pt-2">
+                <a href="#booking" class="mobile-nav-link block w-full text-center px-4 py-3 rounded-xl bg-brand-primary text-white font-semibold text-sm hover:bg-brand-dark transition-colors">
+                    <i class="fa-regular fa-calendar-check mr-2"></i> Buat Janji Sekarang
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- ==================== HERO SECTION ==================== -->
+    <section id="beranda" class="relative pt-8 pb-16 lg:pt-16 lg:pb-24 bg-gradient-to-b from-brand-bgLight/60 to-white overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                
+                <!-- Left Text Column -->
+                <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-light/15 text-brand-primary font-semibold text-xs tracking-wide uppercase border border-brand-light/30">
+                        <i class="fa-solid fa-notes-medical text-xs"></i> Klinik Kesehatan Modern & Terpercaya
+                    </div>
+                    
+                    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-brand-textDark leading-tight tracking-tight">
+                        Kesehatan Anda, <span class="text-brand-primary">Prioritas Kami.</span>
+                    </h1>
+                    
+                    <p class="text-base sm:text-lg text-brand-textMuted max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+                        Pelayanan kesehatan yang profesional, nyaman, dan terpercaya untuk Anda dan keluarga. Kami hadir untuk membantu Anda menjaga kesehatan dengan pelayanan yang penuh perhatian.
+                    </p>
+
+                    <!-- CTA Buttons -->
+                    <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
+                        <a href="#booking" class="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3.5 rounded-xl bg-brand-primary text-white font-bold text-base hover:bg-brand-dark transition-all duration-300 shadow-soft hover:shadow-lg focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary">
+                            Buat Janji Sekarang <i class="fa-solid fa-arrow-right ml-2 text-sm"></i>
+                        </a>
+                        <a href="#layanan" class="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3.5 rounded-xl bg-white text-brand-textDark font-semibold text-base border border-brand-border hover:bg-brand-bgLight hover:border-brand-light transition-all duration-300">
+                            Lihat Layanan
+                        </a>
+                    </div>
+
+                    <!-- Trust Highlights Badge List -->
+                    <div class="pt-6 border-t border-brand-border grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="flex items-center justify-center lg:justify-start gap-3">
+                            <div class="w-9 h-9 rounded-lg bg-brand-bgLight text-brand-primary flex items-center justify-center flex-shrink-0">
+                                <i class="fa-solid fa-house-chimney-medical text-sm"></i>
+                            </div>
+                            <span class="text-xs font-semibold text-brand-textDark text-left">Pelayanan Seluruh Keluarga</span>
+                        </div>
+                        <div class="flex items-center justify-center lg:justify-start gap-3">
+                            <div class="w-9 h-9 rounded-lg bg-brand-bgLight text-brand-primary flex items-center justify-center flex-shrink-0">
+                                <i class="fa-solid fa-user-doctor text-sm"></i>
+                            </div>
+                            <span class="text-xs font-semibold text-brand-textDark text-left">Tim Medis Profesional</span>
+                        </div>
+                        <div class="flex items-center justify-center lg:justify-start gap-3">
+                            <div class="w-9 h-9 rounded-lg bg-brand-bgLight text-brand-primary flex items-center justify-center flex-shrink-0">
+                                <i class="fa-solid fa-clock text-sm"></i>
+                            </div>
+                            <span class="text-xs font-semibold text-brand-textDark text-left">Jadwal Praktik Transparan</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Visual Column -->
+                <div class="lg:col-span-5 relative">
+                    <div class="relative mx-auto max-w-md lg:max-w-none">
+                        <!-- Main Medical Image -->
+                        <div class="aspect-[4/3] sm:aspect-[1/1] rounded-2xl overflow-hidden shadow-soft border-4 border-white bg-brand-bgLight relative">
+                            <img src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=1000&auto=format&fit=crop" 
+                                 alt="Gedung dan Interior Klinik Medika Sehat" 
+                                 class="w-full h-full object-cover object-center"
+                                 onerror="this.src='https://placehold.co/600x600/2586C8/FFFFFF?text=Gedung+Klinik+Modern'"
+                                 loading="eager">
+                        </div>
+
+                        <!-- Floating Info Badge -->
+                        <div class="absolute -bottom-6 -left-2 sm:-left-6 bg-white p-4 rounded-xl shadow-card border border-brand-border flex items-center gap-3.5 max-w-xs">
+                            <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center flex-shrink-0">
+                                <i class="fa-solid fa-circle-check text-lg"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs font-semibold text-brand-textDark">Klinik Beroperasi Hari Ini</p>
+                                <p class="text-[11px] text-brand-textMuted">08.00 – 20.00 WIB • Konsultasi Siap</p>
+                            </div>
+                        </div>
+
+                        <!-- Secondary Floating Card -->
+                        <div class="hidden sm:flex absolute -top-4 -right-4 bg-white p-3.5 rounded-xl shadow-card border border-brand-border items-center gap-3">
+                            <div class="w-9 h-9 rounded-lg bg-brand-light/20 text-brand-primary flex items-center justify-center">
+                                <i class="fa-solid fa-headset text-sm"></i>
+                            </div>
+                            <div>
+                                <span class="block text-[11px] text-brand-textMuted font-medium">Bantuan Cepat</span>
+                                <span class="text-xs font-bold text-brand-textDark">Chat WhatsApp Dokter</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== KEUNGGULAN KLINIK ==================== -->
+    <section class="py-16 bg-white border-y border-brand-border">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-12">
+                <h2 class="text-2xl sm:text-3xl font-bold text-brand-textDark tracking-tight">Mengapa Memilih Klinik Medika Sehat?</h2>
+                <p class="text-sm sm:text-base text-brand-textMuted mt-2">Komitmen kami dalam menghadirkan pelayanan kesehatan primer yang terpercaya dan terjangkau.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                
+                <!-- Card 1 -->
+                <div class="p-6 rounded-2xl bg-white border border-brand-border hover:border-brand-light transition-all duration-300 hover:shadow-card group">
+                    <div class="w-12 h-12 rounded-xl bg-brand-bgLight text-brand-primary flex items-center justify-center mb-5 group-hover:bg-brand-primary group-hover:text-white transition-colors">
+                        <i class="fa-solid fa-user-doctor text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-brand-textDark mb-2">Tenaga Medis Profesional</h3>
+                    <p class="text-xs sm:text-sm text-brand-textMuted leading-relaxed">
+                        Dokter umum dan staf medis berdedikasi tinggi yang siap memberikan penanganan medis awal secara cermat dan santun.
+                    </p>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="p-6 rounded-2xl bg-white border border-brand-border hover:border-brand-light transition-all duration-300 hover:shadow-card group">
+                    <div class="w-12 h-12 rounded-xl bg-brand-bgLight text-brand-primary flex items-center justify-center mb-5 group-hover:bg-brand-primary group-hover:text-white transition-colors">
+                        <i class="fa-solid fa-heart-pulse text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-brand-textDark mb-2">Pelayanan Ramah & Informatif</h3>
+                    <p class="text-xs sm:text-sm text-brand-textMuted leading-relaxed">
+                        Suasana pelayanan yang hangat dan edukasi kesehatan yang jelas agar Anda memahami setiap langkah tindakan medis.
+                    </p>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="p-6 rounded-2xl bg-white border border-brand-border hover:border-brand-light transition-all duration-300 hover:shadow-card group">
+                    <div class="w-12 h-12 rounded-xl bg-brand-bgLight text-brand-primary flex items-center justify-center mb-5 group-hover:bg-brand-primary group-hover:text-white transition-colors">
+                        <i class="fa-regular fa-calendar-check text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-brand-textDark mb-2">Jadwal Transparan</h3>
+                    <p class="text-xs sm:text-sm text-brand-textMuted leading-relaxed">
+                        Informasi jam operasional dan jadwal kunjungan yang pasti, mempermudah Anda mengatur waktu kedatangan.
+                    </p>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="p-6 rounded-2xl bg-white border border-brand-border hover:border-brand-light transition-all duration-300 hover:shadow-card group">
+                    <div class="w-12 h-12 rounded-xl bg-brand-bgLight text-brand-primary flex items-center justify-center mb-5 group-hover:bg-brand-primary group-hover:text-white transition-colors">
+                        <i class="fa-solid fa-mobile-screen-button text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-brand-textDark mb-2">Kemudahan Registrasi</h3>
+                    <p class="text-xs sm:text-sm text-brand-textMuted leading-relaxed">
+                        Pesan waktu kunjungan secara cepat via WhatsApp tanpa proses antrean administrasi yang rumit di lokasi.
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== LAYANAN KLINIK ==================== -->
+    <section id="layanan" class="py-16 sm:py-24 bg-brand-bgLight/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-12">
+                <div>
+                    <span class="text-xs font-bold text-brand-primary uppercase tracking-wider">Layanan Utama</span>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-brand-textDark mt-1">Layanan Kesehatan untuk Anda dan Keluarga</h2>
+                </div>
+                <p class="text-sm text-brand-textMuted mt-2 md:mt-0 max-w-md">
+                    Temukan layanan kesehatan dasar dan pencegahan yang disesuaikan dengan kebutuhan setiap anggota keluarga Anda.
+                </p>
+            </div>
+
+            <!-- Service Cards Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <!-- Service 1 -->
+                <div class="bg-white p-7 rounded-2xl border border-brand-border hover:shadow-card transition-all duration-300 flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-brand-light/20 text-brand-primary flex items-center justify-center mb-5">
+                            <i class="fa-solid fa-stethoscope text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-brand-textDark mb-2">Pemeriksaan Umum</h3>
+                        <p class="text-sm text-brand-textMuted leading-relaxed mb-6">
+                            Pemeriksaan kondisi kesehatan menyeluruh dan konsultasi keluhan penyakit umum bersama tim dokter berpengalaman.
+                        </p>
+                    </div>
+                    <a href="#booking" onclick="preselectService('Pemeriksaan Umum')" class="inline-flex items-center text-xs font-bold text-brand-primary hover:text-brand-dark transition-colors group">
+                        Informasi Layanan <i class="fa-solid fa-chevron-right ml-1 text-[10px] group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                </div>
+
+                <!-- Service 2 -->
+                <div class="bg-white p-7 rounded-2xl border border-brand-border hover:shadow-card transition-all duration-300 flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-brand-light/20 text-brand-primary flex items-center justify-center mb-5">
+                            <i class="fa-solid fa-comments-doctor text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-brand-textDark mb-2">Konsultasi Dokter</h3>
+                        <p class="text-sm text-brand-textMuted leading-relaxed mb-6">
+                            Sesi konsultasi mendalam untuk membantu memahami keluhan medis, evaluasi gejala, serta arahan rujukan medis lanjutan.
+                        </p>
+                    </div>
+                    <a href="#booking" onclick="preselectService('Konsultasi Dokter')" class="inline-flex items-center text-xs font-bold text-brand-primary hover:text-brand-dark transition-colors group">
+                        Informasi Layanan <i class="fa-solid fa-chevron-right ml-1 text-[10px] group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                </div>
+
+                <!-- Service 3 -->
+                <div class="bg-white p-7 rounded-2xl border border-brand-border hover:shadow-card transition-all duration-300 flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-brand-light/20 text-brand-primary flex items-center justify-center mb-5">
+                            <i class="fa-solid fa-baby-carriage text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-brand-textDark mb-2">Kesehatan Ibu & Anak</h3>
+                        <p class="text-sm text-brand-textMuted leading-relaxed mb-6">
+                            Pelayanan pemantauan tumbuh kembang anak, edukasi gizi balita, dan pemeriksaan kesehatan rutin bagi ibu.
+                        </p>
+                    </div>
+                    <a href="#booking" onclick="preselectService('Kesehatan Ibu dan Anak')" class="inline-flex items-center text-xs font-bold text-brand-primary hover:text-brand-dark transition-colors group">
+                        Informasi Layanan <i class="fa-solid fa-chevron-right ml-1 text-[10px] group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                </div>
+
+                <!-- Service 4 -->
+                <div class="bg-white p-7 rounded-2xl border border-brand-border hover:shadow-card transition-all duration-300 flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-brand-light/20 text-brand-primary flex items-center justify-center mb-5">
+                            <i class="fa-solid fa-file-waveform text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-brand-textDark mb-2">Pemeriksaan Kesehatan</h3>
+                        <p class="text-sm text-brand-textMuted leading-relaxed mb-6">
+                            Layanan cek tensi darah, gula darah sewaktu, kolesterol, dan asam urat sesuai dengan ketersediaan fasilitas klinik.
+                        </p>
+                    </div>
+                    <a href="#booking" onclick="preselectService('Pemeriksaan Kesehatan')" class="inline-flex items-center text-xs font-bold text-brand-primary hover:text-brand-dark transition-colors group">
+                        Informasi Layanan <i class="fa-solid fa-chevron-right ml-1 text-[10px] group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                </div>
+
+                <!-- Service 5 -->
+                <div class="bg-white p-7 rounded-2xl border border-brand-border hover:shadow-card transition-all duration-300 flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-brand-light/20 text-brand-primary flex items-center justify-center mb-5">
+                            <i class="fa-solid fa-kit-medical text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-brand-textDark mb-2">Perawatan Luka</h3>
+                        <p class="text-sm text-brand-textMuted leading-relaxed mb-6">
+                            Tindakan pembersihan dan perawatan luka ringan hingga sedang dengan kesterilan alat yang terjamin.
+                        </p>
+                    </div>
+                    <a href="#booking" onclick="preselectService('Perawatan Luka')" class="inline-flex items-center text-xs font-bold text-brand-primary hover:text-brand-dark transition-colors group">
+                        Informasi Layanan <i class="fa-solid fa-chevron-right ml-1 text-[10px] group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                </div>
+
+                <!-- Service 6 -->
+                <div class="bg-white p-7 rounded-2xl border border-brand-border hover:shadow-card transition-all duration-300 flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-brand-light/20 text-brand-primary flex items-center justify-center mb-5">
+                            <i class="fa-solid fa-people-roof text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-brand-textDark mb-2">Konsultasi Kesehatan Keluarga</h3>
+                        <p class="text-sm text-brand-textMuted leading-relaxed mb-6">
+                            Pendampingan dan edukasi pemeliharaan pola hidup sehat berkelanjutan untuk pencegahan penyakit dalam keluarga.
+                        </p>
+                    </div>
+                    <a href="#booking" onclick="preselectService('Konsultasi Kesehatan Keluarga')" class="inline-flex items-center text-xs font-bold text-brand-primary hover:text-brand-dark transition-colors group">
+                        Informasi Layanan <i class="fa-solid fa-chevron-right ml-1 text-[10px] group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                </div>
+
+            </div>
+            
+            <p class="text-center text-xs text-brand-textMuted mt-8">
+                *Seluruh layanan di atas merupakan layanan medis tingkat pertama (primer).
+            </p>
+        </div>
+    </section>
+
+    <!-- ==================== PROFIL DOKTER ==================== -->
+    <section id="dokter" class="py-16 sm:py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-16">
+                <span class="text-xs font-bold text-brand-primary uppercase tracking-wider">Tim Dokter</span>
+                <h2 class="text-2xl sm:text-3xl font-bold text-brand-textDark mt-1">Kenali Tim Dokter Kami</h2>
+                <p class="text-sm sm:text-base text-brand-textMuted mt-2">
+                    Informasi dokter dan jadwal praktik untuk membantu Anda merencanakan kunjungan berobat dengan nyaman.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                
+                <!-- Doctor 1 -->
+                <div class="rounded-2xl border border-brand-border bg-white overflow-hidden hover:shadow-card transition-all duration-300 flex flex-col">
+                    <div class="aspect-[4/3] bg-brand-bgLight relative overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?q=80&w=800&auto=format&fit=crop" 
+                             alt="dr. Aditya Pratama" 
+                             class="w-full h-full object-cover object-top"
+                             onerror="this.src='https://placehold.co/400x300/2586C8/FFFFFF?text=dr.+Aditya+Pratama'"
+                             loading="lazy">
+                        <div class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2.5 py-1 rounded-md text-[11px] font-semibold text-brand-primary border border-brand-border">
+                            Dokter Umum
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-lg font-bold text-brand-textDark">dr. Aditya Pratama</h3>
+                            <p class="text-xs text-brand-textMuted mb-4">Dokter Penanggung Jawab Medis</p>
+                            
+                            <div class="space-y-2 text-xs border-t border-brand-border pt-4 mb-6">
+                                <div class="flex items-center text-brand-textDark">
+                                    <i class="fa-regular fa-calendar text-brand-primary w-5"></i>
+                                    <span class="font-medium">Senin – Jumat</span>
+                                </div>
+                                <div class="flex items-center text-brand-textDark">
+                                    <i class="fa-regular fa-clock text-brand-primary w-5"></i>
+                                    <span>08.00 – 12.00 WIB</span>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="#booking" onclick="preselectDoctor('dr. Aditya Pratama')" class="w-full inline-flex items-center justify-center py-2.5 px-4 rounded-xl bg-brand-bgLight hover:bg-brand-primary text-brand-primary hover:text-white font-semibold text-xs transition-colors border border-brand-border hover:border-transparent">
+                            Buat Janji Kunjungan
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Doctor 2 -->
+                <div class="rounded-2xl border border-brand-border bg-white overflow-hidden hover:shadow-card transition-all duration-300 flex flex-col">
+                    <div class="aspect-[4/3] bg-brand-bgLight relative overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1594824813566-78a9327d1136?q=80&w=800&auto=format&fit=crop" 
+                             alt="dr. Nadia Putri" 
+                             class="w-full h-full object-cover object-top"
+                             onerror="this.src='https://placehold.co/400x300/2586C8/FFFFFF?text=dr.+Nadia+Putri'"
+                             loading="lazy">
+                        <div class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2.5 py-1 rounded-md text-[11px] font-semibold text-brand-primary border border-brand-border">
+                            Dokter Umum
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-lg font-bold text-brand-textDark">dr. Nadia Putri</h3>
+                            <p class="text-xs text-brand-textMuted mb-4">Dokter Umum & Konsultasi Ibu-Anak</p>
+                            
+                            <div class="space-y-2 text-xs border-t border-brand-border pt-4 mb-6">
+                                <div class="flex items-center text-brand-textDark">
+                                    <i class="fa-regular fa-calendar text-brand-primary w-5"></i>
+                                    <span class="font-medium">Senin – Sabtu</span>
+                                </div>
+                                <div class="flex items-center text-brand-textDark">
+                                    <i class="fa-regular fa-clock text-brand-primary w-5"></i>
+                                    <span>13.00 – 17.00 WIB</span>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="#booking" onclick="preselectDoctor('dr. Nadia Putri')" class="w-full inline-flex items-center justify-center py-2.5 px-4 rounded-xl bg-brand-bgLight hover:bg-brand-primary text-brand-primary hover:text-white font-semibold text-xs transition-colors border border-brand-border hover:border-transparent">
+                            Buat Janji Kunjungan
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Doctor 3 -->
+                <div class="rounded-2xl border border-brand-border bg-white overflow-hidden hover:shadow-card transition-all duration-300 flex flex-col">
+                    <div class="aspect-[4/3] bg-brand-bgLight relative overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1537368910025-700350fe46c7?q=80&w=800&auto=format&fit=crop" 
+                             alt="dr. Rizky Mahendra" 
+                             class="w-full h-full object-cover object-top"
+                             onerror="this.src='https://placehold.co/400x300/2586C8/FFFFFF?text=dr.+Rizky+Mahendra'"
+                             loading="lazy">
+                        <div class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2.5 py-1 rounded-md text-[11px] font-semibold text-brand-primary border border-brand-border">
+                            Dokter Umum
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-lg font-bold text-brand-textDark">dr. Rizky Mahendra</h3>
+                            <p class="text-xs text-brand-textMuted mb-4">Dokter Umum Praktik Sore</p>
+                            
+                            <div class="space-y-2 text-xs border-t border-brand-border pt-4 mb-6">
+                                <div class="flex items-center text-brand-textDark">
+                                    <i class="fa-regular fa-calendar text-brand-primary w-5"></i>
+                                    <span class="font-medium">Selasa, Kamis, Sabtu</span>
+                                </div>
+                                <div class="flex items-center text-brand-textDark">
+                                    <i class="fa-regular fa-clock text-brand-primary w-5"></i>
+                                    <span>16.00 – 20.00 WIB</span>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="#booking" onclick="preselectDoctor('dr. Rizky Mahendra')" class="w-full inline-flex items-center justify-center py-2.5 px-4 rounded-xl bg-brand-bgLight hover:bg-brand-primary text-brand-primary hover:text-white font-semibold text-xs transition-colors border border-brand-border hover:border-transparent">
+                            Buat Janji Kunjungan
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Demo Disclaimer Banner -->
+            <div class="mt-8 p-4 rounded-xl bg-brand-bgLight border border-brand-border flex items-center gap-3 text-xs text-brand-textMuted">
+                <i class="fa-solid fa-circle-info text-brand-primary text-base flex-shrink-0"></i>
+                <p>Data profil dokter di atas merupakan data demo fiktif untuk keperluan tampilan portofolio website.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== INTERACTIVE DOCTOR SCHEDULE ==================== -->
+    <section id="jadwal" class="py-16 sm:py-24 bg-brand-bgLight/40 border-t border-brand-border">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-10">
+                <span class="text-xs font-bold text-brand-primary uppercase tracking-wider">Jadwal Terintegrasi</span>
+                <h2 class="text-2xl sm:text-3xl font-bold text-brand-textDark mt-1">Jadwal Praktik Dokter</h2>
+                <p class="text-sm text-brand-textMuted mt-2">Gunakan filter di bawah untuk memfilter jadwal dokter sesuai hari kedatangan Anda.</p>
+            </div>
+
+            <!-- Schedule Filter Controls -->
+            <div class="bg-white p-4 sm:p-6 rounded-2xl border border-brand-border shadow-sm mb-8">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="filter-day" class="block text-xs font-semibold text-brand-textDark mb-1">Filter Hari Praktik:</label>
+                        <select id="filter-day" class="w-full px-3.5 py-2.5 rounded-xl border border-brand-border text-xs sm:text-sm text-brand-textDark focus:outline-none focus:ring-2 focus:ring-brand-primary bg-white">
+                            <option value="all">Semua Hari</option>
+                            <option value="Senin">Senin</option>
+                            <option value="Selasa">Selasa</option>
+                            <option value="Rabu">Rabu</option>
+                            <option value="Kamis">Kamis</option>
+                            <option value="Jumat">Jumat</option>
+                            <option value="Sabtu">Sabtu</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="filter-doctor" class="block text-xs font-semibold text-brand-textDark mb-1">Filter Nama Dokter:</label>
+                        <select id="filter-doctor" class="w-full px-3.5 py-2.5 rounded-xl border border-brand-border text-xs sm:text-sm text-brand-textDark focus:outline-none focus:ring-2 focus:ring-brand-primary bg-white">
+                            <option value="all">Semua Dokter</option>
+                            <option value="dr. Aditya Pratama">dr. Aditya Pratama</option>
+                            <option value="dr. Nadia Putri">dr. Nadia Putri</option>
+                            <option value="dr. Rizky Mahendra">dr. Rizky Mahendra</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Schedule Table / Responsive Cards -->
+            <div class="bg-white rounded-2xl border border-brand-border overflow-hidden shadow-sm">
+                
+                <!-- Desktop Table View -->
+                <div class="hidden md:block overflow-x-auto">
+                    <table class="w-full text-left border-collapse" id="schedule-table">
+                        <thead>
+                            <tr class="bg-brand-bgLight text-brand-textDark text-xs font-bold uppercase tracking-wider border-b border-brand-border">
+                                <th class="p-4 pl-6">Nama Dokter</th>
+                                <th class="p-4">Layanan</th>
+                                <th class="p-4">Hari Praktik</th>
+                                <th class="p-4">Jam Praktik</th>
+                                <th class="p-4 pr-6 text-right">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-brand-border text-sm text-brand-textDark" id="schedule-tbody">
+                            <!-- Populated dynamically via JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Mobile Card Layout -->
+                <div class="md:hidden divide-y divide-brand-border" id="schedule-mobile-cards">
+                    <!-- Populated dynamically via JS -->
+                </div>
+
+            </div>
+
+            <p class="text-xs text-brand-textMuted text-center mt-4">
+                * Catatan: Jadwal pada halaman ini merupakan data demo dan dapat berubah sesuai kebijakan klinik.
+            </p>
+        </div>
+    </section>
+
+    <!-- ==================== JAM OPERASIONAL ==================== -->
+    <section class="py-16 bg-white border-b border-brand-border">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                
+                <div class="lg:col-span-6 space-y-4">
+                    <span class="text-xs font-bold text-brand-primary uppercase tracking-wider">Waktu Pelayanan</span>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-brand-textDark">Jam Operasional Klinik</h2>
+                    <p class="text-sm text-brand-textMuted leading-relaxed">
+                        Klinik Medika Sehat melayani pendaftaran umum dan konsultasi medis sesuai dengan jam kerja operasional gedung klinik berikut.
+                    </p>
+                    
+                    <div class="space-y-3 pt-2">
+                        <div class="flex items-start gap-3 text-xs text-brand-textMuted">
+                            <i class="fa-solid fa-circle-info text-brand-primary mt-0.5"></i>
+                            <span>Jam operasional gedung klinik dapat berbeda dengan jam jadwal praktik masing-masing dokter.</span>
+                        </div>
+                        <div class="flex items-start gap-3 text-xs text-brand-textMuted">
+                            <i class="fa-solid fa-circle-info text-brand-primary mt-0.5"></i>
+                            <span>Sangat disarankan untuk melakukan konfirmasi jadwal terlebih dahulu sebelum datang ke klinik.</span>
+                        </div>
+                    </div>
+
+                    <div class="pt-4">
+                        <a href="https://wa.me/6281234567890?text=Halo%20Klinik%20Medika%20Sehat,%20saya%20ingin%20mengonfirmasi%20jam%20operasional%20hari%20ini." target="_blank" rel="noopener noreferrer" class="inline-flex items-center px-5 py-3 rounded-xl bg-emerald-600 text-white font-semibold text-xs hover:bg-emerald-700 transition-colors shadow-sm">
+                            <i class="fa-brands fa-whatsapp text-base mr-2"></i> Konfirmasi Jadwal via WhatsApp
+                        </a>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-6">
+                    <div class="bg-brand-bgLight p-6 sm:p-8 rounded-2xl border border-brand-border space-y-3">
+                        <div class="flex items-center justify-between pb-3 border-b border-brand-border/60">
+                            <span class="text-sm font-semibold text-brand-textDark flex items-center"><i class="fa-regular fa-clock text-brand-primary mr-2"></i> Senin – Jumat</span>
+                            <span class="text-xs font-bold text-brand-primary bg-white px-3 py-1 rounded-full border border-brand-border">08.00 – 20.00 WIB</span>
+                        </div>
+                        <div class="flex items-center justify-between pb-3 border-b border-brand-border/60">
+                            <span class="text-sm font-semibold text-brand-textDark flex items-center"><i class="fa-regular fa-clock text-brand-primary mr-2"></i> Sabtu</span>
+                            <span class="text-xs font-bold text-brand-primary bg-white px-3 py-1 rounded-full border border-brand-border">08.00 – 17.00 WIB</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-semibold text-brand-textDark flex items-center"><i class="fa-regular fa-clock text-brand-primary mr-2"></i> Minggu & Hari Libur</span>
+                            <span class="text-xs font-bold text-amber-600 bg-white px-3 py-1 rounded-full border border-brand-border">09.00 – 13.00 WIB</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== CARA MEMBUAT JANJI ==================== -->
+    <section class="py-16 sm:py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-xl mx-auto mb-12">
+                <h2 class="text-2xl sm:text-3xl font-bold text-brand-textDark">Buat Janji dengan Mudah</h2>
+                <p class="text-xs sm:text-sm text-brand-textMuted mt-1">3 langkah sederhana untuk merencanakan kunjungan berobat Anda.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+                
+                <!-- Step 1 -->
+                <div class="text-center p-6 rounded-2xl bg-brand-bgLight/50 border border-brand-border relative">
+                    <div class="w-10 h-10 rounded-full bg-brand-primary text-white font-bold flex items-center justify-center mx-auto mb-4 text-sm shadow-md">
+                        1
+                    </div>
+                    <h3 class="text-base font-bold text-brand-textDark mb-1">Pilih Layanan</h3>
+                    <p class="text-xs text-brand-textMuted leading-relaxed">
+                        Tentukan jenis pemeriksaan medis atau konsultasi kesehatan yang Anda perlukan.
+                    </p>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="text-center p-6 rounded-2xl bg-brand-bgLight/50 border border-brand-border relative">
+                    <div class="w-10 h-10 rounded-full bg-brand-primary text-white font-bold flex items-center justify-center mx-auto mb-4 text-sm shadow-md">
+                        2
+                    </div>
+                    <h3 class="text-base font-bold text-brand-textDark mb-1">Pilih Dokter & Jadwal</h3>
+                    <p class="text-xs text-brand-textMuted leading-relaxed">
+                        Sesuaikan waktu luang Anda dengan jadwal hari dan jam praktik dokter kami.
+                    </p>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="text-center p-6 rounded-2xl bg-brand-bgLight/50 border border-brand-border relative">
+                    <div class="w-10 h-10 rounded-full bg-brand-primary text-white font-bold flex items-center justify-center mx-auto mb-4 text-sm shadow-md">
+                        3
+                    </div>
+                    <h3 class="text-base font-bold text-brand-textDark mb-1">Konfirmasi via WhatsApp</h3>
+                    <p class="text-xs text-brand-textMuted leading-relaxed">
+                        Kirim formulir pesanan dan tunggu konfirmasi antrean dari pihak administrasi klinik.
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== FORMULIR BOOKING VIA WHATSAPP ==================== -->
+    <section id="booking" class="py-16 sm:py-24 bg-gradient-to-b from-brand-bgLight to-white border-t border-brand-border">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div class="bg-white rounded-3xl border border-brand-border p-6 sm:p-10 shadow-soft">
+                <div class="text-center max-w-lg mx-auto mb-8">
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-3">
+                        <i class="fa-brands fa-whatsapp text-2xl"></i>
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-brand-textDark">Formulir Buat Janji Kunjungan</h2>
+                    <p class="text-xs sm:text-sm text-brand-textMuted mt-2">
+                        Isi data berikut untuk membuat draf pesan reservasi janji ke WhatsApp klinik.
+                    </p>
+                </div>
+
+                <!-- Form Element -->
+                <form id="whatsapp-booking-form" onsubmit="handleBookingSubmit(event)" class="space-y-5">
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <!-- Patient Name -->
+                        <div>
+                            <label for="booking-name" class="block text-xs font-bold text-brand-textDark mb-1.5">Nama Pasien *</label>
+                            <input type="text" id="booking-name" required placeholder="Contoh: Budi Santoso" class="w-full px-4 py-3 rounded-xl border border-brand-border text-xs sm:text-sm text-brand-textDark focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                        </div>
+
+                        <!-- Patient Phone / WhatsApp -->
+                        <div>
+                            <label for="booking-phone" class="block text-xs font-bold text-brand-textDark mb-1.5">Nomor WhatsApp Pasien *</label>
+                            <input type="tel" id="booking-phone" required placeholder="Contoh: 081234567890" class="w-full px-4 py-3 rounded-xl border border-brand-border text-xs sm:text-sm text-brand-textDark focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <!-- Service Selection -->
+                        <div>
+                            <label for="booking-service" class="block text-xs font-bold text-brand-textDark mb-1.5">Pilih Layanan *</label>
+                            <select id="booking-service" required class="w-full px-4 py-3 rounded-xl border border-brand-border text-xs sm:text-sm text-brand-textDark focus:outline-none focus:ring-2 focus:ring-brand-primary bg-white">
+                                <option value="" disabled selected>-- Pilih Layanan Kesehatan --</option>
+                                <option value="Pemeriksaan Umum">Pemeriksaan Umum</option>
+                                <option value="Konsultasi Dokter">Konsultasi Dokter</option>
+                                <option value="Kesehatan Ibu dan Anak">Kesehatan Ibu dan Anak</option>
+                                <option value="Pemeriksaan Kesehatan">Pemeriksaan Kesehatan</option>
+                                <option value="Perawatan Luka">Perawatan Luka</option>
+                                <option value="Konsultasi Kesehatan Keluarga">Konsultasi Kesehatan Keluarga</option>
+                            </select>
+                        </div>
+
+                        <!-- Doctor Selection -->
+                        <div>
+                            <label for="booking-doctor" class="block text-xs font-bold text-brand-textDark mb-1.5">Pilih Dokter *</label>
+                            <select id="booking-doctor" required class="w-full px-4 py-3 rounded-xl border border-brand-border text-xs sm:text-sm text-brand-textDark focus:outline-none focus:ring-2 focus:ring-brand-primary bg-white">
+                                <option value="" disabled selected>-- Pilih Dokter Praktik --</option>
+                                <option value="dr. Aditya Pratama">dr. Aditya Pratama (Pagi)</option>
+                                <option value="dr. Nadia Putri">dr. Nadia Putri (Siang)</option>
+                                <option value="dr. Rizky Mahendra">dr. Rizky Mahendra (Sore)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <!-- Visit Date -->
+                        <div>
+                            <label for="booking-date" class="block text-xs font-bold text-brand-textDark mb-1.5">Tanggal Kunjungan *</label>
+                            <input type="date" id="booking-date" required class="w-full px-4 py-3 rounded-xl border border-brand-border text-xs sm:text-sm text-brand-textDark focus:outline-none focus:ring-2 focus:ring-brand-primary bg-white">
+                        </div>
+
+                        <!-- Visit Time -->
+                        <div>
+                            <label for="booking-time" class="block text-xs font-bold text-brand-textDark mb-1.5">Prakiraan Waktu Kunjungan *</label>
+                            <select id="booking-time" required class="w-full px-4 py-3 rounded-xl border border-brand-border text-xs sm:text-sm text-brand-textDark focus:outline-none focus:ring-2 focus:ring-brand-primary bg-white">
+                                <option value="" disabled selected>-- Pilih Sesi Waktu --</option>
+                                <option value="Sesi Pagi (08.00 - 11.00 WIB)">Sesi Pagi (08.00 - 11.00 WIB)</option>
+                                <option value="Sesi Siang (13.00 - 16.00 WIB)">Sesi Siang (13.00 - 16.00 WIB)</option>
+                                <option value="Sesi Sore (16.00 - 19.00 WIB)">Sesi Sore (16.00 - 19.00 WIB)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Additional Notes -->
+                    <div>
+                        <label for="booking-notes" class="block text-xs font-bold text-brand-textDark mb-1.5">Catatan Tambahan (Opsional)</label>
+                        <textarea id="booking-notes" rows="3" placeholder="Sampaikan keluhan singkat atau catatan pendaftaran Anda di sini..." class="w-full px-4 py-3 rounded-xl border border-brand-border text-xs sm:text-sm text-brand-textDark focus:outline-none focus:ring-2 focus:ring-brand-primary"></textarea>
+                    </div>
+
+                    <!-- Submit CTA Button -->
+                    <div class="pt-2">
+                        <button type="submit" class="w-full py-3.5 px-6 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm sm:text-base transition-all duration-300 shadow-md flex items-center justify-center gap-2">
+                            <i class="fa-brands fa-whatsapp text-lg"></i> Kirim Permintaan Janji via WhatsApp
+                        </button>
+                    </div>
+
+                    <!-- Notification Disclaimer -->
+                    <div class="p-3.5 rounded-xl bg-brand-bgLight text-[11px] text-brand-textMuted text-center border border-brand-border">
+                        <i class="fa-solid fa-triangle-exclamation text-amber-500 mr-1"></i> Permintaan booking baru dianggap diterima setelah mendapatkan konfirmasi balasan dari pihak petugas klinik.
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ==================== FASILITAS KLINIK & GALERI ==================== -->
+    <section class="py-16 sm:py-24 bg-white border-t border-brand-border">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-12">
+                <span class="text-xs font-bold text-brand-primary uppercase tracking-wider">Kenyamanan Pasien</span>
+                <h2 class="text-2xl sm:text-3xl font-bold text-brand-textDark mt-1">Fasilitas & Suasana Klinik</h2>
+                <p class="text-sm text-brand-textMuted mt-2">Ruang pelayanan yang bersih, terawat, dan didesain nyaman untuk pasien.</p>
+            </div>
+
+            <!-- Gallery Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                
+                <!-- Facility Item 1 -->
+                <div class="group relative aspect-[4/3] rounded-2xl overflow-hidden border border-brand-border cursor-pointer" onclick="openLightbox('https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=1200&auto=format&fit=crop', 'Ruang Tunggu Pasien')">
+                    <img src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=600&auto=format&fit=crop" 
+                         alt="Ruang Tunggu Pasien" 
+                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                         onerror="this.src='https://placehold.co/600x450/2586C8/FFFFFF?text=Ruang+Tunggu'"
+                         loading="lazy">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity"></div>
+                    <div class="absolute bottom-4 left-4 right-4 text-white">
+                        <span class="text-xs font-bold block">Ruang Tunggu Pasien</span>
+                        <span class="text-[10px] text-slate-200">Nyaman, Sejuk & Bersih</span>
+                    </div>
+                </div>
+
+                <!-- Facility Item 2 -->
+                <div class="group relative aspect-[4/3] rounded-2xl overflow-hidden border border-brand-border cursor-pointer" onclick="openLightbox('https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=80&w=1200&auto=format&fit=crop', 'Ruang Konsultasi Dokter')">
+                    <img src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=80&w=600&auto=format&fit=crop" 
+                         alt="Ruang Konsultasi Dokter" 
+                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                         onerror="this.src='https://placehold.co/600x450/2586C8/FFFFFF?text=Ruang+Konsultasi'"
+                         loading="lazy">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity"></div>
+                    <div class="absolute bottom-4 left-4 right-4 text-white">
+                        <span class="text-xs font-bold block">Ruang Konsultasi Dokter</span>
+                        <span class="text-[10px] text-slate-200">Privasi Terjaga</span>
+                    </div>
+                </div>
+
+                <!-- Facility Item 3 -->
+                <div class="group relative aspect-[4/3] rounded-2xl overflow-hidden border border-brand-border cursor-pointer" onclick="openLightbox('https://images.unsplash.com/photo-1586773860418-d37222d8fce3?q=80&w=1200&auto=format&fit=crop', 'Area Resepsionis & Pendaftaran')">
+                    <img src="https://images.unsplash.com/photo-1586773860418-d37222d8fce3?q=80&w=600&auto=format&fit=crop" 
+                         alt="Area Resepsionis" 
+                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                         onerror="this.src='https://placehold.co/600x450/2586C8/FFFFFF?text=Area+Resepsionis'"
+                         loading="lazy">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity"></div>
+                    <div class="absolute bottom-4 left-4 right-4 text-white">
+                        <span class="text-xs font-bold block">Area Resepsionis</span>
+                        <span class="text-[10px] text-slate-200">Pelayanan Cepat & Ramah</span>
+                    </div>
+                </div>
+
+                <!-- Facility Item 4 -->
+                <div class="group relative aspect-[4/3] rounded-2xl overflow-hidden border border-brand-border cursor-pointer" onclick="openLightbox('https://images.unsplash.com/photo-1516549655169-df83a0774514?q=80&w=1200&auto=format&fit=crop', 'Ruang Triage & Pemeriksaan')">
+                    <img src="https://images.unsplash.com/photo-1516549655169-df83a0774514?q=80&w=600&auto=format&fit=crop" 
+                         alt="Ruang Pemeriksaan Medis" 
+                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                         onerror="this.src='https://placehold.co/600x450/2586C8/FFFFFF?text=Ruang+Pemeriksaan'"
+                         loading="lazy">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity"></div>
+                    <div class="absolute bottom-4 left-4 right-4 text-white">
+                        <span class="text-xs font-bold block">Ruang Pemeriksaan</span>
+                        <span class="text-[10px] text-slate-200">Peralatan Medis Terstandar</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Lightbox Modal Container -->
+    <div id="lightbox-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4" onclick="closeLightbox(event)">
+        <div class="relative max-w-4xl w-full bg-transparent text-right" onclick="event.stopPropagation()">
+            <button type="button" onclick="closeLightbox()" aria-label="Tutup Galeri" class="mb-2 text-white bg-white/20 hover:bg-white/40 rounded-full w-10 h-10 inline-flex items-center justify-center text-lg transition-colors">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="rounded-2xl overflow-hidden bg-black max-h-[80vh] flex items-center justify-center">
+                <img id="lightbox-img" src="" alt="Pratinjau Fasilitas" class="max-h-[80vh] w-auto object-contain">
+            </div>
+            <p id="lightbox-caption" class="text-center text-white text-sm font-semibold mt-3"></p>
+        </div>
+    </div>
+
+    <!-- ==================== TENTANG KLINIK ==================== -->
+    <section id="tentang" class="py-16 sm:py-24 bg-brand-bgLight/30 border-t border-brand-border">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                
+                <div class="lg:col-span-6 relative">
+                    <div class="aspect-[4/3] rounded-2xl overflow-hidden border border-brand-border shadow-soft bg-white">
+                        <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?q=80&w=1000&auto=format&fit=crop" 
+                             alt="Diskusi Tim Medis Klinik" 
+                             class="w-full h-full object-cover"
+                             onerror="this.src='https://placehold.co/600x450/2586C8/FFFFFF?text=Tentang+Klinik'"
+                             loading="lazy">
+                    </div>
+                </div>
+
+                <div class="lg:col-span-6 space-y-5">
+                    <span class="text-xs font-bold text-brand-primary uppercase tracking-wider">Komitmen Pelayanan</span>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-brand-textDark">Melayani dengan Kepedulian</h2>
+                    <p class="text-sm text-brand-textMuted leading-relaxed">
+                        Klinik Medika Sehat didirikan dengan tekad memberikan kemudahan akses pelayanan kesehatan tingkat pertama yang ramah, transparan, dan dapat diandalkan oleh masyarakat sekitarnya.
+                    </p>
+                    
+                    <div class="space-y-3 pt-2">
+                        <div class="flex items-start gap-3">
+                            <div class="w-6 h-6 rounded-full bg-brand-light/20 text-brand-primary flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <i class="fa-solid fa-check text-xs"></i>
+                            </div>
+                            <span class="text-xs sm:text-sm text-brand-textDark">Fokus utama pada kenyamanan dan privasi konsultasi pasien.</span>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="w-6 h-6 rounded-full bg-brand-light/20 text-brand-primary flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <i class="fa-solid fa-check text-xs"></i>
+                            </div>
+                            <span class="text-xs sm:text-sm text-brand-textDark">Transparansi jadwal operasional dokter dan biaya tindakan dasar.</span>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="w-6 h-6 rounded-full bg-brand-light/20 text-brand-primary flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <i class="fa-solid fa-check text-xs"></i>
+                            </div>
+                            <span class="text-xs sm:text-sm text-brand-textDark">Komunikasi yang komunikatif dan responsif sebelum kunjungan Anda.</span>
+                        </div>
+                    </div>
+
+                    <p class="text-xs text-brand-textMuted pt-2">
+                        *Catatan: Seluruh deskripsi dan informasi profil pada halaman ini disajikan dalam format demo.
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== LOKASI DAN KONTAK ==================== -->
+    <section id="kontak" class="py-16 sm:py-24 bg-white border-t border-brand-border">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-12">
+                <span class="text-xs font-bold text-brand-primary uppercase tracking-wider">Peta & Kontak</span>
+                <h2 class="text-2xl sm:text-3xl font-bold text-brand-textDark mt-1">Temukan Lokasi Klinik Kami</h2>
+                <p class="text-sm text-brand-textMuted mt-2">Kunjungi lokasi klinik demo atau hubungi layanan pendaftaran kami.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+                
+                <!-- Contact Cards -->
+                <div class="lg:col-span-5 bg-brand-bgLight p-6 sm:p-8 rounded-2xl border border-brand-border flex flex-col justify-between space-y-6">
+                    <div>
+                        <h3 class="text-lg font-bold text-brand-textDark mb-4">Informasi Kontak Demo</h3>
+                        
+                        <div class="space-y-4 text-xs sm:text-sm">
+                            <div class="flex items-start gap-3.5">
+                                <div class="w-9 h-9 rounded-xl bg-white text-brand-primary flex items-center justify-center flex-shrink-0 border border-brand-border">
+                                    <i class="fa-solid fa-location-dot"></i>
+                                </div>
+                                <div>
+                                    <span class="font-semibold block text-brand-textDark">Alamat Klinik:</span>
+                                    <span class="text-brand-textMuted leading-relaxed">Jl. Kesehatan Medika No. 123, Komplek Sehat Jaya, Jakarta Selatan (Alamat Demo)</span>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-3.5">
+                                <div class="w-9 h-9 rounded-xl bg-white text-brand-primary flex items-center justify-center flex-shrink-0 border border-brand-border">
+                                    <i class="fa-solid fa-phone"></i>
+                                </div>
+                                <div>
+                                    <span class="font-semibold block text-brand-textDark">Telepon Klinik:</span>
+                                    <span class="text-brand-textMuted">(021) 555-0192 / (021) 555-0193</span>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-3.5">
+                                <div class="w-9 h-9 rounded-xl bg-white text-emerald-600 flex items-center justify-center flex-shrink-0 border border-brand-border">
+                                    <i class="fa-brands fa-whatsapp"></i>
+                                </div>
+                                <div>
+                                    <span class="font-semibold block text-brand-textDark">WhatsApp Pendaftaran:</span>
+                                    <span class="text-brand-textMuted">+62 812-3456-7890</span>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-3.5">
+                                <div class="w-9 h-9 rounded-xl bg-white text-brand-primary flex items-center justify-center flex-shrink-0 border border-brand-border">
+                                    <i class="fa-regular fa-envelope"></i>
+                                </div>
+                                <div>
+                                    <span class="font-semibold block text-brand-textDark">Email Layanan:</span>
+                                    <span class="text-brand-textMuted">info@klinikmedikasehat-demo.id</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 border-t border-brand-border flex flex-col sm:flex-row gap-3">
+                        <a href="https://wa.me/6281234567890" target="_blank" rel="noopener noreferrer" class="flex-1 inline-flex items-center justify-center py-2.5 px-4 rounded-xl bg-emerald-600 text-white font-semibold text-xs hover:bg-emerald-700 transition-colors">
+                            <i class="fa-brands fa-whatsapp mr-1.5 text-sm"></i> Chat WhatsApp
+                        </a>
+                        <a href="#booking" class="flex-1 inline-flex items-center justify-center py-2.5 px-4 rounded-xl bg-brand-primary text-white font-semibold text-xs hover:bg-brand-dark transition-colors">
+                            <i class="fa-regular fa-calendar-check mr-1.5 text-sm"></i> Buat Janji
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Google Maps Embed Visual -->
+                <div class="lg:col-span-7 rounded-2xl overflow-hidden border border-brand-border min-h-[300px] bg-slate-100 relative">
+                    <iframe 
+                        title="Peta Lokasi Klinik Medika Sehat Demo"
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d126920.2929961623!2d106.75963774843183!3d-6.22972802525838!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f3e945e34b9d%3A0x5371bf0fdad786a2!2sJakarta%20South%20Special%20Capital%20Region!5e0!3m2!1sen!2sid!4v1700000000000!5m2!1sen!2sid" 
+                        class="w-full h-full min-h-[320px] border-0" 
+                        allowfullscreen="" 
+                        loading="lazy" 
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== FOOTER ==================== -->
+    <footer class="bg-brand-textDark text-white border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-12">
+                
+                <!-- Col 1: Brand Info -->
+                <div class="lg:col-span-4 space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-brand-primary text-white flex items-center justify-center">
+                            <i class="fa-solid fa-user-doctor text-lg"></i>
+                        </div>
+                        <div>
+                            <span class="block text-lg font-bold text-white tracking-tight leading-none">Klinik Medika Sehat</span>
+                            <span class="text-xs text-slate-400">Peduli Kesehatan Keluarga</span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed">
+                        Pelayanan kesehatan tingkat pertama yang profesional, transparan, dan nyaman. Melayani konsultasi medis umum dan pemeriksaan kesehatan keluarga Anda.
+                    </p>
+                    <div class="pt-2 flex items-center gap-3 text-slate-400">
+                        <a href="#" aria-label="Facebook Klinik" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-brand-primary hover:text-white flex items-center justify-center transition-colors text-xs"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#" aria-label="Instagram Klinik" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-brand-primary hover:text-white flex items-center justify-center transition-colors text-xs"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#" aria-label="YouTube Klinik" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-brand-primary hover:text-white flex items-center justify-center transition-colors text-xs"><i class="fa-brands fa-youtube"></i></a>
+                    </div>
+                </div>
+
+                <!-- Col 2: Quick Links -->
+                <div class="lg:col-span-2 space-y-3">
+                    <span class="text-xs font-bold text-brand-light uppercase tracking-wider block">Navigasi</span>
+                    <ul class="space-y-2 text-xs text-slate-300">
+                        <li><a href="#beranda" class="hover:text-white transition-colors">Beranda</a></li>
+                        <li><a href="#layanan" class="hover:text-white transition-colors">Layanan Medis</a></li>
+                        <li><a href="#dokter" class="hover:text-white transition-colors">Tim Dokter</a></li>
+                        <li><a href="#jadwal" class="hover:text-white transition-colors">Jadwal Praktik</a></li>
+                        <li><a href="#tentang" class="hover:text-white transition-colors">Tentang Kami</a></li>
+                        <li><a href="#kontak" class="hover:text-white transition-colors">Kontak & Lokasi</a></li>
+                    </ul>
+                </div>
+
+                <!-- Col 3: Services -->
+                <div class="lg:col-span-3 space-y-3">
+                    <span class="text-xs font-bold text-brand-light uppercase tracking-wider block">Layanan Demo</span>
+                    <ul class="space-y-2 text-xs text-slate-300">
+                        <li>Pemeriksaan Umum</li>
+                        <li>Konsultasi Dokter</li>
+                        <li>Kesehatan Ibu dan Anak</li>
+                        <li>Pemeriksaan Kesehatan</li>
+                        <li>Perawatan Luka</li>
+                        <li>Konsultasi Kesehatan Keluarga</li>
+                    </ul>
+                </div>
+
+                <!-- Col 4: Operating Hours Summary -->
+                <div class="lg:col-span-3 space-y-3">
+                    <span class="text-xs font-bold text-brand-light uppercase tracking-wider block">Jam Layanan</span>
+                    <div class="text-xs text-slate-300 space-y-1.5">
+                        <p class="flex justify-between"><span>Senin – Jumat:</span> <span class="text-white font-medium">08.00 – 20.00</span></p>
+                        <p class="flex justify-between"><span>Sabtu:</span> <span class="text-white font-medium">08.00 – 17.00</span></p>
+                        <p class="flex justify-between"><span>Minggu:</span> <span class="text-amber-400 font-medium">09.00 – 13.00</span></p>
+                    </div>
+                    <div class="pt-2">
+                        <a href="#booking" class="inline-block w-full text-center py-2 px-3 rounded-lg bg-slate-800 hover:bg-brand-primary text-xs text-white font-medium transition-colors border border-slate-700">
+                            Buat Janji Kunjungan
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Bottom Copyright & Portfolio Disclaimer -->
+            <div class="mt-12 pt-8 border-t border-slate-800 text-center space-y-2">
+                <p class="text-xs text-slate-400">
+                    &copy; <span id="copyright-year"></span> Klinik Medika Sehat. All rights reserved.
+                </p>
+                <p class="text-[11px] text-slate-500 italic max-w-2xl mx-auto">
+                    Catatan Demo: Website ini merupakan demo portofolio jasa pembuatan website. Seluruh nama, jadwal, nomor kontak, dan informasi klinik pada halaman ini dapat berupa data fiktif untuk tujuan demonstrasi.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ==================== FLOATING WHATSAPP BUTTON ==================== -->
+    <div class="fixed bottom-6 right-6 z-40">
+        <a href="https://wa.me/6281234567890?text=Halo%20Klinik%20Medika%20Sehat,%20saya%20ingin%20bertanya%20mengenai%20layanan%20klinik." 
+           target="_blank" 
+           rel="noopener noreferrer" 
+           aria-label="Hubungi Klinik via WhatsApp"
+           class="group relative flex items-center justify-center w-14 h-14 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500">
+            <i class="fa-brands fa-whatsapp text-3xl"></i>
+            <!-- Floating Tooltip -->
+            <span class="absolute right-16 bg-brand-textDark text-white text-xs font-semibold px-3 py-1.5 rounded-lg whitespace-nowrap shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+                Hubungi Klinik
+            </span>
+        </a>
+    </div>
+
+    <!-- ==================== JAVASCRIPT LOGIC ==================== -->
+    <script>
+        /**
+         * CLINIC WHATSAPP NUMBER CONFIGURATION
+         * Ganti variabel CLINIC_WHATSAPP di bawah ini dengan nomor WhatsApp klinik yang sebenarnya sebelum dipublikasikan.
+         * Format nomor: sertakan kode negara tanpa tanda '+' atau '0' di depan (contoh: '6281234567890').
+         */
+        const CLINIC_WHATSAPP = "6281234567890";
+
+        // Doctor Schedule Data Set (Synchronized across Doctors Profile & Schedule Table)
+        const scheduleData = [
+            { doctor: "dr. Aditya Pratama", service: "Pemeriksaan Umum / Konsultasi", days: ["Senin", "Selasa", "Rabu", "Kamis", "Jumat"], time: "08.00 – 12.00 WIB" },
+            { doctor: "dr. Nadia Putri", service: "Pemeriksaan Umum & Ibu-Anak", days: ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"], time: "13.00 – 17.00 WIB" },
+            { doctor: "dr. Rizky Mahendra", service: "Pemeriksaan Umum Praktik Sore", days: ["Selasa", "Kamis", "Sabtu"], time: "16.00 – 20.00 WIB" }
+        ];
+
+        // On DOM Loaded Initialization
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set Copyright Year Dynamically
+            document.getElementById('copyright-year').textContent = new Date().getFullYear();
+
+            // Set Minimum Date for Date Picker (Prevent selecting past dates)
+            const dateInput = document.getElementById('booking-date');
+            if (dateInput) {
+                const today = new Date().toISOString().split('T')[0];
+                dateInput.setAttribute('min', today);
+            }
+
+            // Initialize Doctor Schedule Table
+            renderScheduleTable('all', 'all');
+
+            // Setup Event Listeners for Filters
+            document.getElementById('filter-day').addEventListener('change', handleScheduleFilter);
+            document.getElementById('filter-doctor').addEventListener('change', handleScheduleFilter);
+
+            // Setup Mobile Menu Toggle
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const menuIcon = document.getElementById('menu-icon');
+
+            if (mobileMenuBtn && mobileMenu) {
+                mobileMenuBtn.addEventListener('click', () => {
+                    const isHidden = mobileMenu.classList.contains('hidden');
+                    if (isHidden) {
+                        mobileMenu.classList.remove('hidden');
+                        menuIcon.classList.remove('fa-bars');
+                        menuIcon.classList.add('fa-xmark');
+                    } else {
+                        mobileMenu.classList.add('hidden');
+                        menuIcon.classList.remove('fa-xmark');
+                        menuIcon.classList.add('fa-bars');
+                    }
+                });
+
+                // Close mobile nav when link is clicked
+                document.querySelectorAll('.mobile-nav-link').forEach(link => {
+                    link.addEventListener('click', () => {
+                        mobileMenu.classList.add('hidden');
+                        menuIcon.classList.remove('fa-xmark');
+                        menuIcon.classList.add('fa-bars');
+                    });
+                });
+            }
+
+            // Setup ESC key listener for Lightbox Modal
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    closeLightbox();
+                }
+            });
+        });
+
+        // Render Doctor Schedule Table & Mobile Cards
+        function renderScheduleTable(selectedDay, selectedDoctor) {
+            const tbody = document.getElementById('schedule-tbody');
+            const mobileContainer = document.getElementById('schedule-mobile-cards');
+            
+            tbody.innerHTML = '';
+            mobileContainer.innerHTML = '';
+
+            let hasResults = false;
+
+            scheduleData.forEach(item => {
+                // Doctor Filter Logic
+                if (selectedDoctor !== 'all' && item.doctor !== selectedDoctor) {
+                    return;
+                }
+
+                // Day Filter Logic
+                if (selectedDay !== 'all' && !item.days.includes(selectedDay)) {
+                    return;
+                }
+
+                hasResults = true;
+                const formattedDays = item.days.join(', ');
+
+                // Desktop Table Row
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-brand-bgLight/50 transition-colors';
+                tr.innerHTML = `
+                    <td class="p-4 pl-6 font-semibold text-brand-textDark">${escapeHtml(item.doctor)}</td>
+                    <td class="p-4 text-brand-textMuted">${escapeHtml(item.service)}</td>
+                    <td class="p-4"><span class="px-2.5 py-1 rounded-md bg-brand-bgLight text-brand-primary text-xs font-semibold border border-brand-border">${escapeHtml(formattedDays)}</span></td>
+                    <td class="p-4 text-brand-textDark font-medium">${escapeHtml(item.time)}</td>
+                    <td class="p-4 pr-6 text-right">
+                        <a href="#booking" onclick="preselectDoctor('${escapeHtml(item.doctor)}')" class="inline-flex items-center px-3 py-1.5 rounded-lg bg-brand-primary text-white text-xs font-semibold hover:bg-brand-dark transition-colors">
+                            Buat Janji
+                        </a>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+
+                // Mobile Card View
+                const card = document.createElement('div');
+                card.className = 'p-4 space-y-2';
+                card.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h4 class="font-bold text-brand-textDark text-sm">${escapeHtml(item.doctor)}</h4>
+                            <p class="text-xs text-brand-textMuted">${escapeHtml(item.service)}</p>
+                        </div>
+                        <a href="#booking" onclick="preselectDoctor('${escapeHtml(item.doctor)}')" class="px-2.5 py-1 rounded-lg bg-brand-primary text-white text-xs font-semibold">
+                            Buat Janji
+                        </a>
+                    </div>
+                    <div class="pt-1 text-xs text-brand-textDark space-y-1">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-regular fa-calendar text-brand-primary w-4"></i>
+                            <span>${escapeHtml(formattedDays)}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="fa-regular fa-clock text-brand-primary w-4"></i>
+                            <span>${escapeHtml(item.time)}</span>
+                        </div>
+                    </div>
+                `;
+                mobileContainer.appendChild(card);
+            });
+
+            if (!hasResults) {
+                const emptyMessage = `<tr><td colspan="5" class="p-6 text-center text-xs text-brand-textMuted">Tidak ada jadwal dokter yang sesuai dengan filter pilihan Anda.</td></tr>`;
+                tbody.innerHTML = emptyMessage;
+                mobileContainer.innerHTML = `<div class="p-6 text-center text-xs text-brand-textMuted">Tidak ada jadwal dokter yang sesuai dengan filter pilihan Anda.</div>`;
+            }
+        }
+
+        // Handle Filter Changes
+        function handleScheduleFilter() {
+            const dayValue = document.getElementById('filter-day').value;
+            const doctorValue = document.getElementById('filter-doctor').value;
+            renderScheduleTable(dayValue, doctorValue);
+        }
+
+        // Preselect Doctor in Booking Form
+        function preselectDoctor(doctorName) {
+            const doctorSelect = document.getElementById('booking-doctor');
+            if (doctorSelect) {
+                doctorSelect.value = doctorName;
+            }
+        }
+
+        // Preselect Service in Booking Form
+        function preselectService(serviceName) {
+            const serviceSelect = document.getElementById('booking-service');
+            if (serviceSelect) {
+                serviceSelect.value = serviceName;
+            }
+        }
+
+        // Handle Booking Form Submission & WhatsApp URL Construction
+        function handleBookingSubmit(event) {
+            event.preventDefault();
+
+            const name = document.getElementById('booking-name').value.trim();
+            const phone = document.getElementById('booking-phone').value.trim();
+            const service = document.getElementById('booking-service').value;
+            const doctor = document.getElementById('booking-doctor').value;
+            const date = document.getElementById('booking-date').value;
+            const time = document.getElementById('booking-time').value;
+            const notes = document.getElementById('booking-notes').value.trim();
+
+            // Phone Validation Check (Simple numeric check)
+            const cleanPhone = phone.replace(/[^0-9]/g, '');
+            if (cleanPhone.length < 8) {
+                alert("Mohon masukkan nomor WhatsApp yang valid.");
+                return;
+            }
+
+            // Format Date for Message
+            let formattedDate = date;
+            if (date) {
+                const dateObj = new Date(date);
+                formattedDate = dateObj.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            }
+
+            // Construct Structured WhatsApp Text Message
+            let message = `Halo Klinik Medika Sehat, saya ingin membuat janji kunjungan.\n\n`;
+            message += `Nama: ${name}\n`;
+            message += `Nomor WhatsApp: ${phone}\n`;
+            message += `Layanan: ${service}\n`;
+            message += `Dokter: ${doctor}\n`;
+            message += `Tanggal: ${formattedDate}\n`;
+            message += `Waktu: ${time}\n`;
+            message += `Catatan: ${notes ? notes : '-'}\n\n`;
+            message += `Mohon informasi mengenai ketersediaan jadwal dan konfirmasi janji. Terima kasih.`;
+
+            // Encode URI Component
+            const encodedMessage = encodeURIComponent(message);
+            const waUrl = `https://wa.me/${CLINIC_WHATSAPP}?text=${encodedMessage}`;
+
+            // Open WhatsApp in new tab
+            window.open(waUrl, '_blank');
+        }
+
+        // Lightbox Modal Functions
+        function openLightbox(imageSrc, captionText) {
+            const modal = document.getElementById('lightbox-modal');
+            const img = document.getElementById('lightbox-img');
+            const caption = document.getElementById('lightbox-caption');
+
+            if (modal && img && caption) {
+                img.src = imageSrc;
+                caption.textContent = captionText;
+                modal.classList.remove('hidden');
+                modal.classList.add('modal-active');
+            }
+        }
+
+        function closeLightbox(event) {
+            const modal = document.getElementById('lightbox-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('modal-active');
+            }
+        }
+
+        // Utility: Escape HTML to prevent XSS in dynamic tables
+        function escapeHtml(str) {
+            return String(str).replace(/[&<>"']/g, function(m) {
+                return {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#039;'
+                }[m];
+            });
+        }
+    </script>
+</body>
+</html>
