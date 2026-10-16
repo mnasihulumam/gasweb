@@ -88,8 +88,20 @@ const DEFAULT_DATA = {
 };
 
 // ---------- AUTH STATE ----------
-auth.onAuthStateChanged(user => {
+auth.onAuthStateChanged(async user => {
   if (user) {
+    // Cek akses user (profil + role) sebelum dashboard dibuka
+    if (window.GasAccess) {
+      const res = await GasAccess.init(user);
+      if (!res.ok) {
+        await auth.signOut();
+        showLogin();
+        const errEl = document.getElementById('login-error');
+        errEl.textContent = res.message;
+        errEl.classList.remove('hidden');
+        return;
+      }
+    }
     showAdmin();
     loadAdminData();
   } else {
@@ -139,6 +151,7 @@ document.getElementById('btn-logout').addEventListener('click', () => {
 // ---------- TABS ----------
 document.querySelectorAll('.tab-btn').forEach(btn => {
   btn.addEventListener('click', () => {
+    if (window.GasAccess && !GasAccess.can(btn.dataset.tab)) return;
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
     btn.classList.add('active');
@@ -421,13 +434,35 @@ function renderPackagesEditor() {
   `).join('') || '<p class="text-gray-400 text-sm">Belum ada paket.</p>';
 }
 
+// Maksimal portfolio yang tampil di beranda (sisanya di demo.html)
+const PORTFOLIO_HOME_LIMIT = 6;
+
+function movePortfolio(idx, dir) {
+  const list = currentData.portfolio || [];
+  const to = idx + dir;
+  if (to < 0 || to >= list.length) return;
+  const tmp = list[idx];
+  list[idx] = list[to];
+  list[to] = tmp;
+  renderPortfolioEditor();
+}
+
 function renderPortfolioEditor() {
   const list = currentData.portfolio || [];
   document.getElementById('portfolio-editor').innerHTML = list.map((item, i) => `
     <div class="border rounded-xl p-4 space-y-3 bg-gray-50">
       <div class="flex justify-between items-center">
-        <span class="font-semibold text-sm">Project #${i + 1}</span>
-        <button type="button" onclick="removeItem('portfolio',${i})" class="text-red-500 text-xs hover:underline">Hapus</button>
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="font-semibold text-sm">Project #${i + 1}</span>
+          ${i < PORTFOLIO_HOME_LIMIT
+            ? '<span class="px-2 py-0.5 rounded-full bg-green-100 text-green-700 text-[10px] font-semibold"><i class="fa-solid fa-house mr-1"></i>Tampil di beranda</span>'
+            : '<span class="px-2 py-0.5 rounded-full bg-gray-200 text-gray-600 text-[10px] font-semibold"><i class="fa-solid fa-eye mr-1"></i>Hanya di demo.html</span>'}
+        </div>
+        <div class="flex items-center gap-3">
+          <button type="button" onclick="movePortfolio(${i},-1)" ${i === 0 ? 'disabled' : ''} class="text-gray-500 hover:text-orange disabled:opacity-30 disabled:cursor-not-allowed" title="Naikkan urutan" aria-label="Naikkan urutan"><i class="fa-solid fa-arrow-up"></i></button>
+          <button type="button" onclick="movePortfolio(${i},1)" ${i === list.length - 1 ? 'disabled' : ''} class="text-gray-500 hover:text-orange disabled:opacity-30 disabled:cursor-not-allowed" title="Turunkan urutan" aria-label="Turunkan urutan"><i class="fa-solid fa-arrow-down"></i></button>
+          <button type="button" onclick="removeItem('portfolio',${i})" class="text-red-500 text-xs hover:underline">Hapus</button>
+        </div>
       </div>
       <div class="grid sm:grid-cols-2 gap-3">
         <div><label class="text-xs text-gray-500">Judul</label><input class="w-full px-2 py-1.5 border rounded text-sm" value="${esc(item.title)}" onchange="updateItem('portfolio',${i},'title',this.value)"></div>
@@ -657,8 +692,9 @@ async function saveAll() {
 async function saveToFirebase(data) {
   const updates = {};
   ['settings', 'logo', 'packages', 'portfolio', 'services', 'problems', 'features', 'steps', 'testimonials', 'faq', 'bankAccounts'].forEach(key => {
-    if (data[key] !== undefined) updates[key] = data[key];
+    if (data[key] !== undefined && (!window.GasAccess || GasAccess.canWriteNode(key))) updates[key] = data[key];
   });
+  if (!Object.keys(updates).length) throw new Error('Role kamu tidak punya akses menyimpan data.');
   await db.ref('/').update(updates);
 }
 
