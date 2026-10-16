@@ -78,6 +78,7 @@
           <a href="#about" class="text-sm font-medium text-navy/80 hover:text-orange transition-colors">About</a>
         </nav>
         <div class="flex items-center gap-3">
+          <a id="nav-order" href="order.html" class="hidden lg:inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-navy text-white text-sm font-semibold hover:bg-navy-800 transition-all hover:scale-[1.02]"><i class="fa-solid fa-cart-shopping" aria-hidden="true"></i> Order Sekarang</a>
           <a id="nav-cta" href="#" target="_blank" class="hidden sm:inline-flex items-center justify-center px-5 py-2.5 rounded-full bg-orange text-white text-sm font-semibold shadow-orange hover:bg-orange-600 transition-all hover:scale-[1.02]">Konsultasi Gratis</a>
           <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg text-navy hover:bg-navy/5" aria-label="Menu">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
@@ -94,6 +95,7 @@
         <a href="#testimonials" class="block px-4 py-3 rounded-lg text-navy font-medium hover:bg-orange/5 hover:text-orange">Testimoni</a>
         <a href="#faq" class="block px-4 py-3 rounded-lg text-navy font-medium hover:bg-orange/5 hover:text-orange">FAQ</a>
         <a href="#about" class="block px-4 py-3 rounded-lg text-navy font-medium hover:bg-orange/5 hover:text-orange">About</a>
+        <a id="mobile-order" href="order.html" class="mt-2 flex items-center justify-center gap-2 w-full text-center px-5 py-3 rounded-full bg-navy text-white font-semibold"><i class="fa-solid fa-cart-shopping" aria-hidden="true"></i> Order Sekarang</a>
         <a id="mobile-cta" href="#" target="_blank" class="mt-2 block w-full text-center px-5 py-3 rounded-full bg-orange text-white font-semibold shadow-orange">Konsultasi Gratis</a>
       </div>
     </div>
@@ -112,9 +114,10 @@
             <span id="hero-headline2" class="text-orange">Bisnis Makin Gas. 🚀</span>
           </h1>
           <p id="hero-subheadline" class="text-lg text-navy/70 max-w-xl mx-auto lg:mx-0 mb-8 leading-relaxed">Kami bantu bisnis, UMKM, dan profesional memiliki website modern yang siap menjadi wajah digital bisnis Anda.</p>
-          <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+          <div class="flex flex-col sm:flex-row sm:flex-wrap gap-4 justify-center lg:justify-start">
             <a id="hero-cta" href="#" target="_blank" class="inline-flex items-center justify-center px-8 py-4 rounded-full bg-orange text-white font-semibold text-base shadow-orange hover:bg-orange-600 transition-all hover:scale-[1.02]">Konsultasi Gratis</a>
             <a href="#portfolio" class="inline-flex items-center justify-center px-8 py-4 rounded-full border-2 border-navy/20 text-navy font-semibold text-base hover:border-orange hover:text-orange transition-all">Lihat Portfolio</a>
+            <a id="hero-order" href="order.html" class="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-navy text-white font-semibold text-base hover:bg-navy-800 transition-all hover:scale-[1.02]"><i class="fa-solid fa-cart-shopping" aria-hidden="true"></i> Order Sekarang</a>
           </div>
           <div class="mt-10 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-sm text-navy/60">
             <div class="flex items-center gap-2"><svg class="w-5 h-5 text-orange" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg><span>Gratis Konsultasi</span></div>
@@ -203,6 +206,9 @@
         <p id="portfolio-subtitle" class="text-navy/60 text-lg">Beberapa contoh website yang sudah kami kerjakan untuk klien.</p>
       </div>
       <div id="portfolio-list" class="grid md:grid-cols-3 gap-8"></div>
+      <div id="portfolio-more" class="hidden text-center mt-12">
+        <a href="demo.html" class="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full border-2 border-navy/20 text-navy font-semibold text-base hover:border-orange hover:text-orange transition-all"><i class="fa-solid fa-eye" aria-hidden="true"></i> Lihat Portofolio Lainnya</a>
+      </div>
     </div>
   </section>
 
@@ -259,10 +265,13 @@
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
       <h2 id="final-cta-headline" class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight mb-6">Siap Bikin Bisnis Kamu Makin Gas? 🚀</h2>
       <p id="final-cta-text" class="text-lg text-white/75 mb-10 max-w-2xl mx-auto">Konsultasikan kebutuhan website kamu sekarang. Gratis dan tanpa kewajiban.</p>
-      <a id="final-cta-btn" href="#" target="_blank" class="inline-flex items-center justify-center gap-3 px-10 py-5 rounded-full bg-orange text-white text-lg font-bold shadow-orange hover:bg-orange-600 transition-all hover:scale-[1.03]">
-        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-        Chat via WhatsApp
-      </a>
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a id="final-cta-btn" href="#" target="_blank" class="inline-flex items-center justify-center gap-3 px-10 py-5 rounded-full bg-orange text-white text-lg font-bold shadow-orange hover:bg-orange-600 transition-all hover:scale-[1.03]">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Chat via WhatsApp
+        </a>
+        <a id="final-order-btn" href="order.html" class="inline-flex items-center justify-center gap-3 px-10 py-5 rounded-full border-2 border-white/30 text-white text-lg font-bold hover:bg-white hover:text-navy transition-all hover:scale-[1.03]"><i class="fa-solid fa-cart-shopping" aria-hidden="true"></i> Order Sekarang</a>
+      </div>
     </div>
   </section>
 
