@@ -365,7 +365,7 @@ async function uploadPortfolioImage(idx, input) {
     currentData.portfolio[idx].imageUrl = dataUrl;
     renderPortfolioEditor();
     const el = document.getElementById('pf-info-' + idx);
-    if (el) el.textContent = 'Gambar siap: ' + width + '×' + height + 'px, ±' + Math.round(dataUrl.length / 1024) + ' KB. Klik "Simpan Semua" untuk menerapkan.';
+    if (el) el.textContent = 'Gambar siap: ' + width + '×' + height + 'px, ±' + Math.round(dataUrl.length / 1024) + ' KB. Klik "Simpan Perubahan" untuk menerapkan.';
   } catch (err) {
     console.error(err);
     info.textContent = err.message || 'Gagal memproses gambar.';
@@ -398,7 +398,7 @@ document.getElementById('logo-file').addEventListener('change', async (e) => {
     document.getElementById('logo-url').value = dataUrl;
     updateLogoPreview();
     const kb = Math.round(dataUrl.length / 1024);
-    setLogoInfo('Logo siap: ' + width + '×' + height + 'px, ±' + kb + ' KB. Klik "Simpan Semua" untuk menerapkan.', false);
+    setLogoInfo('Logo siap: ' + width + '×' + height + 'px, ±' + kb + ' KB. Klik "Simpan Perubahan" untuk menerapkan.', false);
   } catch (err) {
     console.error(err);
     setLogoInfo(err.message || 'Gagal memproses gambar.', true);
@@ -409,7 +409,7 @@ document.getElementById('logo-file').addEventListener('change', async (e) => {
 document.getElementById('logo-clear').addEventListener('click', () => {
   document.getElementById('logo-url').value = '';
   updateLogoPreview();
-  setLogoInfo('Logo dihapus. Klik "Simpan Semua" untuk kembali ke logo default.', false);
+  setLogoInfo('Logo dihapus. Klik "Simpan Perubahan" untuk kembali ke logo default.', false);
 });
 
 // ---------- EDITORS ----------
@@ -649,49 +649,85 @@ function esc(str) {
 }
 
 // ---------- SAVE ----------
-document.getElementById('btn-save-all').addEventListener('click', saveAll);
+// Menu yang menyimpan data ke Firebase -> node yang disimpan
+const SAVE_TABS = {
+  settings: 'settings',
+  bank: 'bankAccounts',
+  logo: 'logo',
+  packages: 'packages',
+  portfolio: 'portfolio',
+  services: 'services',
+  problems: 'problems',
+  features: 'features',
+  steps: 'steps',
+  testimonials: 'testimonials',
+  faq: 'faq'
+};
 
-async function saveAll() {
+// Tombol simpan di bagian bawah tiap menu
+Object.keys(SAVE_TABS).forEach(tab => {
+  const host = document.getElementById('tab-' + tab);
+  if (!host) return;
+  const bar = document.createElement('div');
+  bar.className = 'sticky bottom-4 z-20 flex justify-end pt-4';
+  bar.innerHTML = '<button type="button" data-save-tab="' + tab + '" class="px-5 py-2.5 rounded-lg bg-orange text-white text-sm font-semibold shadow-lg hover:bg-orange-600 transition"><i class="fa-solid fa-floppy-disk mr-1.5"></i> Simpan Perubahan</button>';
+  host.appendChild(bar);
+  bar.querySelector('button').addEventListener('click', () => saveTab(tab));
+});
+
+const SETTINGS_FIELDS = [
+  'siteTitle','whatsapp','instagram','tiktok','heroBadge','ctaText',
+  'heroHeadline1','heroHeadline2','heroSubheadline',
+  'problemsTitle','problemsSubtitle','problemsClosing',
+  'servicesTitle','servicesSubtitle',
+  'featuresTitle','featuresSubtitle',
+  'portfolioTitle','portfolioSubtitle',
+  'stepsTitle','stepsSubtitle',
+  'testimonialsTitle','testimonialsSubtitle','faqTitle','faqSubtitle',
+  'pricingTitle','pricingSubtitle',
+  'finalCtaHeadline','finalCtaText','footerDescription'
+];
+
+async function saveTab(tab) {
   if (!auth.currentUser) {
     showStatus('Kamu belum login. Silakan login ulang.', 'error');
     return;
   }
+  const node = SAVE_TABS[tab];
+  if (!node) return;
 
-  const s = currentData.settings || {};
-  const fields = [
-    'siteTitle','whatsapp','instagram','tiktok','heroBadge','ctaText',
-    'heroHeadline1','heroHeadline2','heroSubheadline',
-    'problemsTitle','problemsSubtitle','problemsClosing',
-    'servicesTitle','servicesSubtitle',
-    'featuresTitle','featuresSubtitle',
-    'portfolioTitle','portfolioSubtitle',
-    'stepsTitle','stepsSubtitle',
-    'testimonialsTitle','testimonialsSubtitle','faqTitle','faqSubtitle',
-    'pricingTitle','pricingSubtitle',
-    'finalCtaHeadline','finalCtaText','footerDescription'
-  ];
-  fields.forEach(f => {
-    const el = document.getElementById('s-' + f);
-    if (el) s[f] = el.value;
-  });
-  currentData.settings = s;
-  currentData.logo = {
-    url: document.getElementById('logo-url').value.trim(),
-    alt: document.getElementById('logo-alt').value.trim() || 'GasWeb'
-  };
+  // Ambil nilai dari form untuk menu yang inputnya langsung di halaman
+  if (tab === 'settings') {
+    const s = currentData.settings || {};
+    SETTINGS_FIELDS.forEach(f => {
+      const el = document.getElementById('s-' + f);
+      if (el) s[f] = el.value;
+    });
+    currentData.settings = s;
+  }
+  if (tab === 'logo') {
+    currentData.logo = {
+      url: document.getElementById('logo-url').value.trim(),
+      alt: document.getElementById('logo-alt').value.trim() || 'GasWeb'
+    };
+  }
 
+  const btn = document.querySelector('button[data-save-tab="' + tab + '"]');
+  if (btn) btn.disabled = true;
   try {
-    await saveToFirebase(currentData);
-    showStatus('Semua data berhasil disimpan! Refresh website untuk melihat perubahan.', 'success');
+    await saveToFirebase(currentData, [node]);
+    showStatus('Perubahan berhasil disimpan! Refresh website untuk melihat perubahan.', 'success');
   } catch (e) {
     console.error(e);
-    showStatus('Gagal menyimpan. Pastikan rules Firebase sudah benar (write hanya untuk auth).', 'error');
+    showStatus('Gagal menyimpan. Pastikan kamu punya akses menu ini dan rules Firebase sudah benar.', 'error');
+  } finally {
+    if (btn) btn.disabled = false;
   }
 }
 
-async function saveToFirebase(data) {
+async function saveToFirebase(data, onlyNodes) {
   const updates = {};
-  ['settings', 'logo', 'packages', 'portfolio', 'services', 'problems', 'features', 'steps', 'testimonials', 'faq', 'bankAccounts'].forEach(key => {
+  (onlyNodes || ['settings', 'logo', 'packages', 'portfolio', 'services', 'problems', 'features', 'steps', 'testimonials', 'faq', 'bankAccounts']).forEach(key => {
     if (data[key] !== undefined && (!window.GasAccess || GasAccess.canWriteNode(key))) updates[key] = data[key];
   });
   if (!Object.keys(updates).length) throw new Error('Role kamu tidak punya akses menyimpan data.');
