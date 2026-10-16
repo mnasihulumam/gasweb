@@ -80,6 +80,9 @@ const DEFAULT_DATA = {
   ]
 };
 
+// Maksimal portfolio yang tampil di beranda (sisanya di demo.html)
+const PORTFOLIO_HOME_LIMIT = 6;
+
 function hideLoader() {
   const loader = document.getElementById('page-loader');
   if (loader) {
@@ -196,7 +199,10 @@ function render(data) {
   // Portfolio
   const portfolioEl = document.getElementById('portfolio-list');
   if (portfolioEl) {
-    portfolioEl.innerHTML = portfolio.map(item => {
+    const portfolioShown = portfolio.slice(0, PORTFOLIO_HOME_LIMIT);
+    const portfolioMore = document.getElementById('portfolio-more');
+    if (portfolioMore) portfolioMore.classList.toggle('hidden', portfolio.length <= PORTFOLIO_HOME_LIMIT);
+    portfolioEl.innerHTML = portfolioShown.map(item => {
       const bg = item.colorTheme === 'orange' ? 'from-orange/10 to-orange/5' : (item.colorTheme === 'pink' ? 'from-pink-50 to-purple-50' : 'from-navy-100 to-navy-50');
       const img = item.imageUrl
         ? `<img src="${esc(item.imageUrl)}" alt="${esc(item.title)}" class="w-full h-full object-cover">`
