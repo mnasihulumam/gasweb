@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio Lengkap — GasWeb</title>
+  <meta name="description" content="Semua contoh website yang sudah dikerjakan GasWeb untuk klien.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            orange: { DEFAULT: '#FF5A1F', 50: '#FFF4F0', 100: '#FFE8E0', 500: '#FF5A1F', 600: '#E04E1A', 700: '#C44316' },
+            navy: { DEFAULT: '#0F1F3D', 50: '#F0F3F8', 100: '#E1E7F0', 800: '#1A2B4A', 900: '#0F1F3D' }
+          },
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+          boxShadow: {
+            'soft': '0 4px 20px -2px rgba(15, 31, 61, 0.08)',
+            'card': '0 8px 30px -4px rgba(15, 31, 61, 0.1)',
+            'orange': '0 8px 25px -5px rgba(255, 90, 31, 0.35)'
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    .nav-scrolled { background: rgba(255,255,255,0.95); backdrop-filter: blur(12px); box-shadow: 0 1px 3px rgba(15,31,61,0.08); }
+    #page-loader { transition: opacity 0.3s ease; }
+  </style>
+</head>
+<body class="bg-white text-navy antialiased">
+
+  <!-- Loader -->
+  <div id="page-loader" class="fixed inset-0 bg-navy z-[9999] flex items-center justify-center">
+    <div class="text-center">
+      <div class="w-10 h-10 border-orange/30 border-t-orange rounded-full animate-spin mx-auto" style="border-width:3px;"></div>
+      <p class="text-white/70 text-sm mt-4">Memuat portfolio...</p>
+    </div>
+  </div>
+
+  <!-- NAVBAR -->
+  <header id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-white/90 backdrop-blur-md border-b border-navy/5">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 md:h-20">
+        <a href="index.html" class="flex items-center gap-2.5 group">
+          <img id="site-logo" src="" alt="GasWeb" class="h-9 w-auto hidden">
+          <svg id="default-logo" width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" class="flex-shrink-0">
+            <rect x="4" y="8" width="32" height="28" rx="3" stroke="#0F1F3D" stroke-width="2.5" fill="white"/>
+            <circle cx="10" cy="14" r="1.5" fill="#0F1F3D"/>
+            <circle cx="15" cy="14" r="1.5" fill="#0F1F3D"/>
+            <circle cx="20" cy="14" r="1.5" fill="#0F1F3D"/>
+            <path d="M12 28C12 22 16 18 22 18C26 18 28 20 28 22" stroke="#0F1F3D" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M22 18L32 12" stroke="#FF5A1F" stroke-width="2.8" stroke-linecap="round"/>
+            <path d="M32 12L28 11M32 12L31 16" stroke="#FF5A1F" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M2 24H6M0 28H5M1 32H6" stroke="#FF5A1F" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span class="text-xl font-bold tracking-tight text-navy">Gas<span class="text-orange">Web</span></span>
+        </a>
+        <div class="flex items-center gap-3">
+          <a href="index.html#portfolio" class="inline-flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 rounded-full border-2 border-navy/20 text-navy text-sm font-semibold hover:border-orange hover:text-orange transition-all"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> <span class="hidden sm:inline">Kembali ke Beranda</span><span class="sm:hidden">Beranda</span></a>
+          <a href="order.html" class="inline-flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 rounded-full bg-orange text-white text-sm font-semibold shadow-orange hover:bg-orange-600 transition-all hover:scale-[1.02]"><i class="fa-solid fa-cart-shopping" aria-hidden="true"></i> Order Sekarang</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- PORTFOLIO LENGKAP -->
+  <main class="pt-32 md:pt-40 pb-20 md:pb-28">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-3xl mx-auto mb-14">
+        <h1 id="portfolio-title" class="text-3xl sm:text-4xl font-extrabold text-navy tracking-tight mb-4">Portfolio Kami</h1>
+        <p id="portfolio-subtitle" class="text-navy/60 text-lg">Beberapa contoh website yang sudah kami kerjakan untuk klien.</p>
+        <p id="portfolio-count" class="text-sm text-navy/40 mt-3"></p>
+      </div>
+      <div id="portfolio-list" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+      <p id="portfolio-empty" class="hidden text-center text-navy/50 py-16">Belum ada portfolio yang ditampilkan.</p>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-navy-900 text-white py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-white/40">
+      <p>© 2026 GasWeb. All rights reserved.</p>
+      <p>Website Profesional. Bisnis Makin Gas.</p>
+    </div>
+  </footer>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script>
+    // Data default (dipakai jika Firebase gagal dimuat), sama dengan index.html
+    const DEFAULT_PORTFOLIO = [
+      { title: 'Construction Company Website', category: 'Construction', imageUrl: '', link: '#cta', colorTheme: 'navy' },
+      { title: 'Coffee Shop Website', category: 'F&B', imageUrl: '', link: '#cta', colorTheme: 'orange' },
+      { title: 'Wedding Organizer Website', category: 'Wedding', imageUrl: '', link: '#cta', colorTheme: 'pink' }
+    ];
+    const DEFAULT_TEXT = {
+      portfolioTitle: 'Portfolio Kami',
+      portfolioSubtitle: 'Beberapa contoh website yang sudah kami kerjakan untuk klien.'
+    };
+
+    function esc(str) {
+      if (str == null) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function hideLoader() {
+      const loader = document.getElementById('page-loader');
+      if (loader) {
+        loader.style.opacity = '0';
+        setTimeout(() => loader.style.display = 'none', 300);
+      }
+    }
+
+    // Link '#cta' milik index.html diarahkan ke halaman utama
+    function resolveLink(link) {
+      const u = String(link || '').trim();
+      if (!u || u.charAt(0) === '#') return 'index.html' + (u || '#cta');
+      if (/^(https?:\/\/|\/|\.\/|assets\/)/i.test(u)) return u;
+      return 'index.html#cta';
+    }
+
+    function render(data) {
+      const s = Object.assign({}, DEFAULT_TEXT, data.settings || {});
+      const logo = data.logo || { url: '', alt: 'GasWeb' };
+      let portfolio = data.portfolio || DEFAULT_PORTFOLIO;
+      if (!Array.isArray(portfolio)) portfolio = Object.values(portfolio);
+
+      document.title = (s.portfolioTitle || 'Portfolio') + ' — GasWeb';
+      document.getElementById('portfolio-title').textContent = s.portfolioTitle || DEFAULT_TEXT.portfolioTitle;
+      document.getElementById('portfolio-subtitle').textContent = s.portfolioSubtitle || DEFAULT_TEXT.portfolioSubtitle;
+
+      if (logo.url) {
+        const img = document.getElementById('site-logo');
+        img.src = logo.url;
+        img.alt = logo.alt || 'GasWeb';
+        img.classList.remove('hidden');
+        document.getElementById('default-logo').classList.add('hidden');
+      }
+
+      const listEl = document.getElementById('portfolio-list');
+      document.getElementById('portfolio-empty').classList.toggle('hidden', portfolio.length > 0);
+      document.getElementById('portfolio-count').textContent = portfolio.length ? portfolio.length + ' project' : '';
+
+      // Urutan mengikuti urutan yang diatur di admin
+      listEl.innerHTML = portfolio.map(item => {
+        const bg = item.colorTheme === 'orange' ? 'from-orange/10 to-orange/5' : (item.colorTheme === 'pink' ? 'from-pink-50 to-purple-50' : 'from-navy-100 to-navy-50');
+        const img = item.imageUrl
+          ? `<img src="${esc(item.imageUrl)}" alt="${esc(item.title)}" class="w-full h-full object-cover">`
+          : `<div class="absolute inset-0 flex flex-col p-5"><div class="flex items-center gap-2 mb-4"><div class="w-3 h-3 rounded-full bg-red-400"></div><div class="w-3 h-3 rounded-full bg-yellow-400"></div><div class="w-3 h-3 rounded-full bg-green-400"></div></div><div class="flex-1 bg-white rounded-lg shadow-sm p-4"><div class="h-3 w-24 bg-navy/20 rounded mb-3"></div><div class="h-6 w-3/4 bg-navy/15 rounded mb-2"></div><div class="h-2 w-full bg-navy/10 rounded mb-1"></div></div></div>`;
+        return `
+          <div class="group bg-white rounded-2xl overflow-hidden border border-navy/8 shadow-soft hover:shadow-card transition-all">
+            <div class="aspect-[4/3] bg-gradient-to-br ${bg} relative overflow-hidden">${img}
+              <div class="absolute inset-0 bg-navy/0 group-hover:bg-navy/40 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                <span class="px-5 py-2.5 bg-white text-navy font-semibold rounded-full text-sm">Lihat Website</span>
+              </div>
+            </div>
+            <div class="p-6">
+              <span class="text-xs font-semibold text-orange uppercase tracking-wide">${esc(item.category)}</span>
+              <h3 class="text-lg font-bold text-navy mt-1">${esc(item.title)}</h3>
+              <a href="${esc(resolveLink(item.link))}" class="inline-flex items-center gap-2 mt-4 text-sm font-semibold text-orange hover:gap-3 transition-all">Lihat Website <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    function loadData() {
+      try {
+        const paths = ['settings', 'logo', 'portfolio'];
+        Promise.all(paths.map(p => db.ref(p).once('value').then(s => ({ key: p, val: s.val() }))))
+          .then(results => {
+            const data = {};
+            results.forEach(r => { if (r.val !== null) data[r.key] = r.val; });
+            render(data);
+            hideLoader();
+          })
+          .catch(err => {
+            console.warn('Firebase load failed, using default data', err);
+            render({});
+            hideLoader();
+          });
+      } catch (e) {
+        console.warn('Firebase not ready, using default', e);
+        render({});
+        hideLoader();
+      }
+    }
+
+    window.addEventListener('scroll', () => {
+      document.getElementById('navbar').classList.toggle('nav-scrolled', window.scrollY > 20);
+    });
+
+    loadData();
+    setTimeout(hideLoader, 2500);
+  </script>
+</body>
+</html>
