@@ -56,6 +56,31 @@
       }
     }
     textarea, input, select { transition: border-color 0.15s; }
+
+    /* Dropdown group sidebar */
+    .nav-group-btn {
+      display: flex; align-items: center; justify-content: space-between;
+      width: 100%; padding: 10px 14px; border-radius: 8px;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+      color: rgba(255,255,255,0.55); background: transparent; border: none; cursor: pointer;
+      transition: all 0.15s;
+    }
+    .nav-group-btn:hover { background: rgba(255,255,255,0.06); color: #fff; }
+    .nav-group-btn .nav-group-title { display: flex; align-items: center; gap: 10px; }
+    .nav-group-btn .nav-group-title i { width: 18px; text-align: center; }
+    .nav-group-btn .nav-chevron { font-size: 10px; transition: transform 0.2s; }
+    .nav-group.open > .nav-group-btn { color: #fff; }
+    .nav-group.open > .nav-group-btn .nav-chevron { transform: rotate(180deg); }
+    .nav-group-items {
+      display: none; margin: 2px 0 6px 18px; padding-left: 8px;
+      border-left: 1px solid rgba(255,255,255,0.12);
+    }
+    .nav-group.open > .nav-group-items { display: block; }
+    .nav-group-items .tab-btn { padding: 8px 12px; }
+
+    /* Modal user */
+    .gx-modal { position: fixed; inset: 0; z-index: 60; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(15,31,61,0.55); }
+    .gx-modal.hidden { display: none; }
   </style>
 </head>
 <body class="bg-gray-100 text-navy min-h-screen">
@@ -96,26 +121,50 @@
       <nav class="flex-1 overflow-y-auto px-3 py-3 space-y-0.5">
         <button class="tab-btn active" data-tab="dashboard"><i class="fa-solid fa-chart-line"></i> Dashboard</button>
 
-        <div class="sidebar-section">Konten Website</div>
-        <button class="tab-btn" data-tab="settings"><i class="fa-solid fa-sliders"></i> Settings & Teks</button>
-        <button class="tab-btn" data-tab="bank"><i class="fa-solid fa-building-columns"></i> Rekening</button>
-        <button class="tab-btn" data-tab="logo"><i class="fa-solid fa-image"></i> Logo</button>
-        <button class="tab-btn" data-tab="packages"><i class="fa-solid fa-box"></i> Paket</button>
-        <button class="tab-btn" data-tab="portfolio"><i class="fa-solid fa-briefcase"></i> Portfolio</button>
-        <button class="tab-btn" data-tab="services"><i class="fa-solid fa-layer-group"></i> Services</button>
-        <button class="tab-btn" data-tab="problems"><i class="fa-solid fa-circle-exclamation"></i> Problems</button>
-        <button class="tab-btn" data-tab="features"><i class="fa-solid fa-star"></i> Features</button>
-        <button class="tab-btn" data-tab="steps"><i class="fa-solid fa-list-ol"></i> Steps</button>
-        <button class="tab-btn" data-tab="testimonials"><i class="fa-solid fa-comments"></i> Testimoni</button>
-        <button class="tab-btn" data-tab="faq"><i class="fa-solid fa-circle-question"></i> FAQ</button>
+        <div class="nav-group" data-group="konten">
+          <button type="button" class="nav-group-btn" aria-expanded="false">
+            <span class="nav-group-title"><i class="fa-solid fa-globe"></i> Konten Website</span>
+            <i class="fa-solid fa-chevron-down nav-chevron"></i>
+          </button>
+          <div class="nav-group-items">
+            <button class="tab-btn" data-tab="settings"><i class="fa-solid fa-sliders"></i> Settings & Teks</button>
+            <button class="tab-btn" data-tab="bank"><i class="fa-solid fa-building-columns"></i> Rekening</button>
+            <button class="tab-btn" data-tab="logo"><i class="fa-solid fa-image"></i> Logo</button>
+            <button class="tab-btn" data-tab="packages"><i class="fa-solid fa-box"></i> Paket</button>
+            <button class="tab-btn" data-tab="portfolio"><i class="fa-solid fa-briefcase"></i> Portfolio</button>
+            <button class="tab-btn" data-tab="services"><i class="fa-solid fa-layer-group"></i> Services</button>
+            <button class="tab-btn" data-tab="problems"><i class="fa-solid fa-circle-exclamation"></i> Problems</button>
+            <button class="tab-btn" data-tab="features"><i class="fa-solid fa-star"></i> Features</button>
+            <button class="tab-btn" data-tab="steps"><i class="fa-solid fa-list-ol"></i> Steps</button>
+            <button class="tab-btn" data-tab="testimonials"><i class="fa-solid fa-comments"></i> Testimoni</button>
+            <button class="tab-btn" data-tab="faq"><i class="fa-solid fa-circle-question"></i> FAQ</button>
+          </div>
+        </div>
 
-        <div class="sidebar-section">Bisnis</div>
-        <button class="tab-btn" data-tab="orders"><i class="fa-solid fa-cart-shopping"></i> Orders</button>
-        <button class="tab-btn" data-tab="invoice"><i class="fa-solid fa-file-invoice"></i> Invoice</button>
-        <button class="tab-btn" data-tab="gaslead"><i class="fa-solid fa-crosshairs"></i> GasLead</button>
+        <div class="nav-group" data-group="bisnis">
+          <button type="button" class="nav-group-btn" aria-expanded="false">
+            <span class="nav-group-title"><i class="fa-solid fa-briefcase"></i> Bisnis</span>
+            <i class="fa-solid fa-chevron-down nav-chevron"></i>
+          </button>
+          <div class="nav-group-items">
+            <button class="tab-btn" data-tab="orders"><i class="fa-solid fa-cart-shopping"></i> Orders</button>
+            <button class="tab-btn" data-tab="invoice"><i class="fa-solid fa-file-invoice"></i> Invoice</button>
+            <button class="tab-btn" data-tab="gaslead"><i class="fa-solid fa-crosshairs"></i> GasLead</button>
+          </div>
+        </div>
 
-        <div class="sidebar-section">Akun</div>
-        <button class="tab-btn" data-tab="password"><i class="fa-solid fa-lock"></i> Ganti Password</button>
+        <div class="nav-group" data-group="akun">
+          <button type="button" class="nav-group-btn" aria-expanded="false">
+            <span class="nav-group-title"><i class="fa-solid fa-user-gear"></i> Akun</span>
+            <i class="fa-solid fa-chevron-down nav-chevron"></i>
+          </button>
+          <div class="nav-group-items">
+            <button class="tab-btn" data-tab="users"><i class="fa-solid fa-users"></i> User</button>
+            <button class="tab-btn" data-tab="roles"><i class="fa-solid fa-user-tag"></i> Role</button>
+            <button class="tab-btn" data-tab="roleauth"><i class="fa-solid fa-shield-halved"></i> Role Auth</button>
+            <button class="tab-btn" data-tab="password"><i class="fa-solid fa-lock"></i> Ganti Password</button>
+          </div>
+        </div>
       </nav>
 
       <div class="p-3 border-t border-white/10 space-y-2">
@@ -353,6 +402,7 @@
           <h2 class="text-lg font-bold">Portfolio</h2>
           <button type="button" onclick="addPortfolio()" class="px-3 py-1.5 rounded-lg bg-orange text-white text-sm font-medium">+ Tambah Project</button>
         </div>
+        <p class="text-xs text-gray-500 mb-4"><i class="fa-solid fa-circle-info mr-1"></i> Beranda hanya menampilkan <b>6 project pertama</b>. Jika lebih dari 6, tombol <b>Lihat Portofolio Lainnya</b> muncul dan mengarah ke <b>demo.html</b> yang menampilkan semua project. Atur urutan dengan tombol panah.</p>
         <div id="portfolio-editor" class="space-y-4"></div>
       </div>
 
@@ -688,6 +738,125 @@
         <div id="gl-toast" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
       </div>
 
+      <!-- TAB: USER -->
+      <div id="tab-users" class="tab-content hidden bg-white rounded-xl shadow-sm p-6 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="text-lg font-bold">User Admin</h2>
+            <p class="text-xs text-gray-500 mt-1">Daftar akun yang boleh masuk ke admin.html. Data profil disimpan di Firebase (node <b>users</b>), password dikelola Firebase Authentication.</p>
+          </div>
+          <button type="button" id="user-btn-add" class="px-4 py-2 rounded-lg bg-orange text-white text-sm font-semibold hover:bg-orange-600"><i class="fa-solid fa-user-plus mr-1"></i> Tambah User</button>
+        </div>
+        <div class="overflow-x-auto border rounded-xl">
+          <table class="w-full text-left text-sm min-w-[720px]">
+            <thead class="bg-gray-50 text-[11px] uppercase text-gray-500">
+              <tr>
+                <th class="px-3 py-2.5">Nama</th>
+                <th class="px-3 py-2.5">Email</th>
+                <th class="px-3 py-2.5">Role</th>
+                <th class="px-3 py-2.5">Status</th>
+                <th class="px-3 py-2.5">Dibuat</th>
+                <th class="px-3 py-2.5 text-right">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="users-tbody">
+              <tr><td colspan="6" class="text-center text-gray-400 py-10">Memuat data user...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="text-[11px] text-gray-400"><i class="fa-solid fa-circle-info mr-1"></i> Hapus user = mencabut akses admin (profil dihapus dari Firebase). Akun login di Firebase Authentication tidak ikut terhapus dari sisi browser.</p>
+      </div>
+
+      <!-- MODAL USER -->
+      <div id="user-modal" class="gx-modal hidden">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto">
+          <div class="flex items-center justify-between mb-4">
+            <h3 id="user-modal-title" class="text-lg font-bold">Tambah User</h3>
+            <button type="button" id="user-modal-close" class="p-1.5 rounded-lg hover:bg-gray-100" aria-label="Tutup"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+          <div class="space-y-3">
+            <div><label class="block text-xs font-medium text-gray-500 mb-1">Nama</label><input id="user-f-name" class="w-full px-3 py-2 border rounded-lg text-sm" placeholder="Nama lengkap"></div>
+            <div><label class="block text-xs font-medium text-gray-500 mb-1">Email</label><input type="email" id="user-f-email" class="w-full px-3 py-2 border rounded-lg text-sm" placeholder="email@contoh.com"></div>
+            <div id="user-f-pass-wrap"><label class="block text-xs font-medium text-gray-500 mb-1">Password (min. 6 karakter)</label><input type="password" id="user-f-pass" autocomplete="new-password" class="w-full px-3 py-2 border rounded-lg text-sm"></div>
+            <div id="user-f-uid-wrap">
+              <label class="block text-xs font-medium text-gray-500 mb-1">UID Firebase (opsional)</label>
+              <input id="user-f-uid" class="w-full px-3 py-2 border rounded-lg text-sm font-mono" placeholder="Isi jika akun sudah ada di Firebase Authentication">
+              <p class="text-[11px] text-gray-400 mt-1">Jika diisi, akun tidak dibuat ulang. Hanya profil user yang didaftarkan ke daftar admin.</p>
+            </div>
+            <div><label class="block text-xs font-medium text-gray-500 mb-1">Role</label><select id="user-f-role" class="w-full px-3 py-2 border rounded-lg text-sm"></select></div>
+            <label class="flex items-center gap-2 text-sm"><input type="checkbox" id="user-f-active" checked> Akun aktif</label>
+            <p id="user-f-error" class="text-red-500 text-sm hidden"></p>
+          </div>
+          <div class="flex justify-end gap-2 mt-5">
+            <button type="button" id="user-modal-cancel" class="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-sm font-medium">Batal</button>
+            <button type="button" id="user-modal-save" class="px-4 py-2 rounded-lg bg-orange text-white text-sm font-semibold hover:bg-orange-600"><i class="fa-solid fa-floppy-disk mr-1"></i> Simpan</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: ROLE -->
+      <div id="tab-roles" class="tab-content hidden space-y-4">
+        <div class="bg-white rounded-xl shadow-sm p-6 space-y-4">
+          <div>
+            <h2 class="text-lg font-bold">Role</h2>
+            <p class="text-xs text-gray-500 mt-1">Buat role lalu tentukan role tiap user. Menu yang boleh diakses tiap role diatur di menu <b>Role Auth</b>.</p>
+          </div>
+          <div class="grid sm:grid-cols-5 gap-2 items-end bg-gray-50 border rounded-xl p-3">
+            <div class="sm:col-span-2"><label class="block text-xs font-medium text-gray-500 mb-1">Nama Role</label><input id="role-f-name" class="w-full px-3 py-2 border rounded-lg text-sm bg-white" placeholder="Mis. Editor, Sales"></div>
+            <div class="sm:col-span-2"><label class="block text-xs font-medium text-gray-500 mb-1">Deskripsi (opsional)</label><input id="role-f-desc" class="w-full px-3 py-2 border rounded-lg text-sm bg-white" placeholder="Keterangan singkat"></div>
+            <div class="flex gap-2">
+              <button type="button" id="role-btn-save" class="flex-1 px-3 py-2 rounded-lg bg-orange text-white text-sm font-semibold hover:bg-orange-600"><i class="fa-solid fa-plus mr-1"></i> <span id="role-btn-save-label">Tambah</span></button>
+              <button type="button" id="role-btn-cancel" class="hidden px-3 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-sm font-medium" title="Batal edit"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+          </div>
+          <div class="overflow-x-auto border rounded-xl">
+            <table class="w-full text-left text-sm min-w-[560px]">
+              <thead class="bg-gray-50 text-[11px] uppercase text-gray-500">
+                <tr>
+                  <th class="px-3 py-2.5">Role</th>
+                  <th class="px-3 py-2.5">Deskripsi</th>
+                  <th class="px-3 py-2.5">Jumlah User</th>
+                  <th class="px-3 py-2.5 text-right">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="roles-tbody"><tr><td colspan="4" class="text-center text-gray-400 py-8">Memuat data role...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm p-6 space-y-3">
+          <div>
+            <h3 class="text-base font-bold">Role per User</h3>
+            <p class="text-xs text-gray-500 mt-1">Pilih role untuk tiap user. Perubahan langsung tersimpan ke Firebase.</p>
+          </div>
+          <div class="overflow-x-auto border rounded-xl">
+            <table class="w-full text-left text-sm min-w-[520px]">
+              <thead class="bg-gray-50 text-[11px] uppercase text-gray-500">
+                <tr><th class="px-3 py-2.5">Nama</th><th class="px-3 py-2.5">Email</th><th class="px-3 py-2.5">Role</th></tr>
+              </thead>
+              <tbody id="role-users-tbody"><tr><td colspan="3" class="text-center text-gray-400 py-8">Memuat data user...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: ROLE AUTH -->
+      <div id="tab-roleauth" class="tab-content hidden bg-white rounded-xl shadow-sm p-6 space-y-4">
+        <div>
+          <h2 class="text-lg font-bold">Role Auth</h2>
+          <p class="text-xs text-gray-500 mt-1">Tentukan menu apa saja yang boleh diakses tiap role. Disimpan di Firebase (node <b>roleAuth</b>). Dashboard dan Ganti Password selalu bisa diakses. Menu Akun (User, Role, Role Auth) hanya untuk Super Admin.</p>
+        </div>
+        <div class="max-w-xs">
+          <label class="block text-xs font-medium text-gray-500 mb-1">Pilih Role</label>
+          <select id="ra-role" class="w-full px-3 py-2 border rounded-lg text-sm"></select>
+        </div>
+        <div id="ra-matrix" class="grid md:grid-cols-3 gap-4"></div>
+        <div class="flex flex-wrap items-center gap-2">
+          <button type="button" id="ra-btn-save" class="px-4 py-2 rounded-lg bg-orange text-white text-sm font-semibold hover:bg-orange-600"><i class="fa-solid fa-floppy-disk mr-1"></i> Simpan Akses Role</button>
+          <span id="ra-hint" class="text-xs text-gray-500"></span>
+        </div>
+      </div>
+
       <!-- TAB: PASSWORD -->
       <div id="tab-password" class="tab-content hidden bg-white rounded-xl shadow-sm p-6 max-w-md">
         <h2 class="text-lg font-bold mb-4">Ganti Password Admin</h2>
@@ -707,6 +876,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="js/firebase-config.js"></script>
+  <script src="js/admin-users.js"></script>
   <script src="js/admin.js"></script>
   <script src="js/orders-invoice.js"></script>
   <script src="js/gaslead.js"></script>
@@ -723,6 +893,25 @@
     document.querySelectorAll('.tab-btn').forEach(function(btn) {
       btn.addEventListener('click', function() {
         if (window.innerWidth <= 900) closeAdminSidebar();
+      });
+    });
+
+    // Dropdown group sidebar
+    function setNavGroup(group, open) {
+      group.classList.toggle('open', open);
+      var gb = group.querySelector('.nav-group-btn');
+      if (gb) gb.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+    document.querySelectorAll('.nav-group-btn').forEach(function(gb) {
+      gb.addEventListener('click', function() {
+        var group = gb.closest('.nav-group');
+        setNavGroup(group, !group.classList.contains('open'));
+      });
+    });
+    // Buka group otomatis saat salah satu menunya dipilih (termasuk lewat Aksi Cepat)
+    document.querySelectorAll('.nav-group .tab-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        setNavGroup(btn.closest('.nav-group'), true);
       });
     });
   </script>
