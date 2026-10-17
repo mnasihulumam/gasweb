@@ -213,9 +213,9 @@ function render(data) {
       return `
         <div class="group bg-white rounded-2xl overflow-hidden border border-navy/8 shadow-soft hover:shadow-card transition-all">
           <div class="aspect-[4/3] bg-gradient-to-br ${bg} relative overflow-hidden">${img}
-            <div class="absolute inset-0 bg-navy/0 group-hover:bg-navy/40 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+            <a href="${esc(safeUrl(item.link, '#cta'))}" aria-label="Lihat website ${esc(item.title)}" class="absolute inset-0 bg-navy/0 group-hover:bg-navy/40 focus-visible:bg-navy/40 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100 focus-visible:opacity-100">
               <span class="px-5 py-2.5 bg-white text-navy font-semibold rounded-full text-sm">Lihat Website</span>
-            </div>
+            </a>
           </div>
           <div class="p-6">
             <span class="text-xs font-semibold text-orange uppercase tracking-wide">${esc(item.category)}</span>
