@@ -7,9 +7,24 @@
 (function () {
   'use strict';
 
-  // Harus sama dengan CONFIG.ADMIN_TOKEN di Code.gs
-  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzpz6EeywSpKqUhlu0Fw0Lk7OppyD-PNCYONZszCiuNFdroGAVZCacWozrUKwIG-q5c/exec';
-  const ADMIN_TOKEN = 'gasweb-admin-2026';
+  // URL Web App Apps Script (apps-script/Code.gs). Otorisasi memakai Firebase ID token
+  // user yang sedang login — tidak ada lagi token statis di frontend.
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbynP8Pcl0_VHfioIfNLBokeV-iLmFBO_LcKyDUmbOsW9A5tkAlfHJ1cyzVbh-ByFzf_/exec';
+
+  /** Panggil Apps Script sebagai admin (POST, text/plain agar tanpa preflight CORS). */
+  async function callAdmin(payload) {
+    if (typeof auth === 'undefined' || !auth.currentUser) throw new Error('Sesi login habis. Silakan login ulang.');
+    const idToken = await auth.currentUser.getIdToken();
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(Object.assign({}, payload, { idToken: idToken }))
+    });
+    let data;
+    try { data = await res.json(); } catch (e) { throw new Error('Respon server tidak valid (HTTP ' + res.status + ').'); }
+    if (!data.success) throw new Error(data.message || 'Permintaan gagal');
+    return data;
+  }
 
   let ordersCache = [];
   let paymentsByOrder = {};   // { orderId: [payment, ...] }
@@ -61,20 +76,17 @@
     if (tbody) tbody.innerHTML = '<tr><td colspan="9" class="text-center text-gray-400 py-8">Memuat data dari Google Sheet...</td></tr>';
 
     try {
-      const url = APPS_SCRIPT_URL + '?action=listOrders&token=' + encodeURIComponent(ADMIN_TOKEN);
-      const [res, payRes] = await Promise.all([
-        fetch(url),
-        fetch(APPS_SCRIPT_URL + '?action=listPayments&token=' + encodeURIComponent(ADMIN_TOKEN)).catch(function () { return null; })
+      const [data, payRes] = await Promise.all([
+        callAdmin({ action: 'listOrders' }),
+        callAdmin({ action: 'listPayments' }).catch(function (e) { return { success: false, message: e.message }; })
       ]);
-      const data = await res.json();
-      if (!data.success) throw new Error(data.message || 'Gagal memuat');
       ordersCache = data.orders || [];
 
       // Riwayat pembayaran (opsional: kalau Code.gs belum di-deploy ulang, order tetap tampil)
       paymentsByOrder = {};
       paymentsError = '';
       try {
-        const pd = payRes ? await payRes.json() : null;
+        const pd = payRes;
         if (!pd || !pd.success) throw new Error((pd && pd.message) || 'listPayments belum tersedia');
         (pd.payments || []).forEach(function (pm) {
           const k = pm['Order ID'];
@@ -89,7 +101,7 @@
     } catch (err) {
       console.error(err);
       ordersCache = [];
-      if (tbody) tbody.innerHTML = '<tr><td colspan="9" class="text-center text-red-500 py-8">Gagal memuat order. Pastikan Code.gs sudah di-deploy ulang dengan action=listOrders.<br><span class="text-xs">' + esc(err.message) + '</span></td></tr>';
+      if (tbody) tbody.innerHTML = '<tr><td colspan="9" class="text-center text-red-500 py-8">Gagal memuat order. Pastikan Code.gs versi terbaru sudah di-deploy dan akun ini punya akses menu Orders.<br><span class="text-xs">' + esc(err.message) + '</span></td></tr>';
       if (statusEl) statusEl.textContent = 'Error: ' + err.message;
       renderOrdersStats();
     }
@@ -240,20 +252,13 @@
 
     const payload = {
       action: 'updateStatus',
-      token: ADMIN_TOKEN,
       orderId: orderId,
       statusOrder: field === 'statusOrder' ? value : undefined,
       statusPembayaran: field === 'statusPembayaran' ? value : undefined
     };
 
     try {
-      const res = await fetch(APPS_SCRIPT_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify(payload)
-      });
-      const data = await res.json();
-      if (!data.success) throw new Error(data.message || 'Gagal update');
+      await callAdmin(payload);
       const st = document.getElementById('orders-status');
       if (st) st.textContent = 'Status ' + orderId + ' diperbarui · ' + new Date().toLocaleTimeString('id-ID');
     } catch (err) {
@@ -439,15 +444,7 @@
   };
 
   async function postAdmin(payload) {
-    payload.token = ADMIN_TOKEN;
-    const res = await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify(payload)
-    });
-    const data = await res.json();
-    if (!data.success) throw new Error(data.message || 'Permintaan gagal');
-    return data;
+    return callAdmin(payload);
   }
 
   function afterPaymentChange(idx) {
