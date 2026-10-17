@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Portfolio Lengkap — GasWeb</title>
   <meta name="description" content="Semua contoh website yang sudah dikerjakan GasWeb untuk klien.">
+  <link rel="canonical" href="https://gasweb.id/demo.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="GasWeb">
+  <meta property="og:title" content="Portfolio Lengkap — GasWeb">
+  <meta property="og:url" content="https://gasweb.id/demo.html">
+  <meta name="theme-color" content="#0F1F3D">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -125,8 +131,9 @@
     function resolveLink(link) {
       const u = String(link || '').trim();
       if (!u || u.charAt(0) === '#') return 'index.html' + (u || '#cta');
-      if (/^(https?:\/\/|\/|\.\/|assets\/)/i.test(u)) return u;
-      return 'index.html#cta';
+      if (/^(https?:)?\/\//i.test(u) || /^(\/|\.\/|\.\.\/)/.test(u)) return u;
+      if (!/^[a-z][a-z0-9+.\-]*:/i.test(u)) return u; // path relatif, mis. demo/properti.html
+      return 'index.html#cta'; // skema berbahaya (javascript:, data:) ditolak
     }
 
     function render(data) {
