@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id" class="scroll-smooth">
+<html lang="id">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,7 +15,8 @@
   <meta name="twitter:card" content="summary">
   <meta name="theme-color" content="#0F1F3D">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="favicon.svg">  
+  <link rel="apple-touch-icon" href="favicon.svg">
+
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -25,30 +26,147 @@
             orange: { DEFAULT: '#FF5A1F', 50: '#FFF4F0', 100: '#FFE8E0', 500: '#FF5A1F', 600: '#E04E1A', 700: '#C44316' },
             navy: { DEFAULT: '#0F1F3D', 50: '#F0F3F8', 100: '#E1E7F0', 800: '#1A2B4A', 900: '#0F1F3D' }
           },
-          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif'],
+            display: ['Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif']
+          },
           boxShadow: {
-            'soft': '0 4px 20px -2px rgba(15, 31, 61, 0.08)',
-            'card': '0 8px 30px -4px rgba(15, 31, 61, 0.1)',
-            'orange': '0 8px 25px -5px rgba(255, 90, 31, 0.35)'
+            soft: '0 4px 24px -4px rgba(15, 31, 61, 0.08)',
+            card: '0 12px 40px -12px rgba(15, 31, 61, 0.14)',
+            orange: '0 10px 28px -6px rgba(255, 90, 31, 0.4)',
+            glass: '0 8px 32px rgba(15, 31, 61, 0.08)'
+          },
+          letterSpacing: {
+            tighter: '-0.04em'
           }
         }
       }
     }
   </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer">
+
   <style>
-    body { font-family: 'Inter', system-ui, sans-serif; }
-    .hero-blob { position: absolute; border-radius: 50%; filter: blur(60px); opacity: 0.35; z-index: 0; }
-    .device-frame { background: linear-gradient(145deg, #1a2b4a, #0f1f3d); border-radius: 12px; padding: 8px; box-shadow: 0 25px 50px -12px rgba(15, 31, 61, 0.4); }
-    .phone-frame { border-radius: 24px; padding: 10px; }
-    .nav-scrolled { background: rgba(255,255,255,0.95); backdrop-filter: blur(12px); box-shadow: 0 1px 3px rgba(15,31,61,0.08); }
-    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
-    .float-anim { animation: float 6s ease-in-out infinite; }
-    .float-anim-delay { animation: float 6s ease-in-out 1.5s infinite; }
-    #page-loader { transition: opacity 0.3s ease; }
+    :root {
+      --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+      --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+      --dur: 0.7s;
+    }
+
+    html { scroll-behavior: smooth; scroll-padding-top: 96px; }
+    html.lenis, html.lenis body { height: auto; }
+    .lenis.lenis-smooth { scroll-behavior: auto !important; }
+    .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+    .lenis.lenis-stopped { overflow: hidden; }
+    .lenis.lenis-smooth iframe { pointer-events: none; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', Inter, system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    /* Loader */
+    #page-loader { transition: opacity 0.4s var(--ease-out); }
+
+    /* Navbar glass */
+    #navbar {
+      transition: background 0.35s var(--ease-out), box-shadow 0.35s var(--ease-out), border-color 0.35s var(--ease-out);
+    }
+    #navbar.nav-scrolled {
+      background: rgba(255, 255, 255, 0.78);
+      backdrop-filter: blur(16px) saturate(1.4);
+      -webkit-backdrop-filter: blur(16px) saturate(1.4);
+      border-bottom-color: rgba(15, 31, 61, 0.08);
+      box-shadow: 0 4px 24px -8px rgba(15, 31, 61, 0.1);
+    }
+
+    /* Hero blobs */
+    .hero-blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(72px);
+      opacity: 0.4;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .device-frame {
+      background: linear-gradient(145deg, #1a2b4a, #0f1f3d);
+      border-radius: 14px;
+      padding: 8px;
+      box-shadow: 0 28px 56px -16px rgba(15, 31, 61, 0.45);
+    }
+    .phone-frame { border-radius: 26px; padding: 10px; }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-14px); }
+    }
+    .float-anim { animation: float 6.5s ease-in-out infinite; }
+    .float-anim-delay { animation: float 6.5s ease-in-out 1.4s infinite; }
+
+    /* Reveal system */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity var(--dur) var(--ease-out), transform var(--dur) var(--ease-out);
+    }
+    .reveal.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: 0.08s; }
+    .reveal-delay-2 { transition-delay: 0.16s; }
+    .reveal-delay-3 { transition-delay: 0.24s; }
+    .reveal-delay-4 { transition-delay: 0.32s; }
+
+    /* Cards & interactive */
+    .card-hover {
+      transition: transform 0.35s var(--ease-out), box-shadow 0.35s var(--ease-out), border-color 0.35s var(--ease-out);
+    }
+    .card-hover:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 48px -16px rgba(15, 31, 61, 0.18);
+    }
+
+    .btn-press {
+      transition: transform 0.25s var(--ease-spring), box-shadow 0.3s var(--ease-out), background-color 0.25s ease;
+    }
+    .btn-press:hover { transform: scale(1.03); }
+    .btn-press:active { transform: scale(0.97); }
+
+    .nav-link {
+      position: relative;
+      transition: color 0.2s ease;
+    }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -4px;
+      height: 2px;
+      border-radius: 2px;
+      background: #FF5A1F;
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s var(--ease-out);
+    }
+    .nav-link:hover::after { transform: scaleX(1); }
+
+    /* Section spacing helper */
+    .section-y { padding-block: clamp(4.5rem, 8vw, 7.5rem); }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1; transform: none; transition: none; }
+      .float-anim, .float-anim-delay { animation: none; }
+      html { scroll-behavior: auto; }
+    }
   </style>
 </head>
 <body class="bg-white text-navy antialiased">
@@ -56,18 +174,18 @@
   <!-- Loader -->
   <div id="page-loader" class="fixed inset-0 bg-navy z-[9999] flex items-center justify-center">
     <div class="text-center">
-      <div class="w-10 h-10 border-3 border-orange/30 border-t-orange rounded-full animate-spin mx-auto" style="border-width:3px;"></div>
-      <p class="text-white/70 text-sm mt-4">Memuat GasWeb...</p>
+      <div class="w-11 h-11 border-[3px] border-orange/25 border-t-orange rounded-full animate-spin mx-auto"></div>
+      <p class="text-white/65 text-sm mt-5 tracking-wide font-medium">Memuat GasWeb...</p>
     </div>
   </div>
 
   <!-- NAVBAR -->
-  <header id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-white/90 backdrop-blur-md border-b border-navy/5">
+  <header id="navbar" class="fixed top-0 left-0 right-0 z-50 border-b border-transparent bg-white/60 backdrop-blur-md">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-16 md:h-20">
+      <div class="flex items-center justify-between h-[4.25rem] md:h-20">
         <a href="#" class="flex items-center gap-2.5 group">
           <img id="site-logo" src="" alt="GasWeb" class="h-9 w-auto hidden">
-          <svg id="default-logo" width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" class="flex-shrink-0">
+          <svg id="default-logo" width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" class="flex-shrink-0 transition-transform group-hover:scale-105">
             <rect x="4" y="8" width="32" height="28" rx="3" stroke="#0F1F3D" stroke-width="2.5" fill="white"/>
             <circle cx="10" cy="14" r="1.5" fill="#0F1F3D"/>
             <circle cx="15" cy="14" r="1.5" fill="#0F1F3D"/>
@@ -77,67 +195,97 @@
             <path d="M32 12L28 11M32 12L31 16" stroke="#FF5A1F" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M2 24H6M0 28H5M1 32H6" stroke="#FF5A1F" stroke-width="2" stroke-linecap="round"/>
           </svg>
-          <span class="text-xl font-bold tracking-tight text-navy">Gas<span class="text-orange">Web</span></span>
+          <span class="text-xl font-extrabold tracking-tight text-navy">Gas<span class="text-orange">Web</span></span>
         </a>
-        <nav class="hidden md:flex items-center gap-8">
-          <a href="#home" class="text-sm font-medium text-navy/80 hover:text-orange transition-colors">Home</a>
-          <a href="#services" class="text-sm font-medium text-navy/80 hover:text-orange transition-colors">Services</a>
-          <a href="#portfolio" class="text-sm font-medium text-navy/80 hover:text-orange transition-colors">Portfolio</a>
-          <a href="#pricing" class="text-sm font-medium text-navy/80 hover:text-orange transition-colors">Pricing</a>
-          <a href="#testimonials" class="text-sm font-medium text-navy/80 hover:text-orange transition-colors">Testimoni</a>
-          <a href="#faq" class="text-sm font-medium text-navy/80 hover:text-orange transition-colors">FAQ</a>
-          <a href="#about" class="text-sm font-medium text-navy/80 hover:text-orange transition-colors">About</a>
+
+        <nav class="hidden md:flex items-center gap-1 lg:gap-2">
+          <a href="#home" class="nav-link px-3 py-2 text-sm font-medium text-navy/75 hover:text-navy">Home</a>
+          <a href="#services" class="nav-link px-3 py-2 text-sm font-medium text-navy/75 hover:text-navy">Services</a>
+          <a href="#portfolio" class="nav-link px-3 py-2 text-sm font-medium text-navy/75 hover:text-navy">Portfolio</a>
+          <a href="#pricing" class="nav-link px-3 py-2 text-sm font-medium text-navy/75 hover:text-navy">Pricing</a>
+          <a href="#testimonials" class="nav-link px-3 py-2 text-sm font-medium text-navy/75 hover:text-navy">Testimoni</a>
+          <a href="#faq" class="nav-link px-3 py-2 text-sm font-medium text-navy/75 hover:text-navy">FAQ</a>
+          <a href="#about" class="nav-link px-3 py-2 text-sm font-medium text-navy/75 hover:text-navy">About</a>
         </nav>
-        <div class="flex items-center gap-3">
-          <a id="nav-order" href="order.html" class="hidden lg:inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-navy text-white text-sm font-semibold hover:bg-navy-800 transition-all hover:scale-[1.02]"><i class="fa-solid fa-cart-shopping" aria-hidden="true"></i> Order Sekarang</a>
-          <a id="nav-cta" href="#" target="_blank" class="hidden sm:inline-flex items-center justify-center px-5 py-2.5 rounded-full bg-orange text-white text-sm font-semibold shadow-orange hover:bg-orange-600 transition-all hover:scale-[1.02]">Konsultasi Gratis</a>
-          <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg text-navy hover:bg-navy/5" aria-label="Menu">
+
+        <div class="flex items-center gap-2.5">
+          <a id="nav-order" href="order.html" class="hidden lg:inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-navy text-white text-sm font-semibold btn-press hover:bg-navy-800">
+            <i class="fa-solid fa-cart-shopping text-xs" aria-hidden="true"></i> Order Sekarang
+          </a>
+          <a id="nav-cta" href="#" target="_blank" class="hidden sm:inline-flex items-center justify-center px-5 py-2.5 rounded-full bg-orange text-white text-sm font-semibold shadow-orange btn-press hover:bg-orange-600">
+            Konsultasi Gratis
+          </a>
+          <button id="mobile-menu-btn" class="md:hidden p-2.5 rounded-xl text-navy hover:bg-navy/5 transition-colors" aria-label="Menu">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
           </button>
         </div>
       </div>
     </div>
-    <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-navy/5">
+
+    <div id="mobile-menu" class="hidden md:hidden bg-white/95 backdrop-blur-xl border-t border-navy/5 shadow-soft">
       <div class="px-4 py-4 space-y-1">
-        <a href="#home" class="block px-4 py-3 rounded-lg text-navy font-medium hover:bg-orange/5 hover:text-orange">Home</a>
-        <a href="#services" class="block px-4 py-3 rounded-lg text-navy font-medium hover:bg-orange/5 hover:text-orange">Services</a>
-        <a href="#portfolio" class="block px-4 py-3 rounded-lg text-navy font-medium hover:bg-orange/5 hover:text-orange">Portfolio</a>
-        <a href="#pricing" class="block px-4 py-3 rounded-lg text-navy font-medium hover:bg-orange/5 hover:text-orange">Pricing</a>
-        <a href="#testimonials" class="block px-4 py-3 rounded-lg text-navy font-medium hover:bg-orange/5 hover:text-orange">Testimoni</a>
-        <a href="#faq" class="block px-4 py-3 rounded-lg text-navy font-medium hover:bg-orange/5 hover:text-orange">FAQ</a>
-        <a href="#about" class="block px-4 py-3 rounded-lg text-navy font-medium hover:bg-orange/5 hover:text-orange">About</a>
-        <a id="mobile-order" href="order.html" class="mt-2 flex items-center justify-center gap-2 w-full text-center px-5 py-3 rounded-full bg-navy text-white font-semibold"><i class="fa-solid fa-cart-shopping" aria-hidden="true"></i> Order Sekarang</a>
-        <a id="mobile-cta" href="#" target="_blank" class="mt-2 block w-full text-center px-5 py-3 rounded-full bg-orange text-white font-semibold shadow-orange">Konsultasi Gratis</a>
+        <a href="#home" class="block px-4 py-3 rounded-xl text-navy font-medium hover:bg-orange/5 hover:text-orange transition-colors">Home</a>
+        <a href="#services" class="block px-4 py-3 rounded-xl text-navy font-medium hover:bg-orange/5 hover:text-orange transition-colors">Services</a>
+        <a href="#portfolio" class="block px-4 py-3 rounded-xl text-navy font-medium hover:bg-orange/5 hover:text-orange transition-colors">Portfolio</a>
+        <a href="#pricing" class="block px-4 py-3 rounded-xl text-navy font-medium hover:bg-orange/5 hover:text-orange transition-colors">Pricing</a>
+        <a href="#testimonials" class="block px-4 py-3 rounded-xl text-navy font-medium hover:bg-orange/5 hover:text-orange transition-colors">Testimoni</a>
+        <a href="#faq" class="block px-4 py-3 rounded-xl text-navy font-medium hover:bg-orange/5 hover:text-orange transition-colors">FAQ</a>
+        <a href="#about" class="block px-4 py-3 rounded-xl text-navy font-medium hover:bg-orange/5 hover:text-orange transition-colors">About</a>
+        <a id="mobile-order" href="order.html" class="mt-3 flex items-center justify-center gap-2 w-full text-center px-5 py-3.5 rounded-full bg-navy text-white font-semibold btn-press">
+          <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i> Order Sekarang
+        </a>
+        <a id="mobile-cta" href="#" target="_blank" class="mt-2 block w-full text-center px-5 py-3.5 rounded-full bg-orange text-white font-semibold shadow-orange btn-press">Konsultasi Gratis</a>
       </div>
     </div>
   </header>
 
   <!-- HERO -->
-  <section id="home" class="relative pt-28 pb-20 md:pt-36 md:pb-28 overflow-hidden">
-    <div class="hero-blob w-96 h-96 bg-orange top-20 -right-20 md:right-10"></div>
-    <div class="hero-blob w-72 h-72 bg-navy/20 bottom-10 -left-20"></div>
+  <section id="home" class="relative pt-28 pb-20 md:pt-40 md:pb-32 overflow-hidden">
+    <div class="hero-blob w-[28rem] h-[28rem] bg-orange/90 top-16 -right-24 md:right-0"></div>
+    <div class="hero-blob w-80 h-80 bg-navy/25 bottom-0 -left-24"></div>
+
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-      <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+      <div class="grid lg:grid-cols-2 gap-14 lg:gap-20 items-center">
         <div class="text-center lg:text-left">
-          <div id="hero-badge" class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-orange/10 text-orange text-sm font-semibold mb-6">🚀 Jasa Pembuatan Website Profesional</div>
-          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.1] tracking-tight text-navy mb-6">
-            <span id="hero-headline1">Website Profesional.</span><br>
-            <span id="hero-headline2" class="text-orange">Bisnis Makin Gas. 🚀</span>
-          </h1>
-          <p id="hero-subheadline" class="text-lg text-navy/70 max-w-xl mx-auto lg:mx-0 mb-8 leading-relaxed">Kami bantu bisnis, UMKM, dan profesional memiliki website modern yang siap menjadi wajah digital bisnis Anda.</p>
-          <div class="flex flex-col sm:flex-row sm:flex-wrap gap-4 justify-center lg:justify-start">
-            <a id="hero-cta" href="#" target="_blank" class="inline-flex items-center justify-center px-8 py-4 rounded-full bg-orange text-white font-semibold text-base shadow-orange hover:bg-orange-600 transition-all hover:scale-[1.02]">Konsultasi Gratis</a>
-            <a href="#portfolio" class="inline-flex items-center justify-center px-8 py-4 rounded-full border-2 border-navy/20 text-navy font-semibold text-base hover:border-orange hover:text-orange transition-all">Lihat Portfolio</a>
-            <a id="hero-order" href="order.html" class="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-navy text-white font-semibold text-base hover:bg-navy-800 transition-all hover:scale-[1.02]"><i class="fa-solid fa-cart-shopping" aria-hidden="true"></i> Order Sekarang</a>
+          <div id="hero-badge" class="reveal inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-orange/10 text-orange text-sm font-semibold mb-7 tracking-wide">
+            🚀 Jasa Pembuatan Website Profesional
           </div>
-          <div class="mt-10 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-sm text-navy/60">
-            <div class="flex items-center gap-2"><svg class="w-5 h-5 text-orange" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg><span>Gratis Konsultasi</span></div>
-            <div class="flex items-center gap-2"><svg class="w-5 h-5 text-orange" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg><span>Mobile Ready</span></div>
-            <div class="flex items-center gap-2"><svg class="w-5 h-5 text-orange" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg><span>SEO Friendly</span></div>
+          <h1 class="reveal reveal-delay-1 text-[2.35rem] sm:text-5xl lg:text-[3.4rem] font-extrabold leading-[1.08] tracking-tighter text-navy mb-6">
+            <span id="hero-headline1" class="block">Website Profesional.</span>
+            <span id="hero-headline2" class="block text-orange mt-1">Bisnis Makin Gas. 🚀</span>
+          </h1>
+          <p id="hero-subheadline" class="reveal reveal-delay-2 text-lg sm:text-xl text-navy/65 max-w-xl mx-auto lg:mx-0 mb-9 leading-relaxed">
+            Kami bantu bisnis, UMKM, dan profesional memiliki website modern yang siap menjadi wajah digital bisnis Anda.
+          </p>
+          <div class="reveal reveal-delay-3 flex flex-col sm:flex-row sm:flex-wrap gap-3.5 justify-center lg:justify-start">
+            <a id="hero-cta" href="#" target="_blank" class="inline-flex items-center justify-center px-8 py-4 rounded-full bg-orange text-white font-semibold text-[0.95rem] shadow-orange btn-press hover:bg-orange-600">
+              Konsultasi Gratis
+            </a>
+            <a href="#portfolio" class="inline-flex items-center justify-center px-8 py-4 rounded-full border-2 border-navy/15 text-navy font-semibold text-[0.95rem] hover:border-orange hover:text-orange transition-all duration-300">
+              Lihat Portfolio
+            </a>
+            <a id="hero-order" href="order.html" class="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-navy text-white font-semibold text-[0.95rem] btn-press hover:bg-navy-800">
+              <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i> Order Sekarang
+            </a>
+          </div>
+          <div class="reveal reveal-delay-4 mt-11 flex flex-wrap items-center justify-center lg:justify-start gap-x-7 gap-y-3 text-sm text-navy/55 font-medium">
+            <div class="flex items-center gap-2">
+              <svg class="w-5 h-5 text-orange shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+              <span>Gratis Konsultasi</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <svg class="w-5 h-5 text-orange shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+              <span>Mobile Ready</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <svg class="w-5 h-5 text-orange shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+              <span>SEO Friendly</span>
+            </div>
           </div>
         </div>
-        <!-- Device mockups (static visual) -->
-        <div class="relative flex justify-center lg:justify-end">
+
+        <!-- Device mockups -->
+        <div class="reveal relative flex justify-center lg:justify-end">
           <div class="relative w-full max-w-lg">
             <div class="device-frame float-anim relative z-10 mx-auto" style="width:90%">
               <div class="bg-white rounded-md overflow-hidden aspect-[16/10]">
@@ -176,162 +324,330 @@
   </section>
 
   <!-- PROBLEMS -->
-  <section class="py-20 md:py-28 bg-navy-50/50">
+  <section class="section-y bg-navy-50/60">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center max-w-3xl mx-auto mb-14">
-        <h2 id="problems-title" class="text-3xl sm:text-4xl font-extrabold text-navy tracking-tight mb-4">Bisnis Kamu Sudah Jalan, Tapi Belum Punya Website?</h2>
-        <p id="problems-subtitle" class="text-navy/60 text-lg">Banyak bisnis hebat yang masih kesulitan tampil profesional di dunia digital.</p>
+      <div class="text-center max-w-3xl mx-auto mb-14 reveal">
+        <h2 id="problems-title" class="text-3xl sm:text-4xl lg:text-[2.75rem] font-extrabold text-navy tracking-tighter mb-4 leading-tight">
+          Bisnis Kamu Sudah Jalan, Tapi Belum Punya Website?
+        </h2>
+        <p id="problems-subtitle" class="text-navy/55 text-lg leading-relaxed">
+          Banyak bisnis hebat yang masih kesulitan tampil profesional di dunia digital.
+        </p>
       </div>
       <div id="problems-list" class="grid md:grid-cols-3 gap-6 lg:gap-8"></div>
-      <p id="problems-closing" class="text-center mt-12 text-lg font-semibold text-navy">Saatnya punya rumah sendiri di internet.</p>
+      <p id="problems-closing" class="reveal text-center mt-14 text-lg font-semibold text-navy">
+        Saatnya punya rumah sendiri di internet. 🏠
+      </p>
     </div>
   </section>
 
   <!-- SERVICES -->
-  <section id="services" class="py-20 md:py-28">
+  <section id="services" class="section-y">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center max-w-3xl mx-auto mb-14">
-        <h2 id="services-title" class="text-3xl sm:text-4xl font-extrabold text-navy tracking-tight mb-4">Website yang Siap Bantu Bisnis Kamu Berkembang.</h2>
-        <p id="services-subtitle" class="text-navy/60 text-lg">Pilih jenis website yang paling sesuai dengan kebutuhan bisnismu.</p>
+      <div class="text-center max-w-3xl mx-auto mb-14 reveal">
+        <h2 id="services-title" class="text-3xl sm:text-4xl lg:text-[2.75rem] font-extrabold text-navy tracking-tighter mb-4 leading-tight">
+          Website yang Siap Bantu Bisnis Kamu Berkembang.
+        </h2>
+        <p id="services-subtitle" class="text-navy/55 text-lg leading-relaxed">
+          Pilih jenis website yang paling sesuai dengan kebutuhan bisnismu.
+        </p>
       </div>
       <div id="services-list" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
     </div>
   </section>
 
   <!-- FEATURES / WHY -->
-  <section id="about" class="py-20 md:py-28 bg-navy text-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center max-w-3xl mx-auto mb-14">
-        <h2 id="features-title" class="text-3xl sm:text-4xl font-extrabold tracking-tight mb-4">Kenapa Pilih GasWeb?</h2>
-        <p id="features-subtitle" class="text-white/70 text-lg">Kami fokus pada hasil yang benar-benar membantu bisnis kamu tumbuh.</p>
+  <section id="about" class="section-y bg-navy text-white relative overflow-hidden">
+    <div class="absolute inset-0 opacity-[0.07] pointer-events-none">
+      <div class="absolute top-0 right-0 w-[32rem] h-[32rem] rounded-full bg-orange blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+      <div class="absolute bottom-0 left-0 w-96 h-96 rounded-full bg-orange/80 blur-3xl translate-y-1/3 -translate-x-1/4"></div>
+    </div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="text-center max-w-3xl mx-auto mb-14 reveal">
+        <h2 id="features-title" class="text-3xl sm:text-4xl lg:text-[2.75rem] font-extrabold tracking-tighter mb-4 leading-tight">
+          Kenapa Pilih GasWeb?
+        </h2>
+        <p id="features-subtitle" class="text-white/65 text-lg leading-relaxed">
+          Kami fokus pada hasil yang benar-benar membantu bisnis kamu tumbuh.
+        </p>
       </div>
       <div id="features-list" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
     </div>
   </section>
 
   <!-- PORTFOLIO -->
-  <section id="portfolio" class="py-20 md:py-28">
+  <section id="portfolio" class="section-y">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center max-w-3xl mx-auto mb-14">
-        <h2 id="portfolio-title" class="text-3xl sm:text-4xl font-extrabold text-navy tracking-tight mb-4">Portfolio Kami</h2>
-        <p id="portfolio-subtitle" class="text-navy/60 text-lg">Beberapa contoh website yang sudah kami kerjakan untuk klien.</p>
+      <div class="text-center max-w-3xl mx-auto mb-14 reveal">
+        <h2 id="portfolio-title" class="text-3xl sm:text-4xl lg:text-[2.75rem] font-extrabold text-navy tracking-tighter mb-4 leading-tight">
+          Portfolio Kami
+        </h2>
+        <p id="portfolio-subtitle" class="text-navy/55 text-lg leading-relaxed">
+          Beberapa contoh website yang sudah kami kerjakan untuk klien.
+        </p>
       </div>
       <div id="portfolio-list" class="grid md:grid-cols-3 gap-8"></div>
-      <div id="portfolio-more" class="hidden text-center mt-12">
-        <a href="demo.html" class="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full border-2 border-navy/20 text-navy font-semibold text-base hover:border-orange hover:text-orange transition-all"><i class="fa-solid fa-eye" aria-hidden="true"></i> Lihat Portofolio Lainnya</a>
+      <div id="portfolio-more" class="hidden text-center mt-14 reveal">
+        <a href="demo.html" class="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full border-2 border-navy/15 text-navy font-semibold text-[0.95rem] hover:border-orange hover:text-orange transition-all duration-300">
+          <i class="fa-solid fa-eye" aria-hidden="true"></i> Lihat Portofolio Lainnya
+        </a>
       </div>
     </div>
   </section>
 
   <!-- STEPS -->
-  <section class="py-20 md:py-28 bg-navy-50/60">
+  <section class="section-y bg-navy-50/60">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center max-w-3xl mx-auto mb-16">
-        <h2 id="steps-title" class="text-3xl sm:text-4xl font-extrabold text-navy tracking-tight mb-4">Gampang. Tinggal Cerita, Kami yang Kerjakan.</h2>
-        <p id="steps-subtitle" class="text-navy/60 text-lg">Proses sederhana dan transparan dari awal sampai website live.</p>
+      <div class="text-center max-w-3xl mx-auto mb-16 reveal">
+        <h2 id="steps-title" class="text-3xl sm:text-4xl lg:text-[2.75rem] font-extrabold text-navy tracking-tighter mb-4 leading-tight">
+          Gampang. Tinggal Cerita, Kami yang Kerjakan.
+        </h2>
+        <p id="steps-subtitle" class="text-navy/55 text-lg leading-relaxed">
+          Proses sederhana dan transparan dari awal sampai website live.
+        </p>
       </div>
-      <div id="steps-list" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-6"></div>
+      <div id="steps-list" class="grid md:grid-cols-3 gap-8 lg:gap-10"></div>
     </div>
   </section>
 
   <!-- PRICING -->
-  <section id="pricing" class="py-20 md:py-28">
+  <section id="pricing" class="section-y">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center max-w-3xl mx-auto mb-14">
-        <h2 id="pricing-title" class="text-3xl sm:text-4xl font-extrabold text-navy tracking-tight mb-4">Pilih Paket Sesuai Kebutuhan.</h2>
-        <p id="pricing-subtitle" class="text-navy/60 text-lg">Harga transparan. Konsultasi dulu, baru tentukan paket yang pas.</p>
+      <div class="text-center max-w-3xl mx-auto mb-14 reveal">
+        <h2 id="pricing-title" class="text-3xl sm:text-4xl lg:text-[2.75rem] font-extrabold text-navy tracking-tighter mb-4 leading-tight">
+          Pilih Paket Sesuai Kebutuhan.
+        </h2>
+        <p id="pricing-subtitle" class="text-navy/55 text-lg leading-relaxed">
+          Harga transparan. Konsultasi dulu, baru tentukan paket yang pas.
+        </p>
       </div>
       <div id="packages-list" class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto"></div>
     </div>
   </section>
 
-  <!-- FINAL CTA -->
-  <!-- TESTIMONIALS (disembunyikan otomatis kalau belum ada data) -->
-  <section id="testimonials" class="hidden py-20 md:py-28 bg-navy-50/60">
+  <!-- TESTIMONIALS -->
+  <section id="testimonials" class="hidden section-y bg-navy-50/60">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center max-w-3xl mx-auto mb-14">
-        <h2 id="testimonials-title" class="text-3xl sm:text-4xl font-extrabold text-navy tracking-tight mb-4">Kata Mereka Tentang GasWeb</h2>
-        <p id="testimonials-subtitle" class="text-navy/60 text-lg">Cerita dari klien yang sudah merasakan hasil kerja kami.</p>
+      <div class="text-center max-w-3xl mx-auto mb-14 reveal">
+        <h2 id="testimonials-title" class="text-3xl sm:text-4xl lg:text-[2.75rem] font-extrabold text-navy tracking-tighter mb-4 leading-tight">
+          Kata Mereka Tentang GasWeb
+        </h2>
+        <p id="testimonials-subtitle" class="text-navy/55 text-lg leading-relaxed">
+          Cerita dari klien yang sudah merasakan hasil kerja kami.
+        </p>
       </div>
       <div id="testimonials-list" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8"></div>
     </div>
   </section>
 
-  <!-- FAQ (disembunyikan otomatis kalau belum ada data) -->
-  <section id="faq" class="hidden py-20 md:py-28">
+  <!-- FAQ -->
+  <section id="faq" class="hidden section-y">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-12">
-        <h2 id="faq-title" class="text-3xl sm:text-4xl font-extrabold text-navy tracking-tight mb-4">Pertanyaan yang Sering Ditanyakan</h2>
-        <p id="faq-subtitle" class="text-navy/60 text-lg">Masih ragu? Semoga jawaban di bawah ini membantu.</p>
+      <div class="text-center mb-12 reveal">
+        <h2 id="faq-title" class="text-3xl sm:text-4xl lg:text-[2.75rem] font-extrabold text-navy tracking-tighter mb-4 leading-tight">
+          Pertanyaan yang Sering Ditanyakan
+        </h2>
+        <p id="faq-subtitle" class="text-navy/55 text-lg leading-relaxed">
+          Masih ragu? Semoga jawaban di bawah ini membantu.
+        </p>
       </div>
       <div id="faq-list" class="space-y-3"></div>
     </div>
   </section>
 
-  <section id="cta" class="py-20 md:py-28 bg-navy relative overflow-hidden">
-    <div class="absolute inset-0 opacity-20">
-      <div class="absolute top-10 left-10 w-64 h-64 rounded-full bg-orange blur-3xl"></div>
-      <div class="absolute bottom-10 right-10 w-80 h-80 rounded-full bg-orange/60 blur-3xl"></div>
+  <!-- FINAL CTA -->
+  <section id="cta" class="section-y bg-navy relative overflow-hidden">
+    <div class="absolute inset-0 opacity-25 pointer-events-none">
+      <div class="absolute top-10 left-10 w-72 h-72 rounded-full bg-orange blur-3xl"></div>
+      <div class="absolute bottom-10 right-10 w-96 h-96 rounded-full bg-orange/70 blur-3xl"></div>
     </div>
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-      <h2 id="final-cta-headline" class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight mb-6">Siap Bikin Bisnis Kamu Makin Gas? 🚀</h2>
-      <p id="final-cta-text" class="text-lg text-white/75 mb-10 max-w-2xl mx-auto">Konsultasikan kebutuhan website kamu sekarang. Gratis dan tanpa kewajiban.</p>
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 reveal">
+      <h2 id="final-cta-headline" class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tighter mb-6 leading-tight">
+        Siap Bikin Bisnis Kamu Makin Gas? 🚀
+      </h2>
+      <p id="final-cta-text" class="text-lg text-white/70 mb-10 max-w-2xl mx-auto leading-relaxed">
+        Konsultasikan kebutuhan website kamu sekarang. Gratis dan tanpa kewajiban.
+      </p>
       <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-        <a id="final-cta-btn" href="#" target="_blank" class="inline-flex items-center justify-center gap-3 px-10 py-5 rounded-full bg-orange text-white text-lg font-bold shadow-orange hover:bg-orange-600 transition-all hover:scale-[1.03]">
+        <a id="final-cta-btn" href="#" target="_blank" class="inline-flex items-center justify-center gap-3 px-10 py-5 rounded-full bg-orange text-white text-lg font-bold shadow-orange btn-press hover:bg-orange-600">
           <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-          Chat via WhatsApp
+          Konsultasi via WhatsApp
         </a>
-        <a id="final-order-btn" href="order.html" class="inline-flex items-center justify-center gap-3 px-10 py-5 rounded-full border-2 border-white/30 text-white text-lg font-bold hover:bg-white hover:text-navy transition-all hover:scale-[1.03]"><i class="fa-solid fa-cart-shopping" aria-hidden="true"></i> Order Sekarang</a>
+        <a id="final-order-btn" href="order.html" class="inline-flex items-center justify-center gap-2 px-10 py-5 rounded-full bg-white text-navy text-lg font-bold btn-press hover:bg-white/90">
+          <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i> Order Sekarang
+        </a>
       </div>
     </div>
   </section>
 
   <!-- FOOTER -->
-  <footer class="bg-navy-900 text-white pt-16 pb-8">
+  <footer class="bg-navy text-white pt-16 pb-10">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid md:grid-cols-4 gap-10 mb-12">
-        <div class="md:col-span-2">
-          <a href="#" class="flex items-center gap-2.5 mb-4">
-            <span class="text-xl font-bold">Gas<span class="text-orange">Web</span></span>
-          </a>
-          <p id="footer-desc" class="text-white/60 text-sm leading-relaxed max-w-sm">GasWeb membantu bisnis, UMKM, dan profesional memiliki website modern yang siap menjadi wajah digital bisnis Anda.</p>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-14">
+        <div class="sm:col-span-2 lg:col-span-1">
+          <div class="flex items-center gap-2.5 mb-5">
+            <svg width="36" height="36" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" class="flex-shrink-0">
+              <rect x="4" y="8" width="32" height="28" rx="3" stroke="white" stroke-width="2.5" fill="transparent"/>
+              <circle cx="10" cy="14" r="1.5" fill="white"/>
+              <circle cx="15" cy="14" r="1.5" fill="white"/>
+              <circle cx="20" cy="14" r="1.5" fill="white"/>
+              <path d="M12 28C12 22 16 18 22 18C26 18 28 20 28 22" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M22 18L32 12" stroke="#FF5A1F" stroke-width="2.8" stroke-linecap="round"/>
+              <path d="M32 12L28 11M32 12L31 16" stroke="#FF5A1F" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M2 24H6M0 28H5M1 32H6" stroke="#FF5A1F" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <span class="text-xl font-extrabold tracking-tight">Gas<span class="text-orange">Web</span></span>
+          </div>
+          <p id="footer-desc" class="text-white/50 text-sm leading-relaxed max-w-xs">
+            GasWeb membantu bisnis, UMKM, dan profesional memiliki website modern yang siap menjadi wajah digital bisnis Anda.
+          </p>
         </div>
         <div>
-          <h4 class="font-semibold mb-4 text-white">Navigasi</h4>
-          <ul class="space-y-2.5 text-sm text-white/60">
+          <h4 class="font-semibold text-sm tracking-wide uppercase text-white/40 mb-4">Navigasi</h4>
+          <ul class="space-y-2.5 text-sm text-white/70">
             <li><a href="#home" class="hover:text-orange transition-colors">Home</a></li>
             <li><a href="#services" class="hover:text-orange transition-colors">Services</a></li>
             <li><a href="#portfolio" class="hover:text-orange transition-colors">Portfolio</a></li>
             <li><a href="#pricing" class="hover:text-orange transition-colors">Pricing</a></li>
-            <li><a href="#testimonials" class="hover:text-orange transition-colors">Testimoni</a></li>
-            <li><a href="#faq" class="hover:text-orange transition-colors">FAQ</a></li>
             <li><a href="#about" class="hover:text-orange transition-colors">About</a></li>
           </ul>
         </div>
         <div>
-          <h4 class="font-semibold mb-4 text-white">Hubungi Kami</h4>
-          <ul class="space-y-3 text-sm text-white/60">
+          <h4 class="font-semibold text-sm tracking-wide uppercase text-white/40 mb-4">Layanan</h4>
+          <ul class="space-y-2.5 text-sm text-white/70">
+            <li><a href="#services" class="hover:text-orange transition-colors">Landing Page</a></li>
+            <li><a href="#services" class="hover:text-orange transition-colors">Company Profile</a></li>
+            <li><a href="#services" class="hover:text-orange transition-colors">Toko Online</a></li>
+            <li><a href="order.html" class="hover:text-orange transition-colors">Order Website</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-semibold text-sm tracking-wide uppercase text-white/40 mb-4">Kontak</h4>
+          <ul class="space-y-2.5 text-sm text-white/70">
             <li><a id="footer-wa" href="#" target="_blank" class="hover:text-orange transition-colors">WhatsApp</a></li>
             <li><a id="footer-ig" href="#" target="_blank" class="hover:text-orange transition-colors">Instagram</a></li>
             <li><a id="footer-tt" href="#" target="_blank" class="hover:text-orange transition-colors">TikTok</a></li>
           </ul>
         </div>
       </div>
-      <div class="border-t border-white/10 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-white/40">
+      <div class="border-t border-white/10 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-white/35">
         <p>© 2026 GasWeb. All rights reserved.</p>
         <p>Website Profesional. Bisnis Makin Gas.</p>
       </div>
     </div>
   </footer>
 
-  <!-- Floating WhatsApp Button -->
+  <!-- Floating WhatsApp -->
   <a id="wa-float" href="#" target="_blank" rel="noopener"
-     class="fixed bottom-6 right-6 z-50 flex items-center justify-center w-14 h-14 rounded-full bg-[#25D366] text-white shadow-lg hover:scale-110 hover:shadow-xl transition-all duration-300"
+     class="fixed bottom-6 right-6 z-50 flex items-center justify-center w-14 h-14 rounded-full bg-[#25D366] text-white shadow-lg hover:scale-110 hover:shadow-xl transition-all duration-300 btn-press"
      aria-label="Chat WhatsApp">
     <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
       <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
     </svg>
   </a>
+
+  <!-- Lenis (smooth scroll) -->
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
+  <script>
+    (function () {
+      // Smooth scroll with Lenis (skip on reduced motion / coarse pointer)
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const isTouch = window.matchMedia('(pointer: coarse)').matches || ('ontouchstart' in window && !window.matchMedia('(pointer: fine)').matches);
+
+      if (!prefersReduced && !isTouch && typeof Lenis !== 'undefined') {
+        const lenis = new Lenis({
+          duration: 1.1,
+          easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+          smoothWheel: true
+        });
+        function raf(time) {
+          lenis.raf(time);
+          requestAnimationFrame(raf);
+        }
+        requestAnimationFrame(raf);
+        document.documentElement.classList.add('lenis', 'lenis-smooth');
+      }
+
+      // Navbar scroll state
+      const navbar = document.getElementById('navbar');
+      function onScroll() {
+        if (!navbar) return;
+        if (window.scrollY > 24) navbar.classList.add('nav-scrolled');
+        else navbar.classList.remove('nav-scrolled');
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+
+      // Mobile menu
+      const menuBtn = document.getElementById('mobile-menu-btn');
+      const mobileMenu = document.getElementById('mobile-menu');
+      if (menuBtn && mobileMenu) {
+        menuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+        mobileMenu.querySelectorAll('a').forEach((a) => {
+          a.addEventListener('click', () => mobileMenu.classList.add('hidden'));
+        });
+      }
+
+      // Reveal on scroll
+      const revealEls = document.querySelectorAll('.reveal');
+      if (prefersReduced) {
+        revealEls.forEach((el) => el.classList.add('is-visible'));
+      } else if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+                io.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
+        );
+        revealEls.forEach((el) => io.observe(el));
+      } else {
+        revealEls.forEach((el) => el.classList.add('is-visible'));
+      }
+
+      // Observe dynamically injected cards (after Firebase render)
+      const observeDynamic = () => {
+        document.querySelectorAll('#problems-list > *, #services-list > *, #features-list > *, #portfolio-list > *, #steps-list > *, #packages-list > *, #testimonials-list > *, #faq-list > *').forEach((el) => {
+          if (el.dataset.revealed) return;
+          el.dataset.revealed = '1';
+          el.classList.add('reveal', 'card-hover');
+          if (prefersReduced) {
+            el.classList.add('is-visible');
+          } else if ('IntersectionObserver' in window) {
+            const io2 = new IntersectionObserver(
+              (entries) => {
+                entries.forEach((entry) => {
+                  if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    io2.unobserve(entry.target);
+                  }
+                });
+              },
+              { threshold: 0.1 }
+            );
+            io2.observe(el);
+          } else {
+            el.classList.add('is-visible');
+          }
+        });
+      };
+
+      // Re-check after app.js renders (MutationObserver + fallback timer)
+      const targets = ['problems-list', 'services-list', 'features-list', 'portfolio-list', 'steps-list', 'packages-list', 'testimonials-list', 'faq-list'];
+      targets.forEach((id) => {
+        const node = document.getElementById(id);
+        if (!node) return;
+        const mo = new MutationObserver(() => observeDynamic());
+        mo.observe(node, { childList: true });
+      });
+      setTimeout(observeDynamic, 800);
+      setTimeout(observeDynamic, 2000);
+    })();
+  </script>
 
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
