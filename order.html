@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Order Website - GasWeb | Go Online, Gas Terus!</title>
   <meta name="description" content="Pesan jasa pembuatan website profesional di GasWeb. Mudah, transparan, dan gratis konsultasi.">
+  <link rel="canonical" href="https://gasweb.id/order.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="GasWeb">
+  <meta property="og:title" content="Order Website - GasWeb">
+  <meta property="og:description" content="Pesan jasa pembuatan website profesional di GasWeb. Mudah, transparan, dan gratis konsultasi.">
+  <meta property="og:url" content="https://gasweb.id/order.html">
+  <meta name="theme-color" content="#0F1F3D">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer">
   <style>
     :root {
@@ -639,12 +646,12 @@
     <div id="checkStatusCard" class="card">
       <h2 style="margin-bottom: 8px;"><i class="fa-solid fa-magnifying-glass"></i> Cek Status Pesanan</h2>
       <p style="font-size: 14px; color: var(--gray-text); margin-bottom: 16px;">
-        Masukkan Order ID Anda (contoh: <code>GW-20261014-1234</code>) untuk melihat status order dan pembayaran.
+        Masukkan Order ID Anda (contoh: <code>GW-20261014-3F9A1C7B</code>) untuk melihat status order dan pembayaran.
       </p>
       <div class="form-group" style="margin-bottom: 12px;">
         <label for="checkOrderIdInput">Order ID</label>
         <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-          <input type="text" id="checkOrderIdInput" placeholder="GW-YYYYMMDD-XXXX" style="flex: 1; min-width: 180px;" autocomplete="off">
+          <input type="text" id="checkOrderIdInput" placeholder="GW-YYYYMMDD-XXXXXXXX" style="flex: 1; min-width: 180px;" autocomplete="off">
           <button type="button" class="btn btn-primary" style="width: auto; padding: 12px 20px;" id="btnCheckOrder" onclick="runCheckOrder()">Cek Status</button>
         </div>
       </div>
@@ -656,6 +663,11 @@
 
     <!-- Form -->
     <form id="orderForm">
+      <!-- Honeypot anti-bot: disembunyikan dari pengguna & screen reader -->
+      <div aria-hidden="true" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;">
+        <label for="website">Jangan diisi</label>
+        <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+      </div>
       <!-- 1. Informasi Pemesan -->
       <div class="card">
         <h2><span>1</span> Informasi Pemesan</h2>
@@ -859,7 +871,7 @@
     // ============================================================
     // KONFIGURASI — ISI NILAI INI
     // ============================================================
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzaC94DvbaBZzdcgh-6ivRxgKBaaYB21lCJtDvkepNqyEo2qzvc6_hMPzRlg69wHt8/exec";   // Hasil deploy Web App
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbynP8Pcl0_VHfioIfNLBokeV-iLmFBO_LcKyDUmbOsW9A5tkAlfHJ1cyzVbh-ByFzf_/exec";   // Hasil deploy Web App
     const ADMIN_WHATSAPP  = "6285111429032";                    // Nomor WhatsApp admin (format 62...)
 
     // REST endpoint publik (bisa dipakai tanpa Firebase SDK)
@@ -1465,7 +1477,8 @@
         deskripsi: document.getElementById("deskripsi").value.trim(),
         target: document.getElementById("target").value,
         materi: document.getElementById("materi").value,
-        domain: document.getElementById("domain").value.trim()
+        domain: document.getElementById("domain").value.trim(),
+        website: (document.getElementById("website") || {}).value || ""
       };
 
       try {
@@ -1483,17 +1496,18 @@
           document.getElementById("displayOrderId").textContent = result.orderId;
 
           // Build WhatsApp message
-          const waMessage = 
-            `Halo Admin GasWeb,%0A%0A` +
-            `Saya baru saja mengirim pesanan website.%0A` +
-            `Order ID: *${result.orderId}*%0A` +
-            `Nama: ${payload.nama}%0A` +
-            `Bisnis: ${payload.bisnis}%0A` +
-            `Paket: ${payload.paket}%0A%0A` +
-            `Mohon dibantu follow-up-nya. Terima kasih.`;
+          const waMessage = encodeURIComponent(
+            "Halo Admin GasWeb,\n\n" +
+            "Saya baru saja mengirim pesanan website.\n" +
+            "Order ID: *" + result.orderId + "*\n" +
+            "Nama: " + payload.nama + "\n" +
+            "Bisnis: " + payload.bisnis + "\n" +
+            "Paket: " + payload.paket + "\n\n" +
+            "Mohon dibantu follow-up-nya. Terima kasih."
+          );
 
-          document.getElementById("waButton").href = 
-            `https://wa.me/${ADMIN_WHATSAPP}?text=${waMessage}`;
+          document.getElementById("waButton").href =
+            "https://wa.me/" + ADMIN_WHATSAPP + "?text=" + waMessage;
 
           document.getElementById("successCard").classList.add("visible");
           window.scrollTo({ top: 0, behavior: "smooth" });
