@@ -80,6 +80,8 @@ const DEFAULT_DATA = {
   ]
 };
 
+const PORTFOLIO_PLACEHOLDER = `<div class="absolute inset-0 flex flex-col p-5"><div class="flex items-center gap-2 mb-4"><div class="w-3 h-3 rounded-full bg-red-400"></div><div class="w-3 h-3 rounded-full bg-yellow-400"></div><div class="w-3 h-3 rounded-full bg-green-400"></div></div><div class="flex-1 bg-white rounded-lg shadow-sm p-4"><div class="h-3 w-24 bg-navy/20 rounded mb-3"></div><div class="h-6 w-3/4 bg-navy/15 rounded mb-2"></div><div class="h-2 w-full bg-navy/10 rounded mb-1"></div></div></div>`;
+
 // Maksimal portfolio yang tampil di beranda (sisanya di demo.html)
 const PORTFOLIO_HOME_LIMIT = 6;
 
@@ -204,10 +206,10 @@ function render(data) {
     if (portfolioMore) portfolioMore.classList.toggle('hidden', portfolio.length <= PORTFOLIO_HOME_LIMIT);
     portfolioEl.innerHTML = portfolioShown.map(item => {
       const bg = item.colorTheme === 'orange' ? 'from-orange/10 to-orange/5' : (item.colorTheme === 'pink' ? 'from-pink-50 to-purple-50' : 'from-navy-100 to-navy-50');
-      const imgUrl = safeUrl(item.imageUrl, '');
+      const imgUrl = safeImgUrl(item.imageUrl);
       const img = imgUrl
-        ? `<img src="${esc(imgUrl)}" alt="${esc(item.title)}" class="w-full h-full object-cover" loading="lazy">`
-        : `<div class="absolute inset-0 flex flex-col p-5"><div class="flex items-center gap-2 mb-4"><div class="w-3 h-3 rounded-full bg-red-400"></div><div class="w-3 h-3 rounded-full bg-yellow-400"></div><div class="w-3 h-3 rounded-full bg-green-400"></div></div><div class="flex-1 bg-white rounded-lg shadow-sm p-4"><div class="h-3 w-24 bg-navy/20 rounded mb-3"></div><div class="h-6 w-3/4 bg-navy/15 rounded mb-2"></div><div class="h-2 w-full bg-navy/10 rounded mb-1"></div></div></div>`;
+        ? `<img src="${esc(imgUrl)}" alt="${esc(item.title)}" class="w-full h-full object-cover" loading="lazy" data-portfolio-img>`
+        : PORTFOLIO_PLACEHOLDER;
       return `
         <div class="group bg-white rounded-2xl overflow-hidden border border-navy/8 shadow-soft hover:shadow-card transition-all">
           <div class="aspect-[4/3] bg-gradient-to-br ${bg} relative overflow-hidden">${img}
@@ -222,6 +224,18 @@ function render(data) {
           </div>
         </div>`;
     }).join('');
+
+    // Gambar gagal dimuat (404 / diblokir) → pakai placeholder, bukan ikon gambar rusak
+    portfolioEl.querySelectorAll('img[data-portfolio-img]').forEach(im => {
+      const fallback = () => {
+        if (!im.parentNode) return;
+        const holder = document.createElement('div');
+        holder.innerHTML = PORTFOLIO_PLACEHOLDER;
+        im.replaceWith(holder.firstElementChild);
+      };
+      im.addEventListener('error', fallback, { once: true });
+      if (im.complete && im.naturalWidth === 0 && im.getAttribute('src')) fallback();
+    });
   }
 
   // Steps
@@ -341,6 +355,15 @@ function safeUrl(url, fallback) {
   if (/^(https?:)?\/\//i.test(u) || /^(#|\/|\.\/|\.\.\/)/.test(u)) return u;
   if (!/^[a-z][a-z0-9+.\-]*:/i.test(u)) return u; // path relatif tanpa skema, mis. demo/properti.html
   return fallback || '#';
+}
+
+// URL gambar: kosong → '' (agar placeholder dipakai), http(s)/relatif/data:image diizinkan.
+function safeImgUrl(url) {
+  const u = String(url || '').trim();
+  if (!u) return '';
+  if (/^data:image\/(png|jpe?g|gif|webp|svg\+xml|avif);/i.test(u)) return u;
+  const r = safeUrl(u, '');
+  return r === '#' ? '' : r;
 }
 
 function esc(str) {
