@@ -50,46 +50,32 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer">
 
   <style>
-    :root {
-      --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-      --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-      --dur: 0.7s;
-    }
-
     html { scroll-behavior: smooth; scroll-padding-top: 96px; }
-    html.lenis, html.lenis body { height: auto; }
-    .lenis.lenis-smooth { scroll-behavior: auto !important; }
-    .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
-    .lenis.lenis-stopped { overflow: hidden; }
-    .lenis.lenis-smooth iframe { pointer-events: none; }
 
     body {
       font-family: 'Plus Jakarta Sans', Inter, system-ui, sans-serif;
       -webkit-font-smoothing: antialiased;
-      text-rendering: optimizeLegibility;
     }
 
-    /* Loader */
-    #page-loader { transition: opacity 0.4s var(--ease-out); }
+    #page-loader { transition: opacity 0.35s ease; }
 
-    /* Navbar glass */
+    /* Navbar glass — lebih jelas bedanya saat scroll */
     #navbar {
-      transition: background 0.35s var(--ease-out), box-shadow 0.35s var(--ease-out), border-color 0.35s var(--ease-out);
+      transition: background 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
     }
     #navbar.nav-scrolled {
-      background: rgba(255, 255, 255, 0.78);
-      backdrop-filter: blur(16px) saturate(1.4);
-      -webkit-backdrop-filter: blur(16px) saturate(1.4);
-      border-bottom-color: rgba(15, 31, 61, 0.08);
-      box-shadow: 0 4px 24px -8px rgba(15, 31, 61, 0.1);
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom-color: rgba(15, 31, 61, 0.1);
+      box-shadow: 0 4px 20px -6px rgba(15, 31, 61, 0.12);
     }
 
-    /* Hero blobs */
     .hero-blob {
       position: absolute;
       border-radius: 50%;
-      filter: blur(72px);
-      opacity: 0.4;
+      filter: blur(64px);
+      opacity: 0.38;
       z-index: 0;
       pointer-events: none;
     }
@@ -104,37 +90,28 @@
 
     @keyframes float {
       0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-14px); }
+      50% { transform: translateY(-10px); }
     }
-    .float-anim { animation: float 6.5s ease-in-out infinite; }
-    .float-anim-delay { animation: float 6.5s ease-in-out 1.4s infinite; }
+    .float-anim { animation: float 7s ease-in-out infinite; will-change: transform; }
+    .float-anim-delay { animation: float 7s ease-in-out 1.5s infinite; will-change: transform; }
 
-    /* Reveal system */
+    /* Reveal — ringan, cuma opacity + sedikit translate */
     .reveal {
       opacity: 0;
-      transform: translateY(28px);
-      transition: opacity var(--dur) var(--ease-out), transform var(--dur) var(--ease-out);
+      transform: translateY(18px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
     }
     .reveal.is-visible {
       opacity: 1;
-      transform: translateY(0);
+      transform: none;
     }
-    .reveal-delay-1 { transition-delay: 0.08s; }
-    .reveal-delay-2 { transition-delay: 0.16s; }
-    .reveal-delay-3 { transition-delay: 0.24s; }
-    .reveal-delay-4 { transition-delay: 0.32s; }
-
-    /* Cards & interactive */
-    .card-hover {
-      transition: transform 0.35s var(--ease-out), box-shadow 0.35s var(--ease-out), border-color 0.35s var(--ease-out);
-    }
-    .card-hover:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 20px 48px -16px rgba(15, 31, 61, 0.18);
-    }
+    .reveal-delay-1 { transition-delay: 0.06s; }
+    .reveal-delay-2 { transition-delay: 0.12s; }
+    .reveal-delay-3 { transition-delay: 0.18s; }
+    .reveal-delay-4 { transition-delay: 0.24s; }
 
     .btn-press {
-      transition: transform 0.25s var(--ease-spring), box-shadow 0.3s var(--ease-out), background-color 0.25s ease;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
     }
     .btn-press:hover { transform: scale(1.03); }
     .btn-press:active { transform: scale(0.97); }
@@ -146,22 +123,25 @@
     .nav-link::after {
       content: '';
       position: absolute;
-      left: 0;
-      right: 0;
-      bottom: -4px;
+      left: 0; right: 0; bottom: -3px;
       height: 2px;
       border-radius: 2px;
       background: #FF5A1F;
       transform: scaleX(0);
       transform-origin: left;
-      transition: transform 0.3s var(--ease-out);
+      transition: transform 0.25s ease;
     }
     .nav-link:hover::after { transform: scaleX(1); }
 
-    /* Section spacing helper */
     .section-y { padding-block: clamp(4.5rem, 8vw, 7.5rem); }
 
-    /* Reduced motion */
+    /* Heading lebih berani biar beda jelas dari versi lama */
+    .heading-display {
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      line-height: 1.1;
+    }
+
     @media (prefers-reduced-motion: reduce) {
       .reveal { opacity: 1; transform: none; transition: none; }
       .float-anim, .float-anim-delay { animation: none; }
@@ -546,106 +526,24 @@
     </svg>
   </a>
 
-  <!-- Lenis (smooth scroll) -->
-  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
+  <!-- Reveal ringan saja (navbar + menu sudah di-handle app.js) -->
   <script>
     (function () {
-      // Smooth scroll with Lenis (skip on reduced motion / coarse pointer)
-      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const isTouch = window.matchMedia('(pointer: coarse)').matches || ('ontouchstart' in window && !window.matchMedia('(pointer: fine)').matches);
-
-      if (!prefersReduced && !isTouch && typeof Lenis !== 'undefined') {
-        const lenis = new Lenis({
-          duration: 1.1,
-          easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-          smoothWheel: true
-        });
-        function raf(time) {
-          lenis.raf(time);
-          requestAnimationFrame(raf);
-        }
-        requestAnimationFrame(raf);
-        document.documentElement.classList.add('lenis', 'lenis-smooth');
+      var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var els = document.querySelectorAll('.reveal');
+      if (prefersReduced || !('IntersectionObserver' in window)) {
+        els.forEach(function (el) { el.classList.add('is-visible'); });
+        return;
       }
-
-      // Navbar scroll state
-      const navbar = document.getElementById('navbar');
-      function onScroll() {
-        if (!navbar) return;
-        if (window.scrollY > 24) navbar.classList.add('nav-scrolled');
-        else navbar.classList.remove('nav-scrolled');
-      }
-      window.addEventListener('scroll', onScroll, { passive: true });
-      onScroll();
-
-      // Mobile menu
-      const menuBtn = document.getElementById('mobile-menu-btn');
-      const mobileMenu = document.getElementById('mobile-menu');
-      if (menuBtn && mobileMenu) {
-        menuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
-        mobileMenu.querySelectorAll('a').forEach((a) => {
-          a.addEventListener('click', () => mobileMenu.classList.add('hidden'));
-        });
-      }
-
-      // Reveal on scroll
-      const revealEls = document.querySelectorAll('.reveal');
-      if (prefersReduced) {
-        revealEls.forEach((el) => el.classList.add('is-visible'));
-      } else if ('IntersectionObserver' in window) {
-        const io = new IntersectionObserver(
-          (entries) => {
-            entries.forEach((entry) => {
-              if (entry.isIntersecting) {
-                entry.target.classList.add('is-visible');
-                io.unobserve(entry.target);
-              }
-            });
-          },
-          { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
-        );
-        revealEls.forEach((el) => io.observe(el));
-      } else {
-        revealEls.forEach((el) => el.classList.add('is-visible'));
-      }
-
-      // Observe dynamically injected cards (after Firebase render)
-      const observeDynamic = () => {
-        document.querySelectorAll('#problems-list > *, #services-list > *, #features-list > *, #portfolio-list > *, #steps-list > *, #packages-list > *, #testimonials-list > *, #faq-list > *').forEach((el) => {
-          if (el.dataset.revealed) return;
-          el.dataset.revealed = '1';
-          el.classList.add('reveal', 'card-hover');
-          if (prefersReduced) {
-            el.classList.add('is-visible');
-          } else if ('IntersectionObserver' in window) {
-            const io2 = new IntersectionObserver(
-              (entries) => {
-                entries.forEach((entry) => {
-                  if (entry.isIntersecting) {
-                    entry.target.classList.add('is-visible');
-                    io2.unobserve(entry.target);
-                  }
-                });
-              },
-              { threshold: 0.1 }
-            );
-            io2.observe(el);
-          } else {
-            el.classList.add('is-visible');
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            io.unobserve(entry.target);
           }
         });
-      };
-
-      // Re-check after app.js renders (MutationObserver + fallback timer)
-      const targets = ['problems-list', 'services-list', 'features-list', 'portfolio-list', 'steps-list', 'packages-list', 'testimonials-list', 'faq-list'];
-      targets.forEach((id) => {
-        const node = document.getElementById(id);
-        if (!node) return;
-        const mo = new MutationObserver(() => observeDynamic());
-        mo.observe(node, { childList: true });
-      });
-      setTimeout(observeDynamic, 800);
-      setTimeout(observeDynamic, 2000);
+      }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+      els.forEach(function (el) { io.observe(el); });
     })();
   </script>
 
