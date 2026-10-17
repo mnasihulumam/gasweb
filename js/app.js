@@ -204,8 +204,9 @@ function render(data) {
     if (portfolioMore) portfolioMore.classList.toggle('hidden', portfolio.length <= PORTFOLIO_HOME_LIMIT);
     portfolioEl.innerHTML = portfolioShown.map(item => {
       const bg = item.colorTheme === 'orange' ? 'from-orange/10 to-orange/5' : (item.colorTheme === 'pink' ? 'from-pink-50 to-purple-50' : 'from-navy-100 to-navy-50');
-      const img = item.imageUrl
-        ? `<img src="${esc(item.imageUrl)}" alt="${esc(item.title)}" class="w-full h-full object-cover">`
+      const imgUrl = safeUrl(item.imageUrl, '');
+      const img = imgUrl
+        ? `<img src="${esc(imgUrl)}" alt="${esc(item.title)}" class="w-full h-full object-cover" loading="lazy">`
         : `<div class="absolute inset-0 flex flex-col p-5"><div class="flex items-center gap-2 mb-4"><div class="w-3 h-3 rounded-full bg-red-400"></div><div class="w-3 h-3 rounded-full bg-yellow-400"></div><div class="w-3 h-3 rounded-full bg-green-400"></div></div><div class="flex-1 bg-white rounded-lg shadow-sm p-4"><div class="h-3 w-24 bg-navy/20 rounded mb-3"></div><div class="h-6 w-3/4 bg-navy/15 rounded mb-2"></div><div class="h-2 w-full bg-navy/10 rounded mb-1"></div></div></div>`;
       return `
         <div class="group bg-white rounded-2xl overflow-hidden border border-navy/8 shadow-soft hover:shadow-card transition-all">
@@ -217,7 +218,7 @@ function render(data) {
           <div class="p-6">
             <span class="text-xs font-semibold text-orange uppercase tracking-wide">${esc(item.category)}</span>
             <h3 class="text-lg font-bold text-navy mt-1">${esc(item.title)}</h3>
-            <a href="${esc(item.link || '#cta')}" class="inline-flex items-center gap-1 mt-4 text-sm font-semibold text-orange hover:gap-2 transition-all">Lihat Website →</a>
+            <a href="${esc(safeUrl(item.link, '#cta'))}" class="inline-flex items-center gap-1 mt-4 text-sm font-semibold text-orange hover:gap-2 transition-all">Lihat Website →</a>
           </div>
         </div>`;
     }).join('');
@@ -255,7 +256,7 @@ function render(data) {
             <ul class="space-y-3 mb-8 flex-1 text-sm text-white/80">
               ${(pkg.features || []).map(f => `<li class="flex items-start gap-2"><svg class="w-5 h-5 text-orange flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>${esc(f)}</li>`).join('')}
             </ul>
-            <a href="${wa}" target="_blank" class="block w-full text-center py-3.5 rounded-full bg-orange text-white font-semibold shadow-orange hover:bg-orange-600 transition-all">${esc(pkg.buttonText || 'Konsultasi Sekarang')}</a>
+            <a href="${wa}" target="_blank" rel="noopener" class="block w-full text-center py-3.5 rounded-full bg-orange text-white font-semibold shadow-orange hover:bg-orange-600 transition-all">${esc(pkg.buttonText || 'Konsultasi Sekarang')}</a>
           </div>`;
       }
       return `
@@ -269,7 +270,7 @@ function render(data) {
           <ul class="space-y-3 mb-8 flex-1 text-sm text-navy/70">
             ${(pkg.features || []).map(f => `<li class="flex items-start gap-2"><svg class="w-5 h-5 text-orange flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>${esc(f)}</li>`).join('')}
           </ul>
-          <a href="${wa}" target="_blank" class="block w-full text-center py-3.5 rounded-full border-2 border-navy/15 text-navy font-semibold hover:border-orange hover:text-orange transition-all">${esc(pkg.buttonText || 'Konsultasi Sekarang')}</a>
+          <a href="${wa}" target="_blank" rel="noopener" class="block w-full text-center py-3.5 rounded-full border-2 border-navy/15 text-navy font-semibold hover:border-orange hover:text-orange transition-all">${esc(pkg.buttonText || 'Konsultasi Sekarang')}</a>
         </div>`;
     }).join('');
   }
@@ -333,10 +334,12 @@ function setText(id, value) {
   if (el && value != null) el.textContent = value;
 }
 
-// Hanya izinkan http(s), anchor, atau path relatif (blokir javascript: dll.)
+// Hanya izinkan http(s), anchor, atau path relatif. Skema lain (javascript:, data:, dll.) ditolak.
 function safeUrl(url, fallback) {
   const u = String(url || '').trim();
-  if (/^(https?:\/\/|#|\/|\.\/|assets\/)/i.test(u)) return u;
+  if (!u) return fallback || '#';
+  if (/^(https?:)?\/\//i.test(u) || /^(#|\/|\.\/|\.\.\/)/.test(u)) return u;
+  if (!/^[a-z][a-z0-9+.\-]*:/i.test(u)) return u; // path relatif tanpa skema, mis. demo/properti.html
   return fallback || '#';
 }
 
