@@ -85,6 +85,32 @@
     /* Modal user */
     .gx-modal { position: fixed; inset: 0; z-index: 60; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(15,31,61,0.55); }
     .gx-modal.hidden { display: none; }
+
+    /* GasLead: tampilan kartu di HP (tanpa geser kanan) */
+    @media (max-width: 767px) {
+      #tab-gaslead .overflow-x-auto { overflow-x: visible; border: 0; }
+      #tab-gaslead table { min-width: 0 !important; display: block; }
+      #tab-gaslead thead { display: none; }
+      #tab-gaslead tbody { display: block; }
+      #tab-gaslead tr.gl-row {
+        display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px;
+        padding: 12px; margin-bottom: 10px; background: #fff;
+        border: 1px solid #e5e7eb !important; border-radius: 12px;
+      }
+      #tab-gaslead tr.gl-row > td { display: block; padding: 0 !important; max-width: none !important; min-width: 0 !important; }
+      #tab-gaslead .gl-c-name { order: 1; width: 100%; }
+      #tab-gaslead .gl-c-act  { order: 2; width: 100%; display: flex !important; gap: 8px; margin: 8px 0 4px; }
+      #tab-gaslead .gl-c-act > a, #tab-gaslead .gl-c-act > button {
+        flex: 1; min-height: 40px; display: inline-flex; align-items: center; justify-content: center;
+        margin: 0 !important; font-size: 13px !important;
+      }
+      #tab-gaslead .gl-c-phone { order: 3; }
+      #tab-gaslead .gl-c-rate  { order: 4; }
+      #tab-gaslead .gl-c-dist  { order: 5; }
+      #tab-gaslead .gl-c-web   { order: 6; }
+      #tab-gaslead .gl-c-addr  { order: 7; width: 100%; margin-top: 4px; }
+      #tab-gaslead .gl-c-pros  { order: 8; width: 100%; margin-top: 8px; }
+    }
   </style>
 </head>
 <body class="bg-gray-100 text-navy min-h-screen">
