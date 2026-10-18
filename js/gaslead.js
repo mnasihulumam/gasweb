@@ -69,20 +69,12 @@
       .replace(/\{\{telepon\}\}/gi, p.phone || '');
   }
 
-  // function toWa(phone, prospect) {
-  //   const num = toWaNumber(phone);
-  //   if (!num) return '';
-  //   if (!prospect) return 'https://wa.me/' + num;
-  //   const msg = applyWaTemplate(getWaTemplate(), prospect);
-  //   return 'https://wa.me/' + num + '?text=' + encodeURIComponent(msg);
-  // }
   function toWa(phone, prospect) {
     const num = toWaNumber(phone);
     if (!num) return '';
-    const base = 'https://api.whatsapp.com/send?phone=' + num;
-    if (!prospect) return base;
+    if (!prospect) return 'https://wa.me/' + num;
     const msg = applyWaTemplate(getWaTemplate(), prospect);
-    return base + '&text=' + encodeURIComponent(msg);
+    return 'https://wa.me/' + num + '?text=' + encodeURIComponent(msg);
   }
 
   window.glSaveWaTemplate = async function () {
@@ -390,25 +382,25 @@
         return '<option value="' + esc(x) + '"' + (s && s.st === x ? ' selected' : '') + '>' + esc(x) + '</option>';
       }).join('');
 
-      return '<tr class="border-b border-gray-100 hover:bg-orange-50/40" data-id="' + esc(pid) + '">' +
-        '<td class="px-3 py-2.5"><div class="font-semibold text-sm">' + esc(p.name) + '</div>' +
+      return '<tr class="gl-row border-b border-gray-100 hover:bg-orange-50/40" data-id="' + esc(pid) + '">' +
+        '<td class="gl-c-name px-3 py-2.5"><div class="font-semibold text-sm">' + esc(p.name) + '</div>' +
         '<div class="text-[11px] text-gray-500">' + esc(p.cat || '') + '</div></td>' +
-        '<td class="px-3 py-2.5 text-xs text-gray-600 max-w-[200px]">' + esc(p.addr || '') + '</td>' +
-        '<td class="px-3 py-2.5 text-xs">' +
+        '<td class="gl-c-addr px-3 py-2.5 text-xs text-gray-600 max-w-[200px]">' + esc(p.addr || '') + '</td>' +
+        '<td class="gl-c-phone px-3 py-2.5 text-xs">' +
           (p.phone ? '<button type="button" class="text-green-700 font-semibold hover:underline text-left" onclick="glOpenWa(\'' + idAttr(pid) + '\')">' + esc(p.phone) + '</button>' : '-') +
         '</td>' +
-        '<td class="px-3 py-2.5 text-xs">' +
+        '<td class="gl-c-web px-3 py-2.5 text-xs">' +
           (p.web ? '<a class="text-orange hover:underline" href="' + esc(p.web) + '" target="_blank" rel="noopener">Web</a>' : '<span class="text-gray-400">—</span>') +
         '</td>' +
-        '<td class="px-3 py-2.5 text-xs">' + (p.rating != null ? p.rating + ' (' + (p.rev || 0) + ')' : '-') + '</td>' +
-        '<td class="px-3 py-2.5 text-xs">' + (p.dist != null ? Number(p.dist).toFixed(1) + ' km' : '-') + '</td>' +
-        '<td class="px-3 py-2.5 min-w-[180px]">' +
+        '<td class="gl-c-rate px-3 py-2.5 text-xs">' + (p.rating != null ? p.rating + ' (' + (p.rev || 0) + ')' : '-') + '</td>' +
+        '<td class="gl-c-dist px-3 py-2.5 text-xs">' + (p.dist != null ? Number(p.dist).toFixed(1) + ' km' : '-') + '</td>' +
+        '<td class="gl-c-pros px-3 py-2.5 min-w-[180px]">' +
           '<button type="button" class="text-lg leading-none mr-1 ' + (s ? 'text-orange' : 'text-gray-300') + '" onclick="glToggleStar(\'' + idAttr(pid) + '\')" title="Simpan prospek">' + (s ? '★' : '☆') + '</button>' +
           '<select class="text-xs border rounded px-1 py-0.5 w-full mb-1" onchange="glUpdateField(\'' + idAttr(pid) + '\',\'st\',this.value)">' + stOpts + '</select>' +
           '<input type="date" class="text-xs border rounded px-1 py-0.5 w-full mb-1" value="' + esc(s ? s.fu || '' : '') + '" onchange="glUpdateField(\'' + idAttr(pid) + '\',\'fu\',this.value)">' +
           '<input class="text-xs border rounded px-1 py-0.5 w-full" placeholder="Catatan" value="' + esc(s ? s.note || '' : '') + '" onchange="glUpdateField(\'' + idAttr(pid) + '\',\'note\',this.value)">' +
         '</td>' +
-        '<td class="px-3 py-2.5 whitespace-nowrap">' +
+        '<td class="gl-c-act px-3 py-2.5 whitespace-nowrap">' +
           (p.url ? '<a class="text-xs px-2 py-1 rounded border hover:border-orange mr-1" href="' + esc(p.url) + '" target="_blank" rel="noopener">Maps</a>' : '') +
           (p.phone ? '<button type="button" class="text-xs px-2 py-1 rounded border hover:border-green-600 text-green-700 mr-1" onclick="glOpenWa(\'' + idAttr(pid) + '\')">WA</button>' : '') +
           (store[pid] ? '<button type="button" class="text-xs px-2 py-1 rounded border border-red-200 text-red-600 hover:bg-red-50" onclick="glDeleteProspect(\'' + idAttr(pid) + '\')" title="Hapus prospek">Hapus</button>' : '') +
