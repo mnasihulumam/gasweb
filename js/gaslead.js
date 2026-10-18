@@ -69,12 +69,20 @@
       .replace(/\{\{telepon\}\}/gi, p.phone || '');
   }
 
+  // function toWa(phone, prospect) {
+  //   const num = toWaNumber(phone);
+  //   if (!num) return '';
+  //   if (!prospect) return 'https://wa.me/' + num;
+  //   const msg = applyWaTemplate(getWaTemplate(), prospect);
+  //   return 'https://wa.me/' + num + '?text=' + encodeURIComponent(msg);
+  // }
   function toWa(phone, prospect) {
     const num = toWaNumber(phone);
     if (!num) return '';
-    if (!prospect) return 'https://wa.me/' + num;
+    const base = 'https://api.whatsapp.com/send?phone=' + num;
+    if (!prospect) return base;
     const msg = applyWaTemplate(getWaTemplate(), prospect);
-    return 'https://wa.me/' + num + '?text=' + encodeURIComponent(msg);
+    return base + '&text=' + encodeURIComponent(msg);
   }
 
   window.glSaveWaTemplate = async function () {
