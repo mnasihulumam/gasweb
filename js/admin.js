@@ -103,6 +103,7 @@ auth.onAuthStateChanged(async user => {
       }
     }
     showAdmin();
+    restoreLastTab();
     loadAdminData();
   } else {
     showLogin();
@@ -156,8 +157,19 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
     btn.classList.add('active');
     document.getElementById('tab-' + btn.dataset.tab).classList.remove('hidden');
+    try { localStorage.setItem('gasweb_admin_tab', btn.dataset.tab); } catch (e) {}
   });
 });
+
+// Kembalikan tab terakhir setelah refresh
+function restoreLastTab() {
+  let tab = null;
+  try { tab = localStorage.getItem('gasweb_admin_tab'); } catch (e) {}
+  if (!tab || tab === 'dashboard') return;
+  if (window.GasAccess && !GasAccess.can(tab)) return;
+  const btn = document.querySelector('.tab-btn[data-tab="' + tab + '"]');
+  if (btn) btn.click();
+}
 
 // ---------- LOAD DATA ----------
 async function loadAdminData() {
