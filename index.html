@@ -16,9 +16,6 @@
   <meta name="theme-color" content="#0F1F3D">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="favicon.svg">
-  <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#0f1d3a">
-  <link rel="apple-touch-icon" href="favicon.svg">
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -150,9 +147,37 @@
       .float-anim, .float-anim-delay { animation: none; }
       html { scroll-behavior: auto; }
     }
+
+    /* Intro: roket meluncur dari bawah ke atas */
+    #rocket-intro { position: fixed; inset: 0; z-index: 10000; pointer-events: none; overflow: hidden; }
+    #rocket-intro .rk {
+      position: absolute; left: 50%; bottom: -140px; width: 64px; margin-left: -32px;
+      display: flex; flex-direction: column; align-items: center;
+      animation: rocketLaunch 1.8s cubic-bezier(.55,.05,.85,.45) 0.2s forwards;
+      opacity: 0;
+    }
+    #rocket-intro .rk-emoji { font-size: 56px; line-height: 1; transform: rotate(-45deg); filter: drop-shadow(0 6px 10px rgba(0,0,0,.25)); }
+    #rocket-intro .rk-trail {
+      width: 14px; height: 130px; margin-top: -6px; border-radius: 0 0 14px 14px;
+      background: linear-gradient(to bottom, #FF5A1F, rgba(255,170,60,.7) 45%, rgba(255,255,255,0));
+      filter: blur(2px); transform-origin: top; animation: rocketFlame .12s ease-in-out infinite alternate;
+    }
+    @keyframes rocketLaunch {
+      0%   { transform: translateY(0) scale(.9); opacity: 0; }
+      10%  { opacity: 1; }
+      85%  { opacity: 1; }
+      100% { transform: translateY(calc(-100vh - 320px)) scale(1.15); opacity: 0; }
+    }
+    @keyframes rocketFlame { from { transform: scaleY(.8); } to { transform: scaleY(1.15); } }
+    @media (prefers-reduced-motion: reduce) { #rocket-intro { display: none; } }
   </style>
 </head>
 <body class="bg-white text-navy antialiased">
+
+  <!-- Intro roket -->
+  <div id="rocket-intro" aria-hidden="true">
+    <div class="rk"><div class="rk-emoji">🚀</div><div class="rk-trail"></div></div>
+  </div>
 
   <!-- Loader -->
   <div id="page-loader" class="fixed inset-0 bg-navy z-[9999] flex items-center justify-center">
@@ -551,14 +576,18 @@
   </script>
 
   <!-- Firebase SDK -->
+  <script>
+    (function () {
+      var el = document.getElementById('rocket-intro');
+      if (!el) return;
+      var rk = el.querySelector('.rk');
+      rk.addEventListener('animationend', function (e) { if (e.animationName === 'rocketLaunch') el.remove(); });
+      setTimeout(function () { if (el.parentNode) el.remove(); }, 4000);
+    })();
+  </script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
   <script src="js/firebase-config.js"></script>
   <script src="js/app.js"></script>
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js'));
-    }
-</script>
 </body>
 </html>
