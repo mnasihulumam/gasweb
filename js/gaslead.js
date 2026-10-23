@@ -288,7 +288,12 @@
       });
     } else {
       if (sortSel === 'near') r.sort(function (a, b) { return (Number(a.dist) || 1e9) - (Number(b.dist) || 1e9); });
-      if (sortSel === 'rating') r.sort(function (a, b) { return (Number(b.rating) || -1) - (Number(a.rating) || -1); });
+      if (sortSel === 'rating') r.sort(function (a, b) {
+        return ((Number(b.rating) || -1) - (Number(a.rating) || -1)) || ((Number(b.rev) || 0) - (Number(a.rev) || 0));
+      });
+      if (sortSel === 'rev') r.sort(function (a, b) {
+        return ((Number(b.rev) || 0) - (Number(a.rev) || 0)) || ((Number(b.rating) || -1) - (Number(a.rating) || -1));
+      });
     }
     return r;
   }
