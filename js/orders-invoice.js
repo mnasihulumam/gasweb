@@ -9,7 +9,7 @@
 
   // URL Web App Apps Script (apps-script/Code.gs). Otorisasi memakai Firebase ID token
   // user yang sedang login — tidak ada lagi token statis di frontend.
-  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyUxp4hd3P1hsWL_9yianoLg4bgPW0LoWmejDPIFda1YgWCVktT32BmVtn-qvcgm-Y/exec';
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwJA4PNVhkeaHkt9r2e8A1kudZbX1wpJH2CUwT1sMOcU5Kxybq5S2zKG0BDjU_gW6sv/exec';
 
   /** Panggil Apps Script sebagai admin (POST, text/plain agar tanpa preflight CORS). */
   async function callAdmin(payload) {
