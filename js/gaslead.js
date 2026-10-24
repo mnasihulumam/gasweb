@@ -9,7 +9,13 @@
   const GASLEAD_URL = 'https://script.google.com/macros/s/AKfycbxH97OOsWYe46Co9g2GCTT0MwoCNYpBYpH8AWQvFQCivRMAg_OBGUpHBWH6H_8xXhi9/exec';
   const ADMIN_TOKEN = 'gasweb-admin-2026';
 
-  const STATUS_LIST = ['Baru', 'Akan Dihubungi', 'Sudah Dihubungi', 'Tertarik', 'Follow-up', 'Closing', 'Tidak Tertarik'];
+  const STATUS_LIST = ['Baru', 'Akan Dihubungi', 'Sudah Dihubungi', 'Tertarik', 'Follow-up', 'Closing', 'Tidak Tertarik', 'Nomor tidak ditemukan'];
+  function todayStr() {
+    const d = new Date();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return d.getFullYear() + '-' + m + '-' + day;
+  }
   const PAGE_SIZE = 10;
   let sortKey = '';
   let sortDir = 1; // 1 asc, -1 desc
@@ -338,6 +344,7 @@
     set('dash-prospek-tertarik', counts['Tertarik'] || 0);
     set('dash-prospek-closing', counts['Closing'] || 0);
     set('dash-prospek-tolak', counts['Tidak Tertarik'] || 0);
+    set('dash-prospek-nonum', counts['Nomor tidak ditemukan'] || 0);
   }
 
   // expose for dashboard refresh button
@@ -464,6 +471,8 @@
 
   window.glUpdateField = async function (id, field, value) {
     id = idFromAttr(String(id));
+    // Ganti status -> tanggal otomatis terisi hari ini (tetap bisa diubah manual)
+    const autoFu = field === 'st' ? todayStr() : null;
     try {
       if (!store[id]) {
         const fromSearch = searchResults.find(function (x) { return String(x.id) === id; });
@@ -472,13 +481,17 @@
           id: id,
           st: field === 'st' ? value : 'Baru',
           note: field === 'note' ? value : '',
-          fu: field === 'fu' ? value : ''
+          fu: field === 'fu' ? value : (autoFu || '')
         });
         await api('saveProspect', { payload: payload });
         store[id] = payload;
       } else {
         await api('updateProspectField', { id: id, field: field, value: value });
         store[id][field] = value;
+        if (autoFu) {
+          await api('updateProspectField', { id: id, field: 'fu', value: autoFu });
+          store[id].fu = autoFu;
+        }
       }
       toast('Diperbarui.');
       renderStats();
