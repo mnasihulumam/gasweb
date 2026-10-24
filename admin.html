@@ -260,7 +260,7 @@
             <h3 class="text-sm font-bold text-navy uppercase tracking-wide">Prospek GasLead</h3>
             <button type="button" class="text-xs text-orange font-semibold hover:underline" onclick="document.querySelector('.tab-btn[data-tab=gaslead]').click()">Buka GasLead →</button>
           </div>
-          <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
+          <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
             <div class="bg-white rounded-xl border border-gray-100 p-3 shadow-sm">
               <div class="text-[10px] uppercase text-gray-400 font-semibold">Total</div>
               <div class="text-xl font-extrabold text-navy" id="dash-prospek-total">0</div>
@@ -288,6 +288,10 @@
             <div class="bg-white rounded-xl border border-gray-100 p-3 shadow-sm">
               <div class="text-[10px] uppercase text-red-500 font-semibold">Tidak Tertarik</div>
               <div class="text-xl font-extrabold text-red-600" id="dash-prospek-tolak">0</div>
+            </div>
+            <div class="bg-white rounded-xl border border-gray-100 p-3 shadow-sm">
+              <div class="text-[10px] uppercase text-gray-500 font-semibold">No. Tidak Ditemukan</div>
+              <div class="text-xl font-extrabold text-gray-600" id="dash-prospek-nonum">0</div>
             </div>
           </div>
         </section>
@@ -689,6 +693,7 @@
                   <option>Follow-up</option>
                   <option>Closing</option>
                   <option>Tidak Tertarik</option>
+                  <option>Nomor tidak ditemukan</option>
                 </select>
                 <select id="gl-ts" class="text-xs border rounded-lg px-2 py-1.5" onchange="glResetSort();glFilter()">
                   <option value="near">Terdekat</option>
