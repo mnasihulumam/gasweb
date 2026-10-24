@@ -41,6 +41,8 @@
   }
 
   const WA_TEMPLATE_KEY = 'gaslead_wa_template';
+  const WA_TEMPLATES_KEY = 'gaslead_wa_templates';
+  const WA_ACTIVE_KEY = 'gaslead_wa_active';
   const DEFAULT_WA_TEMPLATE =
     'Assalamu\'alaikum, Bapak/Ibu pengelola *{{nama}}*.\n\n' +
     'Perkenalkan, saya dari *GasWeb* — jasa pembuatan website profesional.\n\n' +
@@ -52,6 +54,10 @@
     'Kalau berkenan, saya bantu buatkan website serupa untuk *{{nama}}* — mulai dari landing page sampai sistem pendaftaran siswa.\n\n' +
     'Boleh saya kirim penawaran singkatnya, Bapak/Ibu?';
 
+  // Map kategori → isi template. Kategori "Umum" selalu ada sebagai default.
+  let waTemplates = { 'Umum': DEFAULT_WA_TEMPLATE };
+  let waActiveCat = 'Umum';
+
   function toWaNumber(phone) {
     if (!phone) return '';
     let n = String(phone).replace(/\D/g, '');
@@ -61,10 +67,39 @@
     return n;
   }
 
-  function getWaTemplate() {
+  function getActiveCat() {
+    const sel = document.getElementById('gl-wa-cat');
+    if (sel && sel.value) return sel.value;
+    return waActiveCat || 'Umum';
+  }
+
+  function getWaTemplate(forProspect) {
+    // Prioritas: cocokkan kategori prospek → template aktif → textarea → default
+    if (forProspect && forProspect.cat) {
+      const matched = matchTemplateByCat(forProspect.cat);
+      if (matched) return matched;
+    }
+    const cat = getActiveCat();
+    if (waTemplates[cat] && String(waTemplates[cat]).trim()) return waTemplates[cat];
     const el = document.getElementById('gl-wa-template');
     if (el && el.value.trim()) return el.value;
-    return localStorage.getItem(WA_TEMPLATE_KEY) || DEFAULT_WA_TEMPLATE;
+    return waTemplates['Umum'] || DEFAULT_WA_TEMPLATE;
+  }
+
+  function matchTemplateByCat(bizCat) {
+    if (!bizCat) return null;
+    const lower = String(bizCat).toLowerCase();
+    const keys = Object.keys(waTemplates);
+    // exact / contains match (abaikan "Umum")
+    for (let i = 0; i < keys.length; i++) {
+      const k = keys[i];
+      if (k === 'Umum') continue;
+      const kl = k.toLowerCase();
+      if (lower.indexOf(kl) >= 0 || kl.indexOf(lower) >= 0) {
+        if (String(waTemplates[k] || '').trim()) return waTemplates[k];
+      }
+    }
+    return null;
   }
 
   function applyWaTemplate(tpl, p) {
@@ -79,26 +114,118 @@
     const num = toWaNumber(phone);
     if (!num) return '';
     if (!prospect) return 'https://wa.me/' + num;
-    const msg = applyWaTemplate(getWaTemplate(), prospect);
+    const msg = applyWaTemplate(getWaTemplate(prospect), prospect);
     return 'https://wa.me/' + num + '?text=' + encodeURIComponent(msg);
   }
+
+  function persistLocalTemplates() {
+    try {
+      localStorage.setItem(WA_TEMPLATES_KEY, JSON.stringify(waTemplates));
+      localStorage.setItem(WA_ACTIVE_KEY, waActiveCat);
+      localStorage.setItem(WA_TEMPLATE_KEY, waTemplates[waActiveCat] || '');
+    } catch (e) { /* ignore quota */ }
+  }
+
+  function fillCatSelect() {
+    const sel = document.getElementById('gl-wa-cat');
+    if (!sel) return;
+    const keys = Object.keys(waTemplates).sort(function (a, b) {
+      if (a === 'Umum') return -1;
+      if (b === 'Umum') return 1;
+      return a.localeCompare(b, 'id');
+    });
+    const current = waActiveCat;
+    sel.innerHTML = keys.map(function (k) {
+      return '<option value="' + esc(k) + '"' + (k === current ? ' selected' : '') + '>' + esc(k) + '</option>';
+    }).join('');
+    if (keys.indexOf(current) < 0 && keys.length) {
+      waActiveCat = keys[0];
+      sel.value = waActiveCat;
+    }
+  }
+
+  function loadTemplateToEditor(cat) {
+    const el = document.getElementById('gl-wa-template');
+    if (!el) return;
+    waActiveCat = cat || getActiveCat();
+    el.value = waTemplates[waActiveCat] || '';
+    const nameInput = document.getElementById('gl-wa-cat-name');
+    if (nameInput) nameInput.value = waActiveCat === 'Umum' ? '' : waActiveCat;
+    fillCatSelect();
+    persistLocalTemplates();
+  }
+
+  window.glOnWaCatChange = function () {
+    const sel = document.getElementById('gl-wa-cat');
+    if (!sel) return;
+    // Simpan dulu isi editor ke kategori sebelumnya (biar gak hilang)
+    const prev = waActiveCat;
+    const el = document.getElementById('gl-wa-template');
+    if (el && prev && waTemplates[prev] !== undefined) {
+      waTemplates[prev] = el.value;
+    }
+    loadTemplateToEditor(sel.value);
+  };
 
   window.glSaveWaTemplate = async function () {
     const el = document.getElementById('gl-wa-template');
     if (!el) return;
-    localStorage.setItem(WA_TEMPLATE_KEY, el.value);
+    const nameInput = document.getElementById('gl-wa-cat-name');
+    let cat = (nameInput && nameInput.value.trim()) || getActiveCat() || 'Umum';
+    cat = cat.replace(/\s+/g, ' ').trim();
+    if (!cat) cat = 'Umum';
+
+    waTemplates[cat] = el.value;
+    waActiveCat = cat;
+    persistLocalTemplates();
+    fillCatSelect();
+    if (nameInput) nameInput.value = cat === 'Umum' ? '' : cat;
+
     try {
-      await api('saveWaTemplate', { template: el.value });
+      await api('saveWaTemplate', { template: el.value, category: cat, templates: waTemplates, active: cat });
       const hint = document.getElementById('gl-wa-saved-hint');
       if (hint) {
-        hint.textContent = 'Template tersimpan ke Spreadsheet.';
+        hint.textContent = 'Template "' + cat + '" tersimpan.';
         hint.classList.remove('hidden');
         setTimeout(function () { hint.classList.add('hidden'); }, 3000);
       }
-      toast('Template WA disimpan ke Spreadsheet.');
+      toast('Template WA "' + cat + '" disimpan.');
     } catch (err) {
-      toast('Gagal simpan ke Sheet: ' + err.message + ' (tersimpan lokal)', true);
+      toast('Gagal simpan ke server: ' + err.message + ' (tersimpan lokal)', true);
     }
+  };
+
+  window.glDeleteWaTemplate = async function () {
+    const cat = getActiveCat();
+    if (!cat || cat === 'Umum') {
+      toast('Kategori "Umum" tidak bisa dihapus.', true);
+      return;
+    }
+    if (!confirm('Hapus template kategori "' + cat + '"?')) return;
+    delete waTemplates[cat];
+    waActiveCat = 'Umum';
+    persistLocalTemplates();
+    loadTemplateToEditor('Umum');
+    try {
+      await api('saveWaTemplate', { template: waTemplates['Umum'] || '', category: 'Umum', templates: waTemplates, active: 'Umum', deleted: cat });
+      toast('Template "' + cat + '" dihapus.');
+    } catch (err) {
+      toast('Dihapus lokal. Server: ' + err.message, true);
+    }
+  };
+
+  window.glNewWaTemplate = function () {
+    const el = document.getElementById('gl-wa-template');
+    const nameInput = document.getElementById('gl-wa-cat-name');
+    // Simpan dulu kategori aktif
+    if (el && waActiveCat) waTemplates[waActiveCat] = el.value;
+    if (nameInput) {
+      nameInput.value = '';
+      nameInput.focus();
+      nameInput.placeholder = 'Nama kategori baru, mis. Klinik / LPK / Resto';
+    }
+    if (el) el.value = '';
+    toast('Isi nama kategori + template, lalu klik Simpan.');
   };
 
   window.glWaFmt = function (marker) {
@@ -130,22 +257,54 @@
     id = idFromAttr(String(id));
     const p = searchResults.find(function (x) { return String(x.id) === id; }) || store[id];
     if (!p || !p.phone) return toast('Nomor telepon tidak ada.', true);
+    // Sinkronkan isi editor ke map sebelum kirim
+    const el = document.getElementById('gl-wa-template');
+    if (el && waActiveCat) waTemplates[waActiveCat] = el.value;
     const url = toWa(p.phone, p);
     if (!url) return toast('Nomor tidak valid.', true);
+    const used = matchTemplateByCat(p.cat) ? ('auto: ' + p.cat) : ('aktif: ' + getActiveCat());
+    toast('WA dibuka · template ' + used);
     window.open(url, '_blank');
   };
 
   async function initWaTemplate() {
     const el = document.getElementById('gl-wa-template');
     if (!el) return;
-    // local dulu biar cepat
-    el.value = localStorage.getItem(WA_TEMPLATE_KEY) || DEFAULT_WA_TEMPLATE;
+
+    // 1) Load lokal dulu biar cepat
+    try {
+      const raw = localStorage.getItem(WA_TEMPLATES_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === 'object') waTemplates = parsed;
+      }
+      const act = localStorage.getItem(WA_ACTIVE_KEY);
+      if (act) waActiveCat = act;
+      // legacy single template
+      const legacy = localStorage.getItem(WA_TEMPLATE_KEY);
+      if (legacy && (!waTemplates['Umum'] || waTemplates['Umum'] === DEFAULT_WA_TEMPLATE)) {
+        waTemplates['Umum'] = legacy;
+      }
+    } catch (e) { /* ignore */ }
+    if (!waTemplates['Umum']) waTemplates['Umum'] = DEFAULT_WA_TEMPLATE;
+
+    fillCatSelect();
+    loadTemplateToEditor(waActiveCat);
+
+    // 2) Sync dari server
     try {
       const data = await api('getWaTemplate');
-      if (data.template && String(data.template).trim()) {
-        el.value = data.template;
-        localStorage.setItem(WA_TEMPLATE_KEY, data.template);
+      if (data.templates && typeof data.templates === 'object' && Object.keys(data.templates).length) {
+        waTemplates = data.templates;
+        if (!waTemplates['Umum']) waTemplates['Umum'] = DEFAULT_WA_TEMPLATE;
+      } else if (data.template && String(data.template).trim()) {
+        // backward compatible: single template → Umum
+        waTemplates['Umum'] = data.template;
       }
+      if (data.active && waTemplates[data.active]) waActiveCat = data.active;
+      persistLocalTemplates();
+      fillCatSelect();
+      loadTemplateToEditor(waActiveCat);
     } catch (e) { /* fallback lokal */ }
   }
 
