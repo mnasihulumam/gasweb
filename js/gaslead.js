@@ -281,6 +281,60 @@
     window.glWaInsert(e);
   };
 
+  // Kirim manual ke customer (WA / Instagram / TikTok) memakai template aktif
+  function buildManualMessage() {
+    const el = document.getElementById('gl-wa-template');
+    if (el && waActiveCat) waTemplates[waActiveCat] = el.value;
+    const nameEl = document.getElementById('gl-send-name');
+    const p = { name: nameEl ? nameEl.value.trim() : '', cat: getActiveCat() === 'Umum' ? '' : getActiveCat(), addr: '', phone: '' };
+    return cleanWaText(applyWaTemplate(getWaTemplate(null), p));
+  }
+
+  // Instagram/TikTok tidak render *tebal* _miring_ ala WA, jadi penanda dibuang
+  function stripWaMarkup(s) {
+    return String(s)
+      .replace(/```([\s\S]*?)```/g, '$1')
+      .replace(/\*([^*\n]+)\*/g, '$1')
+      .replace(/_([^_\n]+)_/g, '$1')
+      .replace(/~([^~\n]+)~/g, '$1');
+  }
+
+  function cleanHandle(v) {
+    return String(v || '').trim().replace(/^https?:\/\/(www\.)?(instagram|tiktok)\.com\/(@)?/i, '').replace(/^@/, '').replace(/[\/?#].*$/, '');
+  }
+
+  async function copyText(text) {
+    try { await navigator.clipboard.writeText(text); return true; }
+    catch (e) {
+      const t = document.createElement('textarea');
+      t.value = text; t.style.position = 'fixed'; t.style.opacity = '0';
+      document.body.appendChild(t); t.select();
+      let ok = false;
+      try { ok = document.execCommand('copy'); } catch (e2) {}
+      document.body.removeChild(t);
+      return ok;
+    }
+  }
+
+  window.glSendManual = async function (channel) {
+    const msg = buildManualMessage();
+    if (!msg.trim()) return toast('Template kosong.', true);
+
+    if (channel === 'wa') {
+      const num = toWaNumber((document.getElementById('gl-send-wa') || {}).value);
+      if (!num) return toast('Nomor WA tidak valid.', true);
+      window.open('https://api.whatsapp.com/send?phone=' + num + '&text=' + encodeUtf8(msg), '_blank');
+      return toast('WA dibuka · template ' + getActiveCat());
+    }
+
+    const isIg = channel === 'ig';
+    const handle = cleanHandle((document.getElementById(isIg ? 'gl-send-ig' : 'gl-send-tt') || {}).value);
+    if (!handle) return toast('Isi username ' + (isIg ? 'Instagram' : 'TikTok') + ' dulu.', true);
+    const ok = await copyText(stripWaMarkup(msg));
+    toast(ok ? 'Pesan disalin · tempel (Ctrl+V) di chat' : 'Gagal menyalin pesan, salin manual dari template.', !ok);
+    window.open(isIg ? 'https://ig.me/m/' + encodeURIComponent(handle) : 'https://www.tiktok.com/@' + encodeURIComponent(handle), '_blank');
+  };
+
   window.glOpenWa = function (id) {
     id = idFromAttr(String(id));
     const p = searchResults.find(function (x) { return String(x.id) === id; }) || store[id];
