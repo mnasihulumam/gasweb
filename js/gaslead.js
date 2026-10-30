@@ -114,8 +114,27 @@
     const num = toWaNumber(phone);
     if (!num) return '';
     if (!prospect) return 'https://wa.me/' + num;
-    const msg = applyWaTemplate(getWaTemplate(prospect), prospect);
-    return 'https://wa.me/' + num + '?text=' + encodeURIComponent(msg);
+    const msg = cleanWaText(applyWaTemplate(getWaTemplate(prospect), prospect));
+    return 'https://api.whatsapp.com/send?phone=' + num + '&text=' + encodeUtf8(msg);
+  }
+
+  // Buang karakter rusak (surrogate yatim / U+FFFD) supaya emoji tidak jadi tanda tanya di WA
+  function cleanWaText(s) {
+    s = String(s).normalize('NFC').replace(/\uFFFD/g, '');
+    if (typeof s.toWellFormed === 'function') return s.toWellFormed();
+    return s.replace(/[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g, '');
+  }
+
+  // Percent-encode eksplisit dari byte UTF-8 (aman untuk emoji)
+  function encodeUtf8(s) {
+    const bytes = new TextEncoder().encode(s);
+    let out = '';
+    for (let i = 0; i < bytes.length; i++) {
+      const b = bytes[i];
+      out += (b >= 0x30 && b <= 0x39) || (b >= 0x41 && b <= 0x5A) || (b >= 0x61 && b <= 0x7A) || b === 0x2D || b === 0x2E || b === 0x5F || b === 0x7E
+        ? String.fromCharCode(b) : '%' + (b < 16 ? '0' : '') + b.toString(16).toUpperCase();
+    }
+    return out;
   }
 
   function persistLocalTemplates() {
@@ -251,6 +270,15 @@
     ta.focus();
     const pos = start + text.length;
     ta.setSelectionRange(pos, pos);
+  };
+
+  window.glWaEmojiToggle = function () {
+    const p = document.getElementById('gl-wa-emoji-panel');
+    if (p) p.classList.toggle('hidden');
+  };
+
+  window.glWaEmoji = function (e) {
+    window.glWaInsert(e);
   };
 
   window.glOpenWa = function (id) {
