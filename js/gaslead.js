@@ -9,7 +9,12 @@
   const GASLEAD_URL = 'https://script.google.com/macros/s/AKfycbxH97OOsWYe46Co9g2GCTT0MwoCNYpBYpH8AWQvFQCivRMAg_OBGUpHBWH6H_8xXhi9/exec';
   const ADMIN_TOKEN = 'gasweb-admin-2026';
 
-  const STATUS_LIST = ['Baru', 'Akan Dihubungi', 'Sudah Dihubungi', 'Tertarik', 'Follow-up', 'Closing', 'Tidak Tertarik', 'Nomor tidak ditemukan'];
+  let STATUS_LIST = ['Baru', 'Akan Dihubungi', 'Sudah Dihubungi', 'Tertarik', 'Follow-up', 'Closing', 'Tidak Tertarik', 'Nomor tidak ditemukan'];
+  let counts = {};          // jumlah prospek per status (dari server, ringan)
+  let countsLoaded = false;
+  let loadedSt = {};        // status → sudah di-load ke store
+  let allLoaded = false;
+  let savedViewInit = false;
   function todayStr() {
     const d = new Date();
     const m = String(d.getMonth() + 1).padStart(2, '0');
@@ -419,14 +424,61 @@
   }
 
   // ---------- Load prospects ----------
+  function totalSaved() {
+    if (!countsLoaded) return Object.keys(store).length;
+    return Object.keys(counts).reduce(function (n, k) { return n + (Number(counts[k]) || 0); }, 0);
+  }
+
+  function applyCounts(c) {
+    if (c && typeof c === 'object') { counts = c; countsLoaded = true; }
+  }
+
+  function applyStatuses(list) {
+    if (Array.isArray(list) && list.length) STATUS_LIST = list;
+    fillStatusFilter();
+    renderStatusManager();
+  }
+
+  let pendingFilter = null;
+  function fillStatusFilter() {
+    const sel = document.getElementById('gl-st-filter');
+    if (!sel) return;
+    const cur = pendingFilter != null ? pendingFilter : sel.value;
+    sel.innerHTML = '<option value="">Semua status</option>' + STATUS_LIST.map(function (s) {
+      return '<option value="' + esc(s) + '">' + esc(s) + (countsLoaded ? ' (' + (counts[s] || 0) + ')' : '') + '</option>';
+    }).join('');
+    sel.value = STATUS_LIST.indexOf(cur) >= 0 ? cur : '';
+  }
+
+  function mergeList(list) {
+    (list || []).forEach(function (p) {
+      if (p && p.id != null) store[String(p.id)] = p;
+    });
+  }
+
+  // Refresh: ambil jumlah per status + hanya tab yang sedang dipakai (bukan semua)
   async function loadProspects() {
     try {
-      const data = await api('getProspects');
+      const needSaved = view === 'saved';
+      const st = needSaved ? ((document.getElementById('gl-st-filter') || {}).value || '') : '';
+      const data = await api('getProspects', { status: st, countsOnly: !needSaved });
       store = {};
-      (data.list || []).forEach(function (p) {
-        if (p && p.id != null) store[String(p.id)] = p;
-      });
+      loadedSt = {};
+      allLoaded = false;
+      mergeList(data.list);
+      if (needSaved) {
+        if (st) loadedSt[st] = true; else { allLoaded = true; (data.statuses || STATUS_LIST).forEach(function (s) { loadedSt[s] = true; }); }
+      }
+      applyCounts(data.counts);
+      applyStatuses(data.statuses);
       if (data.spreadsheetUrl) sheetUrl = data.spreadsheetUrl;
+      // hasil pencarian yang sudah tersimpan di tab lain
+      if (searchResults.length) {
+        try {
+          const lk = await api('lookupProspects', { ids: searchResults.map(function (p) { return p.id; }) });
+          Object.keys(lk.saved || {}).forEach(function (id) { if (!store[id]) store[id] = lk.saved[id]; });
+        } catch (e) { /* abaikan */ }
+      }
       renderStats();
       if (view === 'saved') renderTable();
       return data;
@@ -434,6 +486,39 @@
       toast('Gagal muat prospek: ' + err.message, true);
       throw err;
     }
+  }
+
+  function isLoadedFor(st) { return allLoaded || (st && loadedSt[st]); }
+
+  // Muat tab yang diminta saja ('' = semua tab)
+  async function ensureLoaded(st) {
+    if (isLoadedFor(st)) return;
+    setSpin(true);
+    try {
+      const data = await api('getProspects', { status: st || '' });
+      if (st) {
+        mergeList(data.list);
+        loadedSt[st] = true;
+      } else {
+        const keep = store;
+        store = {};
+        mergeList(data.list);
+        Object.keys(keep).forEach(function (id) { if (!store[id]) store[id] = keep[id]; });
+        allLoaded = true;
+        (data.statuses || STATUS_LIST).forEach(function (s) { loadedSt[s] = true; });
+      }
+      applyCounts(data.counts);
+      applyStatuses(data.statuses);
+    } finally {
+      setSpin(false);
+    }
+  }
+
+  async function renderSavedForFilter() {
+    const st = (document.getElementById('gl-st-filter') || {}).value || '';
+    try { await ensureLoaded(st); } catch (err) { toast('Gagal muat prospek: ' + err.message, true); }
+    renderStats();
+    renderTable();
   }
 
   // ---------- Search ----------
@@ -458,6 +543,7 @@
         }
       });
       searchResults = data.results || [];
+      Object.keys(data.saved || {}).forEach(function (id) { store[id] = data.saved[id]; });
       searched = true;
       page = 1;
       view = 'search';
@@ -565,20 +651,13 @@
     set('gl-s1', searchResults.length);
     set('gl-s2', searchResults.filter(function (p) { return p.phone; }).length);
     set('gl-s3', searchResults.filter(function (p) { return !p.web; }).length);
-    set('gl-s4', Object.keys(store).length);
+    set('gl-s4', totalSaved());
     renderProspectDash();
   }
 
   function renderProspectDash() {
     const set = function (id, v) { const el = document.getElementById(id); if (el) el.textContent = v; };
-    const list = Object.values(store);
-    set('dash-prospek-total', list.length);
-    const counts = {};
-    STATUS_LIST.forEach(function (s) { counts[s] = 0; });
-    list.forEach(function (p) {
-      const st = p.st || 'Baru';
-      counts[st] = (counts[st] || 0) + 1;
-    });
+    set('dash-prospek-total', totalSaved());
     set('dash-prospek-baru', counts['Baru'] || 0);
     set('dash-prospek-fu', (counts['Akan Dihubungi'] || 0) + (counts['Follow-up'] || 0));
     set('dash-prospek-sudah', counts['Sudah Dihubungi'] || 0);
@@ -613,7 +692,7 @@
     if (!slice.length) {
       tbody.innerHTML = '';
       let msg = '';
-      if (view === 'saved' && !Object.keys(store).length) {
+      if (view === 'saved' && totalSaved() === 0) {
         msg = 'Belum ada prospek. Cari dulu lalu simpan ke Sheet.';
       } else if (view === 'saved') {
         msg = 'Tidak ada yang cocok dengan filter.';
@@ -669,7 +748,8 @@
     if (!confirm('Hapus prospek "' + nama + '" dari Spreadsheet?\n\nTindakan ini tidak bisa dibatalkan.')) return;
     try {
       setSpin(true);
-      await api('saveProspect', { payload: { id: id, action: 'delete' } });
+      const dres = await api('saveProspect', { payload: { id: id, action: 'delete' } });
+      applyCounts(dres.counts);
       delete store[id];
       toast('Prospek dihapus.');
       renderStats();
@@ -688,7 +768,8 @@
     if (store[id]) {
       if ((store[id].note || store[id].fu) && !confirm('Prospek punya catatan. Hapus?')) return;
       try {
-        await api('saveProspect', { payload: { id: id, action: 'delete' } });
+        const dres = await api('saveProspect', { payload: { id: id, action: 'delete' } });
+        applyCounts(dres.counts);
         delete store[id];
         toast('Dihapus dari prospek.');
         renderStats();
@@ -702,7 +783,8 @@
       : null;
     if (!payload) return toast('Data tidak ditemukan.', true);
     try {
-      await api('saveProspect', { payload: payload });
+      const sres = await api('saveProspect', { payload: payload });
+      applyCounts(sres.counts);
       store[id] = payload;
       toast('Disimpan ke Spreadsheet.');
       renderStats();
@@ -724,16 +806,20 @@
           note: field === 'note' ? value : '',
           fu: field === 'fu' ? value : (autoFu || '')
         });
-        await api('saveProspect', { payload: payload });
+        const sres = await api('saveProspect', { payload: payload });
+        applyCounts(sres.counts);
         store[id] = payload;
       } else {
-        await api('updateProspectField', { id: id, field: field, value: value });
-        store[id][field] = value;
-        if (autoFu) {
-          await api('updateProspectField', { id: id, field: 'fu', value: autoFu });
-          store[id].fu = autoFu;
-        }
+        // satu panggilan: status + tanggal sekaligus (baris pindah tab otomatis di server)
+        const fields = {};
+        fields[field] = value;
+        if (autoFu) fields.fu = autoFu;
+        const ures = await api('updateProspectFields', { id: id, fields: fields });
+        applyCounts(ures.counts);
+        Object.keys(fields).forEach(function (k) { store[id][k] = fields[k]; });
       }
+      fillStatusFilter();
+      renderStatusManager();
       toast('Diperbarui.');
       renderStats();
       renderTable();
@@ -748,11 +834,90 @@
     setSpin(true);
     try {
       const res = await api('saveAllResults', { list: belum });
+      applyCounts(res.counts);
       await loadProspects();
       renderTable();
       toast((res.added || 0) + ' baru disimpan' + (res.skipped ? ', ' + res.skipped + ' dilewati' : '') + '.');
     } catch (err) { toast(err.message, true); }
     finally { setSpin(false); }
+  };
+
+  // ---------- Kelola status ----------
+  function renderStatusManager() {
+    const box = document.getElementById('gl-status-list');
+    if (!box) return;
+    box.innerHTML = STATUS_LIST.map(function (s, i) {
+      const locked = s === 'Baru';
+      const btn = 'px-1.5 py-0.5 rounded border text-[10px] hover:border-orange disabled:opacity-30 disabled:cursor-not-allowed';
+      return '<div class="flex items-center gap-1 py-1 border-b border-gray-100 last:border-0">' +
+        '<div class="flex-1 min-w-0"><span class="text-xs font-semibold truncate">' + esc(s) + '</span>' +
+        (locked ? ' <span class="text-[9px] text-gray-400">default</span>' : '') + '</div>' +
+        '<span class="text-[10px] text-gray-500 w-8 text-right">' + (countsLoaded ? (counts[s] || 0) : '-') + '</span>' +
+        '<button type="button" class="' + btn + '" onclick="glStatusMove(' + i + ',-1)"' + (i === 0 ? ' disabled' : '') + ' title="Naik">▲</button>' +
+        '<button type="button" class="' + btn + '" onclick="glStatusMove(' + i + ',1)"' + (i === STATUS_LIST.length - 1 ? ' disabled' : '') + ' title="Turun">▼</button>' +
+        '<button type="button" class="' + btn + '" onclick="glStatusRename(' + i + ')"' + (locked ? ' disabled' : '') + ' title="Ganti nama">Ubah</button>' +
+        '<button type="button" class="px-1.5 py-0.5 rounded border border-red-200 text-red-600 text-[10px] hover:bg-red-50 disabled:opacity-30 disabled:cursor-not-allowed" onclick="glStatusDelete(' + i + ')"' + (locked ? ' disabled' : '') + ' title="Hapus">Hapus</button>' +
+        '</div>';
+    }).join('');
+  }
+
+  async function statusCall(action, payload, okMsg, keepFilter) {
+    setSpin(true);
+    try {
+      const res = await api(action, payload);
+      applyCounts(res.counts);
+      pendingFilter = keepFilter != null ? keepFilter : null;
+      applyStatuses(res.statuses);
+      pendingFilter = null;
+      // data di memori bisa basi (nama/tab berubah) → muat ulang tab yang dipakai
+      await loadProspects();
+      if (okMsg) toast(okMsg(res));
+      return res;
+    } catch (err) {
+      toast(err.message, true);
+    } finally {
+      pendingFilter = null;
+      setSpin(false);
+    }
+  }
+
+  window.glStatusAdd = function () {
+    const el = document.getElementById('gl-status-new');
+    const name = el ? el.value.trim() : '';
+    if (!name) return toast('Isi nama status dulu.', true);
+    statusCall('addStatus', { name: name }, function () { return 'Status "' + name + '" ditambahkan (tab baru dibuat).'; })
+      .then(function (r) { if (r && el) el.value = ''; });
+  };
+
+  window.glStatusRename = function (i) {
+    const from = STATUS_LIST[i];
+    const to = prompt('Ganti nama status "' + from + '" menjadi:', from);
+    if (to == null || !to.trim() || to.trim() === from) return;
+    const cur = document.getElementById('gl-st-filter');
+    const keep = cur && cur.value === from ? to.trim() : null;
+    statusCall('renameStatus', { from: from, to: to.trim() }, function () { return 'Status diganti nama.'; }, keep);
+  };
+
+  window.glStatusDelete = function (i) {
+    const name = STATUS_LIST[i];
+    const n = counts[name] || 0;
+    if (!confirm('Hapus status "' + name + '"?\n\n' + n + ' prospek di dalamnya akan dipindah ke "Baru", lalu tab "' + name + '" dihapus.')) return;
+    statusCall('deleteStatus', { name: name, moveTo: 'Baru' }, function (r) {
+      return 'Status dihapus' + (r.moved ? ', ' + r.moved + ' prospek dipindah ke Baru.' : '.');
+    });
+  };
+
+  window.glStatusMove = function (i, dir) {
+    const j = i + dir;
+    if (j < 0 || j >= STATUS_LIST.length) return;
+    const order = STATUS_LIST.slice();
+    const t = order[i]; order[i] = order[j]; order[j] = t;
+    // urutan di UI langsung berubah, server menyusul
+    STATUS_LIST = order;
+    fillStatusFilter();
+    renderStatusManager();
+    renderTable();
+    api('reorderStatuses', { order: order }).catch(function (err) { toast(err.message, true); });
   };
 
   window.glOpenSheet = async function () {
@@ -769,7 +934,11 @@
     page = 1;
     setViewUI();
     if (v === 'saved') {
-      loadProspects().then(function () { renderTable(); });
+      // pertama kali buka "Prospek saya": default ke status Baru supaya cuma 1 tab yang dimuat
+      const sel = document.getElementById('gl-st-filter');
+      if (!savedViewInit && sel && !sel.value) sel.value = 'Baru';
+      savedViewInit = true;
+      renderSavedForFilter();
     } else {
       renderTable();
     }
@@ -792,6 +961,10 @@
 
   window.glFilter = function () {
     page = 1;
+    if (view === 'saved') {
+      const st = (document.getElementById('gl-st-filter') || {}).value || '';
+      if (!isLoadedFor(st)) { renderSavedForFilter(); return; }
+    }
     renderTable();
   };
 
@@ -819,14 +992,16 @@
   // Hook tab
   document.addEventListener('DOMContentLoaded', function () {
     initWaTemplate();
+    fillStatusFilter();
+    renderStatusManager();
     document.querySelectorAll('.tab-btn').forEach(function (btn) {
       btn.addEventListener('click', function () {
         if (btn.dataset.tab === 'gaslead') {
           initWaTemplate();
-          if (!Object.keys(store).length) loadProspects().catch(function () {});
+          if (!countsLoaded) loadProspects().catch(function () {});
         }
         if (btn.dataset.tab === 'dashboard') {
-          if (!Object.keys(store).length) loadProspects().catch(function () {});
+          if (!countsLoaded) loadProspects().catch(function () {});
           else renderProspectDash();
         }
       });
@@ -835,7 +1010,7 @@
     const adminScreen = document.getElementById('admin-screen');
     if (adminScreen) {
       const obs = new MutationObserver(function () {
-        if (!adminScreen.classList.contains('hidden') && !Object.keys(store).length) {
+        if (!adminScreen.classList.contains('hidden') && !countsLoaded) {
           loadProspects().catch(function () {});
         }
       });
