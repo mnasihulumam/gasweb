@@ -685,15 +685,8 @@
                   <option value="4">4+</option>
                   <option value="4.5">4.5+</option>
                 </select>
-                <select id="gl-st-filter" class="text-xs border rounded-lg px-2 py-1.5" onchange="glFilter()" title="Filter status prospek">
+                <select id="gl-st-filter" class="text-xs border rounded-lg px-2 py-1.5" onchange="glFilter()" title="Filter status prospek (hanya tab status ini yang dimuat)">
                   <option value="">Semua status</option>
-                  <option>Baru</option>
-                  <option>Akan Dihubungi</option>
-                  <option>Tertarik</option>
-                  <option>Follow-up</option>
-                  <option>Closing</option>
-                  <option>Tidak Tertarik</option>
-                  <option>Nomor tidak ditemukan</option>
                 </select>
                 <select id="gl-ts" class="text-xs border rounded-lg px-2 py-1.5" onchange="glResetSort();glFilter()">
                   <option value="near">Terdekat</option>
@@ -822,6 +815,18 @@
               </div>
 
               <p class="text-[10px] text-gray-400">WhatsApp terisi otomatis. Instagram &amp; TikTok tidak mengizinkan isi pesan lewat link, jadi pesan disalin dulu: tinggal tempel (Ctrl+V) di kolom chat.</p>
+            </div>
+
+            <!-- Kelola status -->
+            <div class="bg-white rounded-xl shadow-sm p-4 mt-4">
+              <h3 class="text-sm font-bold">Kelola Status</h3>
+              <p class="text-[10px] text-gray-500 mt-0.5 mb-2">Tiap status = 1 tab di Spreadsheet. Angka = jumlah prospek. Hapus status memindahkan isinya ke "Baru".</p>
+              <div id="gl-status-list" class="mb-2"></div>
+              <div class="flex gap-1.5">
+                <input type="text" id="gl-status-new" class="flex-1 min-w-0 text-xs px-2 py-1.5 border rounded-lg" placeholder="Status baru, mis. Demo Dikirim" maxlength="40" onkeydown="if(event.key==='Enter'){event.preventDefault();glStatusAdd();}">
+                <button type="button" onclick="glStatusAdd()" class="px-3 py-1.5 rounded-lg bg-navy text-white text-xs font-semibold hover:opacity-90">Tambah</button>
+              </div>
+              <p class="text-[10px] text-gray-400 mt-2">Kartu di dashboard memakai nama status bawaan; kalau diganti nama, kartunya menunjukkan 0 (angka tetap benar di daftar ini).</p>
             </div>
           </div>
         </div>
